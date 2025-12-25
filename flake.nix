@@ -54,6 +54,10 @@
           inherit nixpkgs;
           specialArgs = {inherit inputs vars;};
         };
+        loader = [
+          (haumea.matchers.nix haumea.loaders.default)
+          (haumea.matchers.always haumea.loaders.path)
+        ];
       };
     in
       nixpkgs.lib.mapAttrs (hostname: hostInfo: {
