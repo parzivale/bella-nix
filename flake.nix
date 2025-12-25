@@ -66,6 +66,7 @@
             inputs.home-manager.nixosModules.default
             inputs.nixos-facter-modules.nixosModules.facter
             inputs.agenix.nixosModules.default
+            inputs.agenix-rekey.nixosModules.default
             inputs.ucodenix.nixosModules.default
             inputs.disko.nixosModules.disko
             {config.facter.reportPath = hostInfo."facter.json";}
