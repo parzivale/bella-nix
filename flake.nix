@@ -6,7 +6,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
     agenix = {
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -78,7 +77,7 @@
           ];
         };
       })
-      haumea.lib.load {
+      (haumea.lib.load {
         src = hosts;
         inputs = {
           inherit nixpkgs;
@@ -88,7 +87,7 @@
           (haumea.matchers.nix haumea.loaders.default)
           (haumea.matchers.always haumea.loaders.path)
         ];
-      };
+      });
   in {
     nixosConfigurations = mkSystems ./src/hosts ./src/common;
 
