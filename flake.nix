@@ -46,48 +46,47 @@
   }: let
     vars = import ./vars.nix;
 
-    mkSystems = hosts: src: let
-      src = haumea.lib.load {
+    flattenModules = tree:
+      nixpkgs.lib.collect
+      (x: nixpkgs.lib.isFunction x || nixpkgs.lib.isAttrs x)
+      tree;
+
+    load = src:
+      haumea.lib.load {
         inherit src;
         inputs = {
           inherit nixpkgs;
           specialArgs = {inherit inputs vars;};
         };
         loader = [
-          (haumea.matchers.nix haumea.loaders.default)
-          (haumea.matchers.always haumea.loaders.path)
+          (haumea.lib.matchers.nix haumea.lib.loaders.default)
+          (haumea.lib.matchers.always haumea.lib.loaders.path)
         ];
       };
-    in
-      nixpkgs.lib.mapAttrs (hostname: hostInfo: {
-        hostname = nixpkgs.lib.nixosSystem {
-          specialArgs = {inherit inputs vars;};
-          modules = [
-            src
-            hostInfo
+
+    mkSystemForHost = common: hostName: hostInfo: {
+      ${hostName} = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs vars;};
+        modules =
+          [
             inputs.stylix.nixosModules.stylix
             inputs.home-manager.nixosModules.default
             inputs.nixos-facter-modules.nixosModules.facter
             inputs.agenix.nixosModules.default
             inputs.agenix-rekey.nixosModules.default
-            inputs.ucodenix.nixosModules.default
             inputs.disko.nixosModules.disko
-            {config.facter.reportPath = hostInfo."facter.json";}
-            {networking.hostName = "${hostname}";}
-          ];
-        };
-      })
-      (haumea.lib.load {
-        src = hosts;
-        inputs = {
-          inherit nixpkgs;
-          specialArgs = {inherit inputs vars;};
-        };
-        loader = [
-          (haumea.matchers.nix haumea.loaders.default)
-          (haumea.matchers.always haumea.loaders.path)
-        ];
-      });
+            {networking.hostName = "${hostName}";}
+          ]
+          ++ (flattenModules common) ++ (flattenModules hostInfo);
+      };
+    };
+
+    mkSystems = hosts: src: let
+      commonModules = load src;
+      hostsModules = load hosts;
+    in
+      nixpkgs.lib.mapAttrs (mkSystemForHost commonModules)
+      hostsModules;
   in {
     nixosConfigurations = mkSystems ./src/hosts ./src/common;
 
