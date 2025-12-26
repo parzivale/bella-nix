@@ -58,10 +58,6 @@
           inherit nixpkgs;
           specialArgs = {inherit inputs vars;};
         };
-        loader = [
-          (haumea.lib.matchers.nix haumea.lib.loaders.default)
-          (haumea.lib.matchers.always haumea.lib.loaders.path)
-        ];
       };
 
     mkSystemForHost = common: hostName: hostInfo: {
