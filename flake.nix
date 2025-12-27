@@ -48,16 +48,13 @@
 
     flattenModules = tree:
       nixpkgs.lib.collect
-      (x: nixpkgs.lib.isFunction x || nixpkgs.lib.isAttrs x)
+      (x: nixpkgs.lib.isPath x)
       tree;
 
     load = src:
       haumea.lib.load {
         inherit src;
-        inputs = {
-          inherit nixpkgs;
-          specialArgs = {inherit inputs vars;};
-        };
+        loader = haumea.lib.matcher.always haumea.lib.loaders.path;
       };
 
     mkSystemForHost = common: hostName: hostInfo: {

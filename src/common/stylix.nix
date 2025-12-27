@@ -1,6 +1,7 @@
 {
   nixpkgs,
   vars,
+  ...
 }: let
   iconTheme = {
   };
