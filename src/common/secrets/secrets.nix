@@ -4,10 +4,14 @@
     hostPubkey = "/etc/ssh/ssh_host_ed25519_key.pub";
 
     masterIdentities = [
-      # TODO fill this when i get my yubikeys
+      ./id_ed25519_sk_rk.pub
     ];
 
     storageMode = "local";
     localStorageDir = ./. + "/secrets/rekeyed/${config.networking.hostName}";
+  };
+
+  age.secrets = {
+    user-password.rekeyFile = "";
   };
 }

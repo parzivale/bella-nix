@@ -57,8 +57,8 @@
         loader = [(haumea.lib.matchers.always haumea.lib.loaders.path)];
       };
 
-    mkSystemForHost = common: hostName: hostInfo: {
-      ${hostName} = nixpkgs.lib.nixosSystem {
+    mkSystemForHost = common: hostName: hostInfo:
+      nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs vars;};
         modules =
           [
@@ -72,7 +72,6 @@
           ]
           ++ (flattenModules common) ++ (flattenModules hostInfo);
       };
-    };
 
     mkSystems = hosts: src: let
       commonModules = load src;
