@@ -68,7 +68,9 @@
             inputs.agenix.nixosModules.default
             inputs.agenix-rekey.nixosModules.default
             inputs.disko.nixosModules.disko
-            {networking.hostName = "${hostName}";}
+            {
+              networking.hostName = "${hostName}";
+            }
           ]
           ++ (flattenModules common) ++ (flattenModules hostInfo);
       };
