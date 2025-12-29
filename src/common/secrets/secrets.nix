@@ -4,7 +4,7 @@
     hostPubkey = "/etc/ssh/ssh_host_ed25519_key.pub";
 
     masterIdentities = [
-      ./id_ed25519_sk_rk.pub
+      ./mykey.pub
     ];
 
     storageMode = "local";
