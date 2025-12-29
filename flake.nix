@@ -54,7 +54,7 @@
     load = src:
       haumea.lib.load {
         inherit src;
-        loader = [(haumea.lib.matchers.always haumea.lib.loaders.path)];
+        loader = [(haumea.lib.matchers.nix haumea.lib.loaders.path)];
       };
 
     mkSystemForHost = common: hostName: hostInfo:
