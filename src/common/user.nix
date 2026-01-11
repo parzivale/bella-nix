@@ -21,5 +21,22 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+
+    users.${vars.user} = {
+      programs = {
+        home-manager.enable = true;
+      };
+      home = {
+        username = "${vars.user}";
+      };
+      xdg = {
+        enable = true;
+        userDirs = {
+          # Enable this on desktop machines
+          # via home-manager.users.${vars.user}.xdg.userDirs.enable = true
+          createDirectories = true;
+        };
+      };
+    };
   };
 }
