@@ -1,5 +1,5 @@
 {
-  nixpkgs,
+  pkgs,
   vars,
   ...
 }: let

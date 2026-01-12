@@ -1,0 +1,81 @@
+#!/usr/bin/env -S nix shell nixpkgs#bash --command bash
+set -euo pipefail
+
+HOST="$1"
+FLAKE_PATH="$HOME/nix"
+HOSTS_DIR="$FLAKE_PATH/hosts"
+YUBIKEY_PUB="$HOME/yubikey.pub"
+
+mkdir -p "$ARTIFACTS" "$HOSTS_DIR"
+
+echo "==> Bootstrapping host: $HOST"
+
+########################################
+# 1. Query Nix for SSH user
+########################################
+SSH_USER=$(nix eval --raw "$FLAKE_PATH/vars.nix#user")
+echo "==> SSH user: $SSH_USER"
+
+########################################
+# 2. Install base system
+########################################
+echo "==> Installing NixOS via nixos-anywhere"
+nixos-anywhere \
+  --flake "$FLAKE_PATH#bootstrap" \
+  "$SSH_USER@$HOST"
+
+########################################
+# 3. Create YubiKey challenge
+########################################
+CHALLENGE_ID="$(date +%s)-$HOST"
+CHALLENGE_PLAIN="$ARTIFACTS/$CHALLENGE_ID.txt"
+CHALLENGE_AGE="$ARTIFACTS/$CHALLENGE_ID.age"
+
+echo "verify-host=$HOST nonce=$(openssl rand -hex 32)" > "$CHALLENGE_PLAIN"
+
+age -r "$(cat "$YUBIKEY_PUB")" \
+  -o "$CHALLENGE_AGE" \
+  "$CHALLENGE_PLAIN"
+
+scp "$CHALLENGE_AGE" "$SSH_USER@$HOST:/tmp/verify.age"
+
+########################################
+# 4. Physical attestation + facter
+########################################
+cat <<EOF
+
+====================================================
+PHYSICAL ACTION REQUIRED
+----------------------------------------------------
+1. Go to the machine ($HOST)
+2. Plug in your YubiKey
+3. Press Enter below
+====================================================
+
+EOF
+read -r
+
+ssh "$SSH_USER@$HOST" <<'EOF'
+set -euo pipefail
+
+age -d -i <(age-plugin-fido2-hmac -i) /tmp/verify.age > /tmp/verified.txt
+
+nixos-facter --json > /tmp/facter.json
+
+tar czf /tmp/bootstrap-proof.tar.gz \
+  /tmp/verified.txt \
+  /tmp/facter.json \
+  /etc/ssh/ssh_host_*_key.pub
+EOF
+
+########################################
+# 5. Store host material
+########################################
+HOST_DIR="$HOSTS_DIR/$HOST"
+mkdir -p "$HOST_DIR"
+
+scp "$SSH_USER@$HOST:/tmp/bootstrap-proof.tar.gz" "$ARTIFACTS/$HOST-proof.tar.gz"
+tar xzf "$ARTIFACTS/$HOST-proof.tar.gz" -C "$HOST_DIR"
+
+echo "==> Host $HOST bootstrapped and attested"
+echo "==> Data stored in $HOST_DIR"
