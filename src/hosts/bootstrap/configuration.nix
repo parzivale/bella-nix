@@ -1,6 +1,7 @@
 {
   vars,
   config,
+  pkgs,
   ...
 }: let
   user = vars.username;
@@ -23,6 +24,8 @@ in {
     user = "root";
     group = "root";
   };
+
+  environment.systemPackages = [pkgs.nixos-facter];
 
   age.rekey.hostPubkey = ./bootstrap_key.pub;
 
