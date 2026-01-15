@@ -12,7 +12,14 @@ in {
 
   environment.etc."ssh/ssh_host_ed25519_key" = {
     source = config.age.secrets.bootstrap_key.path;
-    mode = "0600";
+    mode = "600";
+    user = "root";
+    group = "root";
+  };
+
+  environment.etc."ssh/ssh_host_ed25519_key.pub" = {
+    source = ./bootstrap_key.pub;
+    mode = "644";
     user = "root";
     group = "root";
   };
