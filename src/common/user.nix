@@ -12,9 +12,9 @@ in {
   users = {
     mutableUsers = false;
     users.${user} = {
-      openssh.authorizedKeys.keyFiles = [./secrets/yubikey_identity.pub];
+      openssh.authorizedKeys.keyFiles = [./secrets/yubikey_sshkey.pub];
       isNormalUser = true;
-      hashedPasswordFile = config.age.secrets.user-password.path;
+      hashedPasswordFile = config.age.secrets.user_password.path;
       extraGroups = ["wheel"];
       uid = vars.uid;
     };

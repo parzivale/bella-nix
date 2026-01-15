@@ -9,6 +9,7 @@
   };
 
   age.secrets = {
-    user-password.rekeyFile = ./user-password.age;
+    user_password.rekeyFile = ./user_password.age;
+    bootstrap_key.rekeyFile = ./bootstrap_key.age;
   };
 }
