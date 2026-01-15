@@ -1,6 +1,5 @@
 {
-  pkgs,
-  inputs,
+  lib,
   config,
   vars,
   ...
@@ -13,6 +12,7 @@ in {
   users = {
     mutableUsers = false;
     users.${user} = {
+      openssh.authorizedKeys.keyFiles = [./secrets/yubikey_identity.pub];
       isNormalUser = true;
       hashedPasswordFile = config.age.secrets.user-password.path;
       extraGroups = ["wheel"];
@@ -26,7 +26,7 @@ in {
 
     users.${user} = {
       programs = {
-        home-manager.enable = true;
+        home-manager.enable = lib.mkDefault true;
       };
       home = {
         username = "${user}";
@@ -36,6 +36,7 @@ in {
         userDirs = {
           # Enable this on desktop machines
           # via home-manager.users.${vars.username}.xdg.userDirs.enable = true
+          enable = lib.mkDefault true;
           createDirectories = true;
         };
       };

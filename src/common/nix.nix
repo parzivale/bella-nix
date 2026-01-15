@@ -1,4 +1,4 @@
-{...}: {
+{lib, ...}: {
   nixpkgs.config.allowUnfree = true;
   documentation.nixos.enable = false;
   documentation.man.enable = false;
@@ -16,11 +16,11 @@
         "nyx.chaotic.cx-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
       ];
     };
-    optimise = {
+    optimise = lib.mkDefault {
       automatic = true;
       dates = "daily";
     };
-    gc = {
+    gc = lib.mkDefault {
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than-7d";

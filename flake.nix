@@ -59,7 +59,9 @@
 
     mkSystemForHost = common: hostName: hostInfo:
       nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs vars;};
+        specialArgs = {
+          inherit inputs vars hostName;
+        };
         modules =
           [
             inputs.stylix.nixosModules.stylix

@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  vars,
+  ...
+}: {
   config.services.openssh = {
     # Ssh should always be enabled
     # as rekey expects the public key
@@ -7,6 +11,8 @@
     settings = {
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+      AllowUsers = [vars.username];
     };
     hostKeys = [
       {
