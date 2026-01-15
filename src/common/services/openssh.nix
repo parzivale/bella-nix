@@ -4,7 +4,7 @@
   lib,
   ...
 }: {
-  config.services.openssh = {
+  services.openssh = {
     # Ssh should always be enabled
     # as rekey expects the public key
     # to decrypt secrets
