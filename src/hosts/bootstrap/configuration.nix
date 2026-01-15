@@ -29,7 +29,7 @@ in {
 
   age.rekey.hostPubkey = ./bootstrap_key.pub;
 
-  generateHostKeys = false;
+  services.openssh.generateHostKeys = false;
 
   system.stateVersion = "25.11";
 }
