@@ -1,6 +1,5 @@
 {
   vars,
-  config,
   pkgs,
   ...
 }: let
@@ -12,7 +11,7 @@ in {
   };
 
   environment.etc."ssh/ssh_host_ed25519_key" = {
-    source = config.age.secrets.bootstrap_key.path;
+    source = ./bootstrap_key;
     mode = "600";
     user = "root";
     group = "root";
