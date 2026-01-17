@@ -10,25 +10,9 @@ in {
     home.stateVersion = "25.11";
   };
 
-  environment.etc."ssh/ssh_host_ed25519_key" = {
-    source = ./bootstrap_key;
-    mode = "600";
-    user = "root";
-    group = "root";
-  };
-
-  environment.etc."ssh/ssh_host_ed25519_key.pub" = {
-    source = ./bootstrap_key.pub;
-    mode = "644";
-    user = "root";
-    group = "root";
-  };
-
   environment.systemPackages = [pkgs.nixos-facter];
 
   age.rekey.hostPubkey = ./bootstrap_key.pub;
-
-  services.openssh.generateHostKeys = false;
 
   system.stateVersion = "25.11";
 }

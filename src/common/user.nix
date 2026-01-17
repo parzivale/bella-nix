@@ -1,6 +1,5 @@
 {
   lib,
-  config,
   vars,
   ...
 }: let
@@ -14,7 +13,7 @@ in {
     users.${user} = {
       openssh.authorizedKeys.keyFiles = [./secrets/yubikey_sshkey.pub];
       isNormalUser = true;
-      hashedPasswordFile = config.age.secrets.user_password.path;
+      hashedPassword = "$y$j9T$3SYXqLHQFhpwfTY8BHXmw.$cQGsYVD7CIWC22AJu1sX8qg4Po8Cyd00KzL9mAXa5F7";
       extraGroups = ["wheel"];
       uid = vars.uid;
     };

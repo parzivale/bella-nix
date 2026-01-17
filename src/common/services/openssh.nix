@@ -8,7 +8,7 @@
     # Ssh should always be enabled
     # as rekey expects the public key
     # to decrypt secrets
-    enable = pkgs.lib.mkDefault true;
+    enable = lib.mkDefault true;
     settings = {
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
