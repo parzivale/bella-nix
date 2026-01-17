@@ -12,7 +12,5 @@ in {
 
   environment.systemPackages = [pkgs.nixos-facter];
 
-  age.rekey.hostPubkey = ./bootstrap_key.pub;
-
   system.stateVersion = "25.11";
 }
