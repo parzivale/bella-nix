@@ -34,6 +34,7 @@ function prompt_key_local {
     echo "Needed for: SSH Authentication / File Transfer"
     echo "------------------------------------------------------------------"
     read -r -p "Press [Enter] when the key is connected locally..."
+    ssh-add -K
 }
 
 function prompt_key_remote {
@@ -45,6 +46,7 @@ function prompt_key_remote {
     echo "Needed for: Identity Attestation (Decryption)"
     echo "------------------------------------------------------------------"
     read -r -p "Press [Enter] when the key is connected remotely..."
+    ssh-add -K
 }
 
 # ----------------------------------------------------------
@@ -101,6 +103,7 @@ prompt_key_remote "$BOOTSTRAP_HOSTNAME"
 echo "==> Verifying identity on remote..."
 # NOTE: If your SSH auth relies on the YubiKey, this step requires
 # SSH ControlMaster (multiplexing) or a password fallback, as the key is now remote.
+
 ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" <<'EOF'
   set -euo pipefail
   echo "Decrypting..."
