@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Inputs
 TARGET_HOSTNAME="${1:-}"
-BOOTSTRAP_HOSTNAME="bootstrap"
+BOOTSTRAP_HOSTNAME="bootstrap.local"
 
 if [[ -z "$TARGET_HOSTNAME" ]]; then
     echo "Usage: ./scripts/bootstrap-host <target-hostname>"
@@ -41,7 +41,7 @@ cp -r "$TEMPLATE_DIR" "$TARGET_DIR"
 ########################################
 CHALLENGE_1="$ARTIFACTS/c1.age"
 echo "stage=pre-install host=$TARGET_HOSTNAME nonce=$(openssl rand -hex 32)" > "$ARTIFACTS/c1.txt"
-age -r "$(cat "$YUBIKEY_PUB")" -o "$CHALLENGE_1" "$ARTIFACTS/c1.txt"
+age -r "$(head -1 "$YUBIKEY_PUB"|awk '{print $NF}')" -o "$CHALLENGE_1" "$ARTIFACTS/c1.txt"
 
 scp $SSH_OPTS "$CHALLENGE_1" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
 
