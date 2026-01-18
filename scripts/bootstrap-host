@@ -16,33 +16,52 @@ HOSTS_DIR="$PROJECT_ROOT/src/hosts"
 TEMPLATE_DIR="$PROJECT_ROOT/template/host"
 YUBIKEY_PUB="$PROJECT_ROOT/src/common/secrets/yubikey_identity.pub"
 VARS_FILE="$PROJECT_ROOT/vars.nix"
-SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5"
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10"
 
-# Resolve User early for trap
+# Resolve User early
 SSH_USER=$(nix eval --raw -f "$VARS_FILE" username)
 
-########################################
+# ----------------------------------------------------------
+# Helper Functions
+# ----------------------------------------------------------
+
+function prompt_key_local {
+    echo ""
+    echo "=================================================================="
+    echo " 🔌  ACTION REQUIRED: YUBIKEY -> LOCAL "
+    echo "=================================================================="
+    echo "Please plug your YubiKey into THIS machine (Local)."
+    echo "Needed for: SSH Authentication / File Transfer"
+    echo "------------------------------------------------------------------"
+    read -r -p "Press [Enter] when the key is connected locally..."
+}
+
+function prompt_key_remote {
+    echo ""
+    echo "=================================================================="
+    echo " 🔌  ACTION REQUIRED: YUBIKEY -> REMOTE "
+    echo "=================================================================="
+    echo "Please plug your YubiKey into the TARGET machine ($1)."
+    echo "Needed for: Identity Attestation (Decryption)"
+    echo "------------------------------------------------------------------"
+    read -r -p "Press [Enter] when the key is connected remotely..."
+}
+
+# ----------------------------------------------------------
 # 0. Cleanup Trap
-########################################
+# ----------------------------------------------------------
 ARTIFACTS=$(mktemp -d -t bootstrap-XXXXXX)
 
 function cleanup {
     EXIT_CODE=$?
     echo ""
-    echo "==> Cleaning up artifacts and temporary files..."
-    
-    # 1. Local Cleanup
+    echo "==> Cleaning up artifacts..."
     rm -rf "$ARTIFACTS"
 
-    # 2. Remote Cleanup (Bootstrap Host)
-    # Using || true to suppress errors if host is unreachable or files don't exist
-    ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" \
-        "rm -f /tmp/verify.age /tmp/verified.txt /tmp/facter.json" 2>/dev/null || true
-
-    # 3. Remote Cleanup (Target Host)
-    # Only verify cleanup if we think the host is up (simple check) or just try blindly
-    ssh $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" \
-        "rm -f /tmp/verify_final.age /tmp/verified_final.txt" 2>/dev/null || true
+    # Attempt remote cleanup (Best effort, as key might be in wrong place)
+    echo "==> Attempting remote cleanup (ignoring errors if key is missing)..."
+    ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "rm -f /tmp/verify.age /tmp/verified.txt /tmp/facter.json" 2>/dev/null || true
+    ssh $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" "rm -f /tmp/verify_final.age /tmp/verified_final.txt" 2>/dev/null || true
 
     exit "$EXIT_CODE"
 }
@@ -67,30 +86,35 @@ cp -r "$TEMPLATE_DIR" "$TARGET_DIR"
 ########################################
 # 2. First Attestation & Disk Discovery
 ########################################
+echo "==> Generating Challenge 1..."
 CHALLENGE_1="$ARTIFACTS/c1.age"
 echo "stage=pre-install host=$TARGET_HOSTNAME nonce=$(openssl rand -hex 32)" > "$ARTIFACTS/c1.txt"
 age -r "$(head -1 "$YUBIKEY_PUB"|awk '{print $NF}')" -o "$CHALLENGE_1" "$ARTIFACTS/c1.txt"
 
+# --- SWAP 1: LOCAL ---
+prompt_key_local
+echo "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
 scp $SSH_OPTS "$CHALLENGE_1" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
 
-echo "----------------------------------------------------"
-echo "ATTESTATION 1/2: Verify identity & Discover Disks"
-echo "Touch YubiKey on the machine..."
-echo "----------------------------------------------------"
-read -r
-
-# Decrypt remotely
+# --- SWAP 2: REMOTE ---
+prompt_key_remote "$BOOTSTRAP_HOSTNAME"
+echo "==> Verifying identity on remote..."
+# NOTE: If your SSH auth relies on the YubiKey, this step requires
+# SSH ControlMaster (multiplexing) or a password fallback, as the key is now remote.
 ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" <<'EOF'
   set -euo pipefail
+  echo "Decrypting..."
   age -d -i <(age-plugin-fido2-hmac -i | head -1 | awk '{print $NF}') /tmp/verify.age > /tmp/verified.txt
+  echo "Scanning Hardware..."
   nixos-facter --json > /tmp/facter.json
 EOF
 
-# Retrieve proofs
+# --- SWAP 3: LOCAL ---
+prompt_key_local
+echo "==> Retrieving proofs..."
 scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" "$ARTIFACTS/c1_returned.txt"
 scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" "$TARGET_DIR/facter.json"
 
-# Verify Challenge
 if ! cmp -s "$ARTIFACTS/c1.txt" "$ARTIFACTS/c1_returned.txt"; then
     echo "!!!!!! SECURITY ALERT !!!!!!"
     echo "Attestation Failed! Remote content does not match local challenge."
@@ -126,6 +150,7 @@ sed -i "s|device = \"/dev/[^\"]*\"|device = \"/dev/$SELECTED_DISK\"|g" "$TARGET_
 ########################################
 # 4. Execute Installation
 ########################################
+# Key is already Local from previous step
 echo "==> Starting installation on /dev/$SELECTED_DISK..."
 nixos-anywhere \
   --flake ".#$TARGET_HOSTNAME" \
@@ -140,26 +165,28 @@ nixos-anywhere \
 echo "==> Waiting for reboot to $TARGET_HOSTNAME..."
 until ssh $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" exit 2>/dev/null; do sleep 5; done
 
+echo "==> Generating Challenge 2..."
 CHALLENGE_2="$ARTIFACTS/c2.age"
 echo "stage=post-install host=$TARGET_HOSTNAME nonce=$(openssl rand -hex 32)" > "$ARTIFACTS/c2.txt"
-age -r "$(cat "$YUBIKEY_PUB" | head -1 | aawk '{print $NF}')" -o "$CHALLENGE_2" "$ARTIFACTS/c2.txt"
+age -r "$(head -1 "$YUBIKEY_PUB"|awk '{print $NF}')" -o "$CHALLENGE_2" "$ARTIFACTS/c2.txt"
 
+# --- SWAP 4: LOCAL (Ensure it's still here) ---
+# It should be local from the install step, but let's be safe.
+prompt_key_local
+echo "==> Uploading final challenge..."
 scp $SSH_OPTS "$CHALLENGE_2" "$SSH_USER@$TARGET_HOSTNAME:/tmp/verify_final.age"
 
-echo "----------------------------------------------------"
-echo "ATTESTATION 2/2: Confirming identity of NEW SYSTEM"
-echo "Touch YubiKey again..."
-echo "----------------------------------------------------"
-read -r
+# --- SWAP 5: REMOTE ---
+prompt_key_remote "$TARGET_HOSTNAME"
+echo "==> Verifying new system identity..."
+ssh -t $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" "age -d -i <(age-plugin-fido2-hmac -i | head -1 | awk '{print $NF}') /tmp/verify_final.age > /tmp/verified_final.txt"
 
-# Decrypt remotely
-ssh -t $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" "age -d -i <(age-plugin-fido2-hmac -i | head -1 | awk '{print $NF}') /tmp/verify_final.age > /tmp/verified_final.txt"
-
-# Retrieve proofs
+# --- SWAP 6: LOCAL ---
+prompt_key_local
+echo "==> Retrieving final proofs..."
 scp $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME:/tmp/verified_final.txt" "$ARTIFACTS/c2_returned.txt"
 scp $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME:/etc/ssh/ssh_host_ed25519_key.pub" "$TARGET_DIR/ssh_host_ed25519_key.pub"
 
-# Verify Challenge
 if ! cmp -s "$ARTIFACTS/c2.txt" "$ARTIFACTS/c2_returned.txt"; then
     echo "!!!!!! SECURITY ALERT !!!!!!"
     echo "Post-Install Attestation Failed!"
