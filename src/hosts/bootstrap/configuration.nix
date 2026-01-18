@@ -11,7 +11,7 @@ in {
   };
 
   environment.systemPackages = [pkgs.nixos-facter pkgs.age pkgs.age-plugin-fido2-hmac];
-
+  programs.ssh.startAgent = true;
   services.avahi.enable = true;
   services.avahi.nssmdns4 = true;
   services.avahi.publish.enable = true;
