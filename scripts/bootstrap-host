@@ -1,81 +1,124 @@
-#!/usr/bin/env -S nix shell nixpkgs#bash --command bash
+#!/usr/bin/env -S nix shell nixpkgs#bash nixpkgs#age nixpkgs#openssl nixpkgs#coreutils nixpkgs#jq --command bash
 set -euo pipefail
 
-HOST="$1"
-FLAKE_PATH="$HOME/nix"
-HOSTS_DIR="$FLAKE_PATH/hosts"
-YUBIKEY_PUB="$HOME/yubikey.pub"
+# Inputs
+TARGET_HOSTNAME="${1:-}"
+BOOTSTRAP_HOSTNAME="bootstrap"
 
-mkdir -p "$ARTIFACTS" "$HOSTS_DIR"
+if [[ -z "$TARGET_HOSTNAME" ]]; then
+    echo "Usage: ./scripts/bootstrap-host <target-hostname>"
+    exit 1
+fi
 
-echo "==> Bootstrapping host: $HOST"
-
-########################################
-# 1. Query Nix for SSH user
-########################################
-SSH_USER=$(nix eval --raw "$FLAKE_PATH/vars.nix#user")
-echo "==> SSH user: $SSH_USER"
-
-########################################
-# 2. Install base system
-########################################
-echo "==> Installing NixOS via nixos-anywhere"
-nixos-anywhere \
-  --flake "$FLAKE_PATH#bootstrap" \
-  "$SSH_USER@$HOST"
+# Paths
+PROJECT_ROOT=$(pwd)
+HOSTS_DIR="$PROJECT_ROOT/src/hosts"
+TEMPLATE_DIR="$PROJECT_ROOT/template/host"
+YUBIKEY_PUB="$PROJECT_ROOT/src/common/secrets/yubikey_identity.pub"
+VARS_FILE="$PROJECT_ROOT/vars.nix"
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5"
 
 ########################################
-# 3. Create YubiKey challenge
+# 1. Pre-flight & Scaffold
 ########################################
-CHALLENGE_ID="$(date +%s)-$HOST"
-CHALLENGE_PLAIN="$ARTIFACTS/$CHALLENGE_ID.txt"
-CHALLENGE_AGE="$ARTIFACTS/$CHALLENGE_ID.age"
+echo "==> Checking for $BOOTSTRAP_HOSTNAME..."
+ping -c 1 -W 2 "$BOOTSTRAP_HOSTNAME" > /dev/null 2>&1 || (echo "Error: Host unreachable"; exit 1)
 
-echo "verify-host=$HOST nonce=$(openssl rand -hex 32)" > "$CHALLENGE_PLAIN"
+TARGET_DIR="$HOSTS_DIR/$TARGET_HOSTNAME"
+[ -d "$TARGET_DIR" ] && (echo "Error: Host exists"; exit 1)
 
-age -r "$(cat "$YUBIKEY_PUB")" \
-  -o "$CHALLENGE_AGE" \
-  "$CHALLENGE_PLAIN"
+ARTIFACTS=$(mktemp -d -t bootstrap-XXXXXX)
+trap 'rm -rf "$ARTIFACTS"' EXIT
+SSH_USER=$(nix eval --raw -f "$VARS_FILE" username)
 
-scp "$CHALLENGE_AGE" "$SSH_USER@$HOST:/tmp/verify.age"
+echo "==> Scaffolding $TARGET_DIR..."
+mkdir -p "$HOSTS_DIR"
+cp -r "$TEMPLATE_DIR" "$TARGET_DIR"
 
 ########################################
-# 4. Physical attestation + facter
+# 2. First Attestation & Disk Discovery
 ########################################
-cat <<EOF
+CHALLENGE_1="$ARTIFACTS/c1.age"
+echo "stage=pre-install host=$TARGET_HOSTNAME nonce=$(openssl rand -hex 32)" > "$ARTIFACTS/c1.txt"
+age -r "$(cat "$YUBIKEY_PUB")" -o "$CHALLENGE_1" "$ARTIFACTS/c1.txt"
 
-====================================================
-PHYSICAL ACTION REQUIRED
-----------------------------------------------------
-1. Go to the machine ($HOST)
-2. Plug in your YubiKey
-3. Press Enter below
-====================================================
+scp $SSH_OPTS "$CHALLENGE_1" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
 
-EOF
+echo "----------------------------------------------------"
+echo "ATTESTATION 1/2: Verify identity & Discover Disks"
+echo "Touch YubiKey on the machine..."
+echo "----------------------------------------------------"
 read -r
 
-ssh "$SSH_USER@$HOST" <<'EOF'
-set -euo pipefail
-
-age -d -i <(age-plugin-fido2-hmac -i) /tmp/verify.age > /tmp/verified.txt
-
-nixos-facter --json > /tmp/facter.json
-
-tar czf /tmp/bootstrap-proof.tar.gz \
-  /tmp/verified.txt \
-  /tmp/facter.json \
-  /etc/ssh/ssh_host_*_key.pub
+ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" <<'EOF'
+  set -euo pipefail
+  age -d -i <(age-plugin-fido2-hmac -i) /tmp/verify.age > /tmp/verified.txt
+  nixos-facter --json > /tmp/facter.json
 EOF
 
-########################################
-# 5. Store host material
-########################################
-HOST_DIR="$HOSTS_DIR/$HOST"
-mkdir -p "$HOST_DIR"
+scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" "$TARGET_DIR/facter.json"
 
-scp "$SSH_USER@$HOST:/tmp/bootstrap-proof.tar.gz" "$ARTIFACTS/$HOST-proof.tar.gz"
-tar xzf "$ARTIFACTS/$HOST-proof.tar.gz" -C "$HOST_DIR"
+########################################
+# 3. Interactive Disk Selection
+########################################
+echo "==> Available disks on $BOOTSTRAP_HOSTNAME:"
+# Parse facter.json to list block devices
+# Filters for disks that aren't read-only (like ISOs) or tiny loop devices
+DISK_LIST=$(jq -r '.hardware.disks | to_entries[] | select(.value.size_bytes > 1000000000) | "\(.key) (\(.value.model // "Unknown") - \(.value.size_bytes / 1024 / 1024 / 1024 | floor)GB)"' "$TARGET_DIR/facter.json")
 
-echo "==> Host $HOST bootstrapped and attested"
-echo "==> Data stored in $HOST_DIR"
+if [ -z "$DISK_LIST" ]; then
+    echo "Error: No suitable disks found!"
+    exit 1
+fi
+
+# Create an array for the menu
+mapfile -t DISKS <<< "$DISK_LIST"
+for i in "${!DISKS[@]}"; do
+    echo "$((i+1))) ${DISKS[$i]}"
+done
+
+echo -n "Select disk for installation (1-${#DISKS[@]}): "
+read -r CHOICE
+SELECTED_DISK_STR="${DISKS[$((CHOICE-1))]}"
+SELECTED_DISK=$(echo "$SELECTED_DISK_STR" | cut -d' ' -f1)
+
+echo "==> Selected: /dev/$SELECTED_DISK"
+
+# Automatically update the disk-configuration.nix in the new host folder
+# This assumes your template uses: device = "/dev/sda"; or similar
+sed -i "s|device = \"/dev/[^\"]*\"|device = \"/dev/$SELECTED_DISK\"|g" "$TARGET_DIR/disk-configuration.nix"
+
+########################################
+# 4. Execute Installation
+########################################
+echo "==> Starting installation on /dev/$SELECTED_DISK..."
+nixos-anywhere \
+  --flake ".#$TARGET_HOSTNAME" \
+  --ssh-user "$SSH_USER" \
+  --ssh-option "StrictHostKeyChecking=no" \
+  --ssh-option "UserKnownHostsFile=/dev/null" \
+  "$SSH_USER@$BOOTSTRAP_HOSTNAME"
+
+########################################
+# 5. POST-INSTALL CHALLENGE
+########################################
+echo "==> Waiting for reboot to $TARGET_HOSTNAME..."
+until ssh $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" exit 2>/dev/null; do sleep 5; done
+
+CHALLENGE_2="$ARTIFACTS/c2.age"
+echo "stage=post-install host=$TARGET_HOSTNAME nonce=$(openssl rand -hex 32)" > "$ARTIFACTS/c2.txt"
+age -r "$(cat "$YUBIKEY_PUB")" -o "$CHALLENGE_2" "$ARTIFACTS/c2.txt"
+
+scp $SSH_OPTS "$CHALLENGE_2" "$SSH_USER@$TARGET_HOSTNAME:/tmp/verify_final.age"
+
+echo "----------------------------------------------------"
+echo "ATTESTATION 2/2: Confirming identity of NEW SYSTEM"
+echo "Touch YubiKey again..."
+echo "----------------------------------------------------"
+read -r
+
+ssh -t $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" "age -d -i <(age-plugin-fido2-hmac -i) /tmp/verify_final.age > /tmp/verified_final.txt"
+
+scp $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME:/etc/ssh/ssh_host_ed25519_key.pub" "$TARGET_DIR/ssh_host_ed25519_key.pub"
+
+echo "==> Success! Host $TARGET_HOSTNAME is ready."
