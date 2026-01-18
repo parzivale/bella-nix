@@ -17,6 +17,7 @@ in {
   services.avahi.publish.enable = true;
   services.avahi.publish.domain = true;
   services.avahi.publish.addresses = true;
+  services.avahi.publish.userServices = true;
   networking.nameservers = ["1.1.1.1"];
   system.stateVersion = "25.11";
 }
