@@ -12,5 +12,8 @@ in {
 
   environment.systemPackages = [pkgs.nixos-facter pkgs.age pkgs.age-plugin-fido2-hmac];
 
+  services.avahi.enable = true;
+  services.avahi.nssmdns4 = true;
+
   system.stateVersion = "25.11";
 }
