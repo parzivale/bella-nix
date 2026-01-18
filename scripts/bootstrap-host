@@ -1,5 +1,4 @@
-#!/usr/bin/env nix
-#! nix shell nixpkgs#bash nixpkgs#age nixpkgs#openssl nixpkgs#coreutils nixpkgs#jq --command bash
+#!/usr/bin/env -S nix shell nixpkgs#bash nixpkgs#age nixpkgs#openssl nixpkgs#coreutils nixpkgs#jq --command bash
 set -euo pipefail
 
 # Inputs
@@ -19,6 +18,36 @@ YUBIKEY_PUB="$PROJECT_ROOT/src/common/secrets/yubikey_identity.pub"
 VARS_FILE="$PROJECT_ROOT/vars.nix"
 SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5"
 
+# Resolve User early for trap
+SSH_USER=$(nix eval --raw -f "$VARS_FILE" username)
+
+########################################
+# 0. Cleanup Trap
+########################################
+ARTIFACTS=$(mktemp -d -t bootstrap-XXXXXX)
+
+function cleanup {
+    EXIT_CODE=$?
+    echo ""
+    echo "==> Cleaning up artifacts and temporary files..."
+    
+    # 1. Local Cleanup
+    rm -rf "$ARTIFACTS"
+
+    # 2. Remote Cleanup (Bootstrap Host)
+    # Using || true to suppress errors if host is unreachable or files don't exist
+    ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" \
+        "rm -f /tmp/verify.age /tmp/verified.txt /tmp/facter.json" 2>/dev/null || true
+
+    # 3. Remote Cleanup (Target Host)
+    # Only verify cleanup if we think the host is up (simple check) or just try blindly
+    ssh $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" \
+        "rm -f /tmp/verify_final.age /tmp/verified_final.txt" 2>/dev/null || true
+
+    exit "$EXIT_CODE"
+}
+trap cleanup EXIT INT TERM
+
 ########################################
 # 1. Pre-flight & Scaffold
 ########################################
@@ -26,11 +55,10 @@ echo "==> Checking for $BOOTSTRAP_HOSTNAME..."
 ping -c 1 -W 2 "$BOOTSTRAP_HOSTNAME" > /dev/null 2>&1 || (echo "Error: Host unreachable"; exit 1)
 
 TARGET_DIR="$HOSTS_DIR/$TARGET_HOSTNAME"
-[ -d "$TARGET_DIR" ] && (echo "Error: Host exists"; exit 1)
-
-ARTIFACTS=$(mktemp -d -t bootstrap-XXXXXX)
-trap 'rm -rf "$ARTIFACTS"' EXIT
-SSH_USER=$(nix eval --raw -f "$VARS_FILE" username)
+if [ -d "$TARGET_DIR" ]; then
+    echo "Error: Host directory $TARGET_DIR already exists."
+    exit 1
+fi
 
 echo "==> Scaffolding $TARGET_DIR..."
 mkdir -p "$HOSTS_DIR"
@@ -51,20 +79,30 @@ echo "Touch YubiKey on the machine..."
 echo "----------------------------------------------------"
 read -r
 
+# Decrypt remotely
 ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" <<'EOF'
   set -euo pipefail
-  age -d -i <(age-plugin-fido2-hmac -i) /tmp/verify.age > /tmp/verified.txt
+  age -d -i <(age-plugin-fido2-hmac -i | head -1 | awk '{print $NF}') /tmp/verify.age > /tmp/verified.txt
   nixos-facter --json > /tmp/facter.json
 EOF
 
+# Retrieve proofs
+scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" "$ARTIFACTS/c1_returned.txt"
 scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" "$TARGET_DIR/facter.json"
+
+# Verify Challenge
+if ! cmp -s "$ARTIFACTS/c1.txt" "$ARTIFACTS/c1_returned.txt"; then
+    echo "!!!!!! SECURITY ALERT !!!!!!"
+    echo "Attestation Failed! Remote content does not match local challenge."
+    exit 1
+else
+    echo "==> Identity confirmed."
+fi
 
 ########################################
 # 3. Interactive Disk Selection
 ########################################
 echo "==> Available disks on $BOOTSTRAP_HOSTNAME:"
-# Parse facter.json to list block devices
-# Filters for disks that aren't read-only (like ISOs) or tiny loop devices
 DISK_LIST=$(jq -r '.hardware.disks | to_entries[] | select(.value.size_bytes > 1000000000) | "\(.key) (\(.value.model // "Unknown") - \(.value.size_bytes / 1024 / 1024 / 1024 | floor)GB)"' "$TARGET_DIR/facter.json")
 
 if [ -z "$DISK_LIST" ]; then
@@ -72,7 +110,6 @@ if [ -z "$DISK_LIST" ]; then
     exit 1
 fi
 
-# Create an array for the menu
 mapfile -t DISKS <<< "$DISK_LIST"
 for i in "${!DISKS[@]}"; do
     echo "$((i+1))) ${DISKS[$i]}"
@@ -84,9 +121,6 @@ SELECTED_DISK_STR="${DISKS[$((CHOICE-1))]}"
 SELECTED_DISK=$(echo "$SELECTED_DISK_STR" | cut -d' ' -f1)
 
 echo "==> Selected: /dev/$SELECTED_DISK"
-
-# Automatically update the disk-configuration.nix in the new host folder
-# This assumes your template uses: device = "/dev/sda"; or similar
 sed -i "s|device = \"/dev/[^\"]*\"|device = \"/dev/$SELECTED_DISK\"|g" "$TARGET_DIR/disk-configuration.nix"
 
 ########################################
@@ -108,7 +142,7 @@ until ssh $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" exit 2>/dev/null; do sleep 5; d
 
 CHALLENGE_2="$ARTIFACTS/c2.age"
 echo "stage=post-install host=$TARGET_HOSTNAME nonce=$(openssl rand -hex 32)" > "$ARTIFACTS/c2.txt"
-age -r "$(cat "$YUBIKEY_PUB")" -o "$CHALLENGE_2" "$ARTIFACTS/c2.txt"
+age -r "$(cat "$YUBIKEY_PUB" | head -1 | aawk '{print $NF}')" -o "$CHALLENGE_2" "$ARTIFACTS/c2.txt"
 
 scp $SSH_OPTS "$CHALLENGE_2" "$SSH_USER@$TARGET_HOSTNAME:/tmp/verify_final.age"
 
@@ -118,8 +152,20 @@ echo "Touch YubiKey again..."
 echo "----------------------------------------------------"
 read -r
 
-ssh -t $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" "age -d -i <(age-plugin-fido2-hmac -i) /tmp/verify_final.age > /tmp/verified_final.txt"
+# Decrypt remotely
+ssh -t $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" "age -d -i <(age-plugin-fido2-hmac -i | head -1 | awk '{print $NF}') /tmp/verify_final.age > /tmp/verified_final.txt"
 
+# Retrieve proofs
+scp $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME:/tmp/verified_final.txt" "$ARTIFACTS/c2_returned.txt"
 scp $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME:/etc/ssh/ssh_host_ed25519_key.pub" "$TARGET_DIR/ssh_host_ed25519_key.pub"
+
+# Verify Challenge
+if ! cmp -s "$ARTIFACTS/c2.txt" "$ARTIFACTS/c2_returned.txt"; then
+    echo "!!!!!! SECURITY ALERT !!!!!!"
+    echo "Post-Install Attestation Failed!"
+    exit 1
+else
+    echo "==> Identity confirmed."
+fi
 
 echo "==> Success! Host $TARGET_HOSTNAME is ready."
