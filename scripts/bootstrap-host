@@ -98,6 +98,8 @@ age -r "$(head -1 "$YUBIKEY_PUB"|awk '{print $NF}')" -o "$CHALLENGE_1" "$ARTIFAC
 prompt_key_local
 echo "==> Adding key to agent"
 ssh-add -K
+echo "==> inital ssh connection"
+ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "echo 'hi'"
 echo "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
 scp $SSH_OPTS "$CHALLENGE_1" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
 scp $SSH_OPTS "$YUBIKEY_PUB" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
