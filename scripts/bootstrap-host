@@ -10,6 +10,8 @@ if [[ -z "$TARGET_HOSTNAME" ]]; then
     exit 1
 fi
 
+ARTIFACTS=$(mktemp -d -t bootstrap-XXXXXX)
+
 # Paths
 PROJECT_ROOT=$(pwd)
 HOSTS_DIR="$PROJECT_ROOT/src/hosts"
@@ -50,7 +52,6 @@ function prompt_key_remote {
 # ----------------------------------------------------------
 # 0. Cleanup Trap
 # ----------------------------------------------------------
-ARTIFACTS=$(mktemp -d -t bootstrap-XXXXXX)
 
 function cleanup {
     EXIT_CODE=$?
