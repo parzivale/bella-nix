@@ -100,7 +100,7 @@ echo "==> Adding key to agent"
 ssh-add -K
 echo "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
 scp $SSH_OPTS "$CHALLENGE_1" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
-scp $SSH_OPTS "$(cat $YUBIKEY_PUB)" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
+scp $SSH_OPTS "$YUBIKEY_PUB" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
 
 # --- SWAP 2: REMOTE ---
 prompt_key_remote "$BOOTSTRAP_HOSTNAME"
