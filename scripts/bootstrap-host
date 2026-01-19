@@ -11,6 +11,7 @@ if [[ -z "$TARGET_HOSTNAME" ]]; then
 fi
 
 ARTIFACTS=$(mktemp -d -t bootstrap-XXXXXX)
+SOCKET="$ARTIFACTS/ssh-%r@%h:%p"
 
 # Paths
 PROJECT_ROOT=$(pwd)
@@ -18,7 +19,7 @@ HOSTS_DIR="$PROJECT_ROOT/src/hosts"
 TEMPLATE_DIR="$PROJECT_ROOT/template/host"
 YUBIKEY_PUB="$PROJECT_ROOT/src/common/secrets/yubikey_identity.pub"
 VARS_FILE="$PROJECT_ROOT/vars.nix"
-SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m"
+SSH_OPTS="-S "$SOCKET" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m"
 
 # Resolve User early
 SSH_USER=$(nix eval --raw -f "$VARS_FILE" username)
