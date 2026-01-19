@@ -42,40 +42,40 @@ def main [TARGET_HOSTNAME: string] {
         print "------------------------------------------------------------------"
         input "Press [Enter] when the key is connected remotely..."
     }
-    echo $"==> Checking for $BOOTSTRAP_HOSTNAME..."
+    print "==> Checking for $BOOTSTRAP_HOSTNAME..."
     try {
-    ping -c 1 -W 2 $BOOTSTRAP_HOSTNAME
-    echo "Found host"
+        ping -c 1 -W 2 -q $BOOTSTRAP_HOSTNAME
+        print "Found host"
      } catch {
-        echo "Error: Host unreachable"
+        print "Error: Host unreachable"
         exit 1
     }
     let TARGET_DIR = $"($HOSTS_DIR)/$TARGET_HOSTNAME"
     if (^ls $TARGET_DIR | length) > 0 {
-        echo $"Error: Host directory $TARGET_DIR already exists."
+        print $"Error: Host directory $TARGET_DIR already exists."
         exit 1
     }
-    echo $"==> Scaffolding $TARGET_DIR..."
+    print $"==> Scaffolding $TARGET_DIR..."
     mkdir $HOSTS_DIR
     cp -r $TEMPLATE_DIR $TARGET_DIR
-    echo "==> Generating Challenge 1..."
+    print "==> Generating Challenge 1..."
     let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
     openssl rand -hex 32 > $"($ARTIFACTS)/c1_nonce.txt"
-    echo $"stage=pre-install host=$TARGET_HOSTNAME nonce=(open $"($ARTIFACTS)/c1_nonce.txt" | str trim)" > $"($ARTIFACTS)/c1.txt"
+    print $"stage=pre-install host=$TARGET_HOSTNAME nonce=(open $"($ARTIFACTS)/c1_nonce.txt" | str trim)" > $"($ARTIFACTS)/c1.txt"
     age -r (
         open $YUBIKEY_PUB | lines | first | split words | last
     ) -o $CHALLENGE_1 $"($ARTIFACTS)/c1.txt"
     prompt_key_local
-    echo "==> Adding key to agent"
+    print "==> Adding key to agent"
     ssh-add -K
-    echo "==> initial ssh connection"
-    ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "echo 'connected to host'"
-    echo "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
+    print "==> initial ssh connection"
+    ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "print 'connected to host'"
+    print "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
     scp $SSH_OPTS $CHALLENGE_1 "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
     scp $SSH_OPTS $YUBIKEY_PUB "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
     # --- SWAP 2: REMOTE ---
     prompt_key_remote $BOOTSTRAP_HOSTNAME
-    echo "==> Verifying identity on remote..."
+    print "==> Verifying identity on remote..."
     ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" '
     set -euo pipefail
     echo "Decrypting..."
@@ -84,13 +84,13 @@ def main [TARGET_HOSTNAME: string] {
     sudo nixos-facter > /tmp/facter.json
 '
     prompt_key_local
-    echo "==> Retrieving proofs..."
+    print "==> Retrieving proofs..."
     scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" $"($ARTIFACTS)/c1_returned.txt"
     scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" $"($TARGET_DIR)/facter.json"
     let challenge_match = (open $"($ARTIFACTS)/c1.txt" | str trim) == (open $"($ARTIFACTS)/c1_returned.txt" | str trim)
     if !$challenge_match {
-        echo "!!!!!! SECURITY ALERT !!!!!!"
-        echo "Attestation Failed! Remote content does not match local challenge."
+        print "!!!!!! SECURITY ALERT !!!!!!"
+        print "Attestation Failed! Remote content does not match local challenge."
         exit 1
-    } else { echo "==> Identity confirmed." }
+    } else { print "==> Identity confirmed." }
 }
