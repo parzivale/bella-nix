@@ -110,7 +110,7 @@ echo "==> Verifying identity on remote..."
 # NOTE: If your SSH auth relies on the YubiKey, this step requires
 # SSH ControlMaster (multiplexing) or a password fallback, as the key is now remote.
 
-ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" 'echo "Decrypting...";age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age;echo "Scanning Hardware...";nixos-facter --json > /tmp/facter.json'
+ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" 'set -euo pipefail; echo "Decrypting...";age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age;echo "Scanning Hardware...";sudo nixos-facter > /tmp/facter.json'
 
 # --- SWAP 3: LOCAL ---
 prompt_key_local
