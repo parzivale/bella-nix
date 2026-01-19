@@ -57,14 +57,14 @@ def main [TARGET_HOSTNAME: string] {
     cp -r $TEMPLATE_DIR $TARGET_DIR
     echo "==> Generating Challenge 1..."
     let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
-    run openssl rand -hex 32 > $"($ARTIFACTS)/c1_nonce.txt"
+    openssl rand -hex 32 > $"($ARTIFACTS)/c1_nonce.txt"
     echo $"stage=pre-install host=$TARGET_HOSTNAME nonce=(open $"($ARTIFACTS)/c1_nonce.txt" | str trim)" > $"($ARTIFACTS)/c1.txt"
-    run age -r (
+    age -r (
         open $YUBIKEY_PUB | lines | first | split words | last
     ) -o $CHALLENGE_1 $"($ARTIFACTS)/c1.txt"
     prompt_key_local
     echo "==> Adding key to agent"
-    run ssh-add -K
+    ssh-add -K
     echo "==> initial ssh connection"
     ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "echo 'connected to host'"
     echo "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
@@ -73,7 +73,7 @@ def main [TARGET_HOSTNAME: string] {
     # --- SWAP 2: REMOTE ---
     prompt_key_remote $BOOTSTRAP_HOSTNAME
     echo "==> Verifying identity on remote..."
-    run ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" '
+    ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" '
     set -euo pipefail
     echo "Decrypting..."
     age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age
@@ -82,8 +82,8 @@ def main [TARGET_HOSTNAME: string] {
 '
     prompt_key_local
     echo "==> Retrieving proofs..."
-    run scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" $"($ARTIFACTS)/c1_returned.txt"
-    run scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" $"($TARGET_DIR)/facter.json"
+    scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" $"($ARTIFACTS)/c1_returned.txt"
+    scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" $"($TARGET_DIR)/facter.json"
     let challenge_match = (open $"($ARTIFACTS)/c1.txt" | str trim) == (open $"($ARTIFACTS)/c1_returned.txt" | str trim)
     if !$challenge_match {
         echo "!!!!!! SECURITY ALERT !!!!!!"
