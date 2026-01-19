@@ -48,7 +48,7 @@ def main [TARGET_HOSTNAME: string] {
         exit 1
     }
     let TARGET_DIR = $"($HOSTS_DIR)/$TARGET_HOSTNAME"
-    if (ls $TARGET_DIR | length) > 0 {
+    if (^ls $TARGET_DIR | length) > 0 {
         echo $"Error: Host directory $TARGET_DIR already exists."
         exit 1
     }
