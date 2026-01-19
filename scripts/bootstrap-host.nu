@@ -7,20 +7,7 @@ def main [TARGET_HOSTNAME: string] {
     let TEMPLATE_DIR = $"($PROJECT_ROOT)/template/host"
     let YUBIKEY_PUB = $"($PROJECT_ROOT)/src/common/secrets/yubikey_identity.pub"
     let VARS_FILE = $"($PROJECT_ROOT)/vars.nix"
-    let SSH_OPTS = [
-        "-o"
-        "StrictHostKeyChecking=no"
-        "-o"
-        "UserKnownHostsFile=/dev/null"
-        "-o"
-        "ConnectTimeout=10"
-        "-o"
-        "ControlMaster=auto"
-        "-o"
-        "ControlPath=$ARTIFACTS/ssh-%r@%h:%p"
-        "-o"
-        "ControlPersist=10m"
-    ]
+    let SSH_OPTS = $"-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=($ARTIFACTS)/ssh-%r@%h:%p -o ControlPersist=10m"
     let SSH_USER = (nix eval --raw -f $VARS_FILE username)
     def prompt_key_local [] {
         print ""
@@ -50,18 +37,18 @@ def main [TARGET_HOSTNAME: string] {
         print "Error: Host unreachable"
         exit 1
     }
-    let TARGET_DIR = $"($HOSTS_DIR)/$TARGET_HOSTNAME"
-    if (^ls $TARGET_DIR | length) > 0 {
-        print $"Error: Host directory $TARGET_DIR already exists."
+    let TARGET_DIR = $"($HOSTS_DIR)/($TARGET_HOSTNAME)"
+    if ($TARGET_DIR | path exists) {
+        print $"Error: Host directory ($TARGET_DIR) already exists."
         exit 1
     }
-    print $"==> Scaffolding $TARGET_DIR..."
+    print $"==> Scaffolding ($TARGET_DIR)..."
     mkdir $HOSTS_DIR
     cp -r $TEMPLATE_DIR $TARGET_DIR
     print "==> Generating Challenge 1..."
     let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
-    openssl rand -hex 32 > $"($ARTIFACTS)/c1_nonce.txt"
-    print $"stage=pre-install host=$TARGET_HOSTNAME nonce=(open $"($ARTIFACTS)/c1_nonce.txt" | str trim)" > $"($ARTIFACTS)/c1.txt"
+    openssl rand -hex 32 | save $"($ARTIFACTS)/c1_nonce.txt"
+    $"stage=pre-install host=($TARGET_HOSTNAME) nonce=(open $"($ARTIFACTS)/c1_nonce.txt" | str trim)" | save $"($ARTIFACTS)/c1.txt"
     age -r (
         open $YUBIKEY_PUB | lines | first | split words | last
     ) -o $CHALLENGE_1 $"($ARTIFACTS)/c1.txt"
@@ -69,7 +56,7 @@ def main [TARGET_HOSTNAME: string] {
     print "==> Adding key to agent"
     ssh-add -K
     print "==> initial ssh connection"
-    ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "print 'connected to host'"
+    ssh $"($SSH_OPTS) ($SSH_USER)@($BOOTSTRAP_HOSTNAME) echo 'connected to host'"
     print "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
     scp $SSH_OPTS $CHALLENGE_1 "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
     scp $SSH_OPTS $YUBIKEY_PUB "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
