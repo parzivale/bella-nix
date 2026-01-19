@@ -112,7 +112,6 @@ echo "==> Verifying identity on remote..."
 
 ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" 
   'set -euo pipefail;
-  exec </dev/tty >/dev/tty 2>&1;
   echo "Decrypting...";
   age -d -i /tmp/yubikey_identity.pub  -o /tmp/verified.txt /tmp/verify.age;
   echo "Scanning Hardware...";
