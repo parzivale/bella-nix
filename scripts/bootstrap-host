@@ -1,5 +1,4 @@
 #!/usr/bin/env -S nix shell nixpkgs#nushell nixpkgs#age nixpkgs#openssl nixpkgs#coreutils nixpkgs#jq --command nu
-#!/usr/bin/env -S nix shell nixpkgs#nushell nixpkgs#age nixpkgs#openssl nixpkgs#coreutils nixpkgs#jq --command nu
 
 # ----------------------------------------------------------
 # 0. Imports / Prep
