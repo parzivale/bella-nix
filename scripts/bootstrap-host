@@ -19,8 +19,7 @@ TEMPLATE_DIR="$PROJECT_ROOT/template/host"
 YUBIKEY_PUB="$PROJECT_ROOT/src/common/secrets/yubikey_identity.pub"
 VARS_FILE="$PROJECT_ROOT/vars.nix"
 
-SSH_OPTS="-S $ARTIFACTS/ssh-%r@%h:%p -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m"
-SCP_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m"
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m"
 
 # Resolve User early
 SSH_USER=$(nix eval --raw -f "$VARS_FILE" username)
@@ -100,7 +99,8 @@ prompt_key_local
 echo "==> Adding key to agent"
 ssh-add -K
 echo "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
-scp $SCP_OPTS "$CHALLENGE_1" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
+scp $SSH_OPTS "$CHALLENGE_1" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
+scp $SSH_OPTS "$(cat $YUBIKEY_PUB)" "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
 
 # --- SWAP 2: REMOTE ---
 prompt_key_remote "$BOOTSTRAP_HOSTNAME"
@@ -111,7 +111,7 @@ echo "==> Verifying identity on remote..."
 ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" <<'EOF'
   set -euo pipefail
   echo "Decrypting..."
-  age -d -i <(age-plugin-fido2-hmac -i | head -1 | awk '{print $NF}') /tmp/verify.age > /tmp/verified.txt
+  age -d -i <(/tmp/yubikey_identity.pub | head -1 | awk '{print $NF}') /tmp/verify.age > /tmp/verified.txt
   echo "Scanning Hardware..."
   nixos-facter --json > /tmp/facter.json
 EOF
@@ -119,8 +119,8 @@ EOF
 # --- SWAP 3: LOCAL ---
 prompt_key_local
 echo "==> Retrieving proofs..."
-scp $SCP_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" "$ARTIFACTS/c1_returned.txt"
-scp $SCP_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" "$TARGET_DIR/facter.json"
+scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" "$ARTIFACTS/c1_returned.txt"
+scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" "$TARGET_DIR/facter.json"
 
 if ! cmp -s "$ARTIFACTS/c1.txt" "$ARTIFACTS/c1_returned.txt"; then
     echo "!!!!!! SECURITY ALERT !!!!!!"
@@ -181,7 +181,7 @@ age -r "$(head -1 "$YUBIKEY_PUB"|awk '{print $NF}')" -o "$CHALLENGE_2" "$ARTIFAC
 # It should be local from the install step, but let's be safe.
 prompt_key_local
 echo "==> Uploading final challenge..."
-scp $SCP_OPTS "$CHALLENGE_2" "$SSH_USER@$TARGET_HOSTNAME:/tmp/verify_final.age"
+scp $SSH_OPTS "$CHALLENGE_2" "$SSH_USER@$TARGET_HOSTNAME:/tmp/verify_final.age"
 
 # --- SWAP 5: REMOTE ---
 prompt_key_remote "$TARGET_HOSTNAME"
