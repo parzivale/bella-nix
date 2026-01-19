@@ -37,12 +37,16 @@ def prompt_key_remote [host: string] {
 def ssh_with_opts [command: string user: string, host = $BOOTSTRAP_HOSTNAME] {
     ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m $"($user)@($host)" command
 }
-def scp_with_opts [infile: path, outfile: path, user: string, host = $BOOTSTRAP_HOSTNAME] {
+def scp_with_opts_up [infile: path, outfile: path, user: string, host = $BOOTSTRAP_HOSTNAME] {
     scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m $"($user)@($host)" $infile $"($user)@($host):($outfile)"
 }
     
+def scp_with_opts_down [infile: path, outfile: path, user: string, host = $BOOTSTRAP_HOSTNAME] {
+    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m $"($user)@($host)" $"($user)@($host):($infile)" $outfile
+}
+
 def main [TARGET_HOSTNAME: string] {
-    println "==> Checking for $BOOTSTRAP_HOSTNAME...\n"
+    print "==> Checking for $BOOTSTRAP_HOSTNAME...\n"
     try {
         ping -c 1 -W 2 -q $BOOTSTRAP_HOSTNAME
         print "Found host"
@@ -83,28 +87,23 @@ def main [TARGET_HOSTNAME: string] {
     
     print "==> Uploading challenge to $BOOTSTRAP_HOSTNAME...\n"
 
-    scp_with_opts $CHALLENGE_1  "/tmp/verify.age" $SSH_USER
-    scp_with_opts $YUBIKEY_PUB  "/tmp/yubikey_identity.pub"  $SSH_USER
+    scp_with_opts_up $CHALLENGE_1  "/tmp/verify.age" $SSH_USER
+    scp_with_opts_up $YUBIKEY_PUB  "/tmp/yubikey_identity.pub"  $SSH_USER
 
     prompt_key_remote $BOOTSTRAP_HOSTNAME
     
     print "==> Verifying identity on remote...\n"
-    ssh_with_opts '' $SSH_USER
-    ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" '
-    set -euo pipefail
-    echo "Decrypting..."
-    age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age
-    echo "Scanning Hardware..."
-    sudo nixos-facter > /tmp/facter.json
-'
+    ssh_with_opts 'set -euo pipefail; echo "Decrypting..."; age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age; echo "Scanning Hardware..."; sudo nixos-facter > /tmp/facter.json' $SSH_USER
+
     prompt_key_local
-    print "==> Retrieving proofs..."
-    scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verified.txt" $"($ARTIFACTS)/c1_returned.txt"
-    scp $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/facter.json" $"($TARGET_DIR)/facter.json"
+    print "==> Retrieving proofs...\n"
+    scp_with_opts_down /tmp/verified.txt  $"($ARTIFACTS)/c1_returned.txt" $SSH_USER
+    scp_with_opts_down /tmp/facter.json $"($TARGET_DIR)/facter.json" $SSH_USER
     let challenge_match = (open $"($ARTIFACTS)/c1.txt" | str trim) == (open $"($ARTIFACTS)/c1_returned.txt" | str trim)
     if !$challenge_match {
         print "!!!!!! SECURITY ALERT !!!!!!"
         print "Attestation Failed! Remote content does not match local challenge."
         exit 1
-    } else { print "==> Identity confirmed." }
+    }
+     print "==> Identity confirmed." 
 }
