@@ -55,7 +55,7 @@ def main [TARGET_HOSTNAME: string] {
         exit 1
     }
 
-    if  ($TARGET_DIR | path exists) {
+    if  ($TARGET_DIR | path exists) {
         print $"Error: Host directory $TARGET_DIR already exists."
         exit 1
     }
