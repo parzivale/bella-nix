@@ -34,7 +34,6 @@ function prompt_key_local {
     echo "Needed for: SSH Authentication / File Transfer"
     echo "------------------------------------------------------------------"
     read -r -p "Press [Enter] when the key is connected locally..."
-    ssh-add -K
 }
 
 function prompt_key_remote {
@@ -46,7 +45,6 @@ function prompt_key_remote {
     echo "Needed for: Identity Attestation (Decryption)"
     echo "------------------------------------------------------------------"
     read -r -p "Press [Enter] when the key is connected remotely..."
-    ssh-add -K
 }
 
 # ----------------------------------------------------------
@@ -74,6 +72,14 @@ trap cleanup EXIT INT TERM
 ########################################
 echo "==> Checking for $BOOTSTRAP_HOSTNAME..."
 ping -c 1 -W 2 "$BOOTSTRAP_HOSTNAME" > /dev/null 2>&1 || (echo "Error: Host unreachable"; exit 1)
+
+prompt_key_local
+echo "==> Adding key to agent"
+ssh-add -K
+
+prompt_key_remote "$BOOTSTRAP_HOSTNAME"
+echo "==> Adding key to agent"
+ssh -t $SSH_OPTS "$SSH_USER@$TARGET_HOSTNAME" "ssh-add -K"
 
 TARGET_DIR="$HOSTS_DIR/$TARGET_HOSTNAME"
 if [ -d "$TARGET_DIR" ]; then
