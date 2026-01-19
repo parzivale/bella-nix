@@ -43,7 +43,10 @@ def main [TARGET_HOSTNAME: string] {
         input "Press [Enter] when the key is connected remotely..."
     }
     echo $"==> Checking for $BOOTSTRAP_HOSTNAME..."
-    try { ping -c 1 -W 2 $BOOTSTRAP_HOSTNAME } catch {
+    try {
+    ping -c 1 -W 2 $BOOTSTRAP_HOSTNAME
+    echo "Found host"
+     } catch {
         echo "Error: Host unreachable"
         exit 1
     }
