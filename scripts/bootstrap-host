@@ -111,7 +111,7 @@ echo "==> Verifying identity on remote..."
 ssh -t $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" <<'EOF'
   set -euo pipefail
   echo "Decrypting..."
-  age -d -i <(/tmp/yubikey_identity.pub | head -1 | awk '{print $NF}') /tmp/verify.age > /tmp/verified.txt
+  age -d -i /tmp/yubikey_identity.pub  -o /tmp/verified.txt /tmp/verify.age
   echo "Scanning Hardware..."
   nixos-facter --json > /tmp/facter.json
 EOF
