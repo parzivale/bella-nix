@@ -4,7 +4,7 @@
 # 0. Imports / Prep
 # ----------------------------------------------------------
 # Note: NuShell has no "set -euo pipefail", but `exit` will stop script on error
-let-env TARGET_HOSTNAME = ($env.TARGET_HOSTNAME ?: (echo "Usage: $0 <target-hostname>"; exit 1))
+def main [TARGET_HOSTNAME: string] {
 let BOOTSTRAP_HOSTNAME = "bootstrap.local"
 
 let ARTIFACTS = (mktemp -d -t bootstrap-XXXXXX | str trim)
@@ -54,10 +54,10 @@ def prompt_key_remote [host:string] {
 # 1. Pre-flight & Scaffold
 # ----------------------------------------------------------
 echo $"==> Checking for $BOOTSTRAP_HOSTNAME..."
-run ping -c 1 -W 2 $BOOTSTRAP_HOSTNAME || (echo "Error: Host unreachable"; exit 1)
+try {ping -c 1 -W 2 $BOOTSTRAP_HOSTNAME} catch {echo "Error: Host unreachable"; exit 1}
 
 let TARGET_DIR = $"($HOSTS_DIR)/$TARGET_HOSTNAME"
-if (ls $TARGET_DIR | length > 0) {
+if (ls $TARGET_DIR | length) > 0 {
     echo $"Error: Host directory $TARGET_DIR already exists."
     exit 1
 }
@@ -73,7 +73,7 @@ echo "==> Generating Challenge 1..."
 let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
 run openssl rand -hex 32 > $"($ARTIFACTS)/c1_nonce.txt"
 echo $"stage=pre-install host=$TARGET_HOSTNAME nonce=(open $"($ARTIFACTS)/c1_nonce.txt" | str trim)" > $"($ARTIFACTS)/c1.txt"
-run age -r ((open $YUBIKEY_PUB | lines | first | split ' ' | last)) -o $CHALLENGE_1 $"($ARTIFACTS)/c1.txt"
+run age -r (open $YUBIKEY_PUB | lines | first | split words | last) -o $CHALLENGE_1 $"($ARTIFACTS)/c1.txt"
 
 # --- SWAP 1: LOCAL ---
 prompt_key_local
@@ -116,7 +116,11 @@ if !$challenge_match {
 # 3. Interactive Disk Selection
 # ----------------------------------------------------------
 echo $"==> Available disks on $BOOTSTRAP_HOSTNAME:"
-let disks = (open $"($TARGET_DIR)/facter.json" | from json | get hardware.disks | each { $it | where value.size_bytes > 1000000000 } | each { $"($it.key) ($it.value.model? // 'Unknown') - ($it.value.size_bytes / 1024 / 1024 / 1024 | math floor)GB)" })
+let disks = (open $"($TARGET_DIR)/facter.json" |
+    get hardware.disk |
+    each {|it| where value.size_bytes > 1000000000 } |
+    each { $"($it.key) ($it.value.model? // 'Unknown') - ($it.value.size_bytes / 1024 / 1024 / 1024 |
+    math floor)GB)" })
 
 for idx in (range 0 ( ($disks | length) - 1 )) {
     echo $"($($idx + 1))) $($disks[$idx])"
@@ -133,12 +137,7 @@ run sed -i $"s|device = \"/dev/[^\"]*\"|device = \"/dev/$selected_disk\"|g" $"($
 # 4. Execute Installation
 # ----------------------------------------------------------
 echo $"==> Starting installation on /dev/$selected_disk..."
-run nixos-anywhere \
-    --flake ".#$TARGET_HOSTNAME" \
-    --ssh-user $SSH_USER \
-    --ssh-option "StrictHostKeyChecking=no" \
-    --ssh-option "UserKnownHostsFile=/dev/null" \
-    "$SSH_USER@$BOOTSTRAP_HOSTNAME"
+run nixos-anywhere --flake ".#$TARGET_HOSTNAME" --ssh-user $SSH_USER --ssh-option "StrictHostKeyChecking=no" --ssh-option "UserKnownHostsFile=/dev/null" "$SSH_USER@$BOOTSTRAP_HOSTNAME"
 
 # ----------------------------------------------------------
 # 5. POST-INSTALL CHALLENGE
@@ -182,3 +181,4 @@ if !$post_match {
 }
 
 echo $"==> Success! Host $TARGET_HOSTNAME is ready."
+}
