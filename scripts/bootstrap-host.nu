@@ -53,8 +53,8 @@ def main [TARGET_HOSTNAME: string] {
         exit 1
     }
     echo $"==> Scaffolding $TARGET_DIR..."
-    run mkdir -p $HOSTS_DIR
-    run cp -r $TEMPLATE_DIR $TARGET_DIR
+    mkdir $HOSTS_DIR
+    cp -r $TEMPLATE_DIR $TARGET_DIR
     echo "==> Generating Challenge 1..."
     let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
     run openssl rand -hex 32 > $"($ARTIFACTS)/c1_nonce.txt"
@@ -66,10 +66,10 @@ def main [TARGET_HOSTNAME: string] {
     echo "==> Adding key to agent"
     run ssh-add -K
     echo "==> initial ssh connection"
-    run ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "echo 'connected to host'"
+    ssh $SSH_OPTS "$SSH_USER@$BOOTSTRAP_HOSTNAME" "echo 'connected to host'"
     echo "==> Uploading challenge to $BOOTSTRAP_HOSTNAME..."
-    run scp $SSH_OPTS $CHALLENGE_1 "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
-    run scp $SSH_OPTS $YUBIKEY_PUB "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
+    scp $SSH_OPTS $CHALLENGE_1 "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/verify.age"
+    scp $SSH_OPTS $YUBIKEY_PUB "$SSH_USER@$BOOTSTRAP_HOSTNAME:/tmp/yubikey_identity.pub"
     # --- SWAP 2: REMOTE ---
     prompt_key_remote $BOOTSTRAP_HOSTNAME
     echo "==> Verifying identity on remote..."
