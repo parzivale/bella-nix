@@ -101,6 +101,6 @@ def main [TARGET_HOSTNAME: string] {
         }
     }
 
-    let selected_disk = disks | get model | str join "\n" | fzf
+    let selected_disk = $disks | get model | str join "\n" | fzf
 
 }
