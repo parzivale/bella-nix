@@ -60,7 +60,7 @@ def init [TARGET_DIR: string] {
     print $"==> Scaffolding ($TARGET_DIR)...\n"
     mkdir $HOSTS_DIR
     cp -r $TEMPLATE_DIR $TARGET_DIR
-    avahi-resolve | str substring 15.. | str trim
+    avahi-resolve-host-name $BOOTSTRAP_HOSTNAME | str substring 15.. | str trim
 }
 def verify_identity [addr: string, TARGET_DIR: string] {
     print "==> Generating Challenge 1...\n"
