@@ -1,4 +1,4 @@
-#!/usr/bin/env -S nix shell nixpkgs#nushell nixpkgs#age nixpkgs#openssl nixpkgs#coreutils nixpkgs#avahi --command nu
+#!/usr/bin/env -S nix shell nixpkgs#nushell nixpkgs#age nixpkgs#openssl nixpkgs#coreutils nixpkgs#avahi nixpkgs#fzf --command nu
 const BOOTSTRAP_HOSTNAME = "bootstrap.local"
 let ARTIFACTS = (mktemp -d -t bootstrap-XXXXXX | str trim)
 let PROJECT_ROOT = (pwd)
@@ -8,7 +8,6 @@ let YUBIKEY_PUB = $"($PROJECT_ROOT)/src/common/secrets/yubikey_identity.pub"
 let VARS_FILE = $"($PROJECT_ROOT)/vars.nix"
 let SSH_USER = (nix eval --raw -f $VARS_FILE username)
 let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
-
 def prompt_key_local [] {
     print ""
     print "=================================================================="
@@ -19,7 +18,6 @@ def prompt_key_local [] {
     print "------------------------------------------------------------------"
     input "Press [Enter] when the key is connected locally..."
 }
-
 def prompt_key_remote [host: string] {
     print ""
     print "=================================================================="
@@ -30,7 +28,6 @@ def prompt_key_remote [host: string] {
     print "------------------------------------------------------------------"
     input "Press [Enter] when the key is connected remotely..."
 }
-
 def ssh_with_opts [command: string, user: string, host: string] { ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host)" $command }
 def scp_with_opts_up [
     infile: path
@@ -38,14 +35,12 @@ def scp_with_opts_up [
     user: string
     host: string
 ] { scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $infile $"($user)@($host):($outfile)" }
-
 def scp_with_opts_down [
     infile: path
     outfile: path
     user: string
     host: string
 ] { scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host):($infile)" $outfile }
-
 def init [TARGET_DIR: string] {
     prompt_key_local
     print "==> Adding key to agent\n"
@@ -70,7 +65,6 @@ def init [TARGET_DIR: string] {
     ssh_with_opts "echo '==> Connected to host\n'" $SSH_USER $addr
     $addr
 }
-
 def verify_identity [addr: string, TARGET_DIR: string] {
     print "==> Generating Challenge...\n"
     openssl rand -hex 32 | str trim | save $"($ARTIFACTS)/c1.txt"
@@ -94,11 +88,19 @@ def verify_identity [addr: string, TARGET_DIR: string] {
     }
     print "==> Identity confirmed."
 }
-
 def main [TARGET_HOSTNAME: string] {
     let TARGET_DIR = $"($HOSTS_DIR)/($TARGET_HOSTNAME)"
     let bootstrap_ip = init $TARGET_DIR
     verify_identity $bootstrap_ip $TARGET_DIR
     ssh_with_opts "echo 'Scanning Hardware'; sudo nixos-facter > /tmp/facter.json" $SSH_USER $bootstrap_ip
-    scp_with_opts_down /tmp/facter.json $"($TARGET_DIR)/facter.json" $SSH_USER $bootstrap_ip
+    let facter = $"($TARGET_DIR)/facter.json"
+    scp_with_opts_down /tmp/facter.json $facter $SSH_USER $bootstrap_ip
+    let disks = open $facter | get hardware.disk | where { |item|
+        ($item.resources? | default []) | any { |res|
+            $res.type == "size" and ($res.value_1? | default 0) * ($res.value_2? | default 0) > 32_000_000_000
+        }
+    }
+
+    let selected_disk = disks | get model | str join "\n" | fzf
+
 }
