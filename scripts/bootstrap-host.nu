@@ -8,6 +8,7 @@ let YUBIKEY_PUB = $"($PROJECT_ROOT)/src/common/secrets/yubikey_identity.pub"
 let VARS_FILE = $"($PROJECT_ROOT)/vars.nix"
 let SSH_USER = (nix eval --raw -f $VARS_FILE username)
 let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
+
 def prompt_key_local [] {
     print ""
     print "=================================================================="
@@ -18,6 +19,7 @@ def prompt_key_local [] {
     print "------------------------------------------------------------------"
     input "Press [Enter] when the key is connected locally..."
 }
+
 def prompt_key_remote [host: string] {
     print ""
     print "=================================================================="
@@ -28,6 +30,7 @@ def prompt_key_remote [host: string] {
     print "------------------------------------------------------------------"
     input "Press [Enter] when the key is connected remotely..."
 }
+
 def ssh_with_opts [command: string, user: string, host: string] { ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host)" $command }
 def scp_with_opts_up [
     infile: path
@@ -35,12 +38,14 @@ def scp_with_opts_up [
     user: string
     host: string
 ] { scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $infile $"($user)@($host):($outfile)" }
+
 def scp_with_opts_down [
     infile: path
     outfile: path
     user: string
     host: string
 ] { scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host):($infile)" $outfile }
+
 def init [TARGET_DIR: string] {
     prompt_key_local
     print "==> Adding key to agent\n"
@@ -60,26 +65,27 @@ def init [TARGET_DIR: string] {
     print $"==> Scaffolding ($TARGET_DIR)...\n"
     mkdir $HOSTS_DIR
     cp -r $TEMPLATE_DIR $TARGET_DIR
-    avahi-resolve-host-name $BOOTSTRAP_HOSTNAME | str substring 15.. | str trim
+    let addr = avahi-resolve-host-name $BOOTSTRAP_HOSTNAME | str substring 15.. | str trim
+    print "==> Initial ssh connection\n"
+    ssh_with_opts "echo '==> Connected to host\n'" $SSH_USER $addr
+    $addr
 }
+
 def verify_identity [addr: string, TARGET_DIR: string] {
-    print "==> Generating Challenge 1...\n"
+    print "==> Generating Challenge...\n"
     openssl rand -hex 32 | str trim | save $"($ARTIFACTS)/c1.txt"
     age -r (
         open $YUBIKEY_PUB | lines | first | split words | last
     ) -o $CHALLENGE_1 $"($ARTIFACTS)/c1.txt"
-    print "==> initial ssh connection\n"
-    ssh_with_opts "echo '==> Connected to host\n'" $SSH_USER $addr
     print $"==> Uploading challenge to ($BOOTSTRAP_HOSTNAME)...\n"
     scp_with_opts_up $CHALLENGE_1 "/tmp/verify.age" $SSH_USER $addr
     scp_with_opts_up $YUBIKEY_PUB "/tmp/yubikey_identity.pub" $SSH_USER $addr
     prompt_key_remote $BOOTSTRAP_HOSTNAME
     print "==> Verifying identity on remote...\n"
-    ssh_with_opts 'set -euo pipefail; echo "Decrypting..."; age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age; echo "Scanning Hardware..."; sudo nixos-facter > /tmp/facter.json' $SSH_USER $addr
+    ssh_with_opts $'set -euo pipefail; echo "Decrypting..."; age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age' $SSH_USER $addr
     prompt_key_local
-    print "==> Retrieving proofs...\n"
+    print "==> Retrieving proof...\n"
     scp_with_opts_down /tmp/verified.txt $"($ARTIFACTS)/c1_returned.txt" $SSH_USER $addr
-    scp_with_opts_down /tmp/facter.json $"($TARGET_DIR)/facter.json" $SSH_USER $addr
     let challenge_match = (open $"($ARTIFACTS)/c1.txt" | str trim) == (open $"($ARTIFACTS)/c1_returned.txt" | str trim)
     if not $challenge_match {
         print "!!!!!! SECURITY ALERT !!!!!!"
@@ -88,8 +94,11 @@ def verify_identity [addr: string, TARGET_DIR: string] {
     }
     print "==> Identity confirmed."
 }
+
 def main [TARGET_HOSTNAME: string] {
     let TARGET_DIR = $"($HOSTS_DIR)/($TARGET_HOSTNAME)"
     let bootstrap_ip = init $TARGET_DIR
     verify_identity $bootstrap_ip $TARGET_DIR
+    ssh_with_opts "echo 'Scanning Hardware'; sudo nixos-facter > /tmp/facter.json" $SSH_USER $bootstrap_ip
+    scp_with_opts_down /tmp/facter.json $"($TARGET_DIR)/facter.json" $SSH_USER $bootstrap_ip
 }
