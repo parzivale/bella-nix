@@ -8,7 +8,6 @@ let TEMPLATE_DIR = $"($PROJECT_ROOT)/template/host"
 let YUBIKEY_PUB = $"($PROJECT_ROOT)/src/common/secrets/yubikey_identity.pub"
 let VARS_FILE = $"($PROJECT_ROOT)/vars.nix"
 let SSH_USER = (nix eval --raw -f $VARS_FILE username)
-let TARGET_DIR = $"($HOSTS_DIR)/$TARGET_HOSTNAME"
 let CHALLENGE_1 = $"($ARTIFACTS)/c1.age"
 
 def prompt_key_local [] {
@@ -34,15 +33,15 @@ def prompt_key_remote [host: string] {
     input "Press [Enter] when the key is connected remotely..."
 }
 
-def ssh_with_opts [command: string user: string, host = $BOOTSTRAP_HOSTNAME] {
-    ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m $"($user)@($host)" command
+def ssh_with_opts [command: string, user: string, host = $BOOTSTRAP_HOSTNAME] {
+    ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host)" $command
 }
 def scp_with_opts_up [infile: path, outfile: path, user: string, host = $BOOTSTRAP_HOSTNAME] {
-    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m $"($user)@($host)" $infile $"($user)@($host):($outfile)"
+    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $infile $"($user)@($host):($outfile)"
 }
     
 def scp_with_opts_down [infile: path, outfile: path, user: string, host = $BOOTSTRAP_HOSTNAME] {
-    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o ControlPath=$ARTIFACTS/ssh-%r@%h:%p -o ControlPersist=10m $"($user)@($host)" $"($user)@($host):($infile)" $outfile
+    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host):($infile)" $outfile
 }
 
 def main [TARGET_HOSTNAME: string] {
@@ -54,6 +53,8 @@ def main [TARGET_HOSTNAME: string] {
         print "Error: Host unreachable"
         exit 1
     }
+
+    let TARGET_DIR = $"($HOSTS_DIR)/($TARGET_HOSTNAME)"
 
     if  ($TARGET_DIR | path exists) {
         print $"Error: Host directory $TARGET_DIR already exists."
@@ -85,7 +86,7 @@ def main [TARGET_HOSTNAME: string] {
 
     ssh_with_opts "echo 'Connected to host'" $SSH_USER
     
-    print "==> Uploading challenge to $BOOTSTRAP_HOSTNAME...\n"
+    print $"==> Uploading challenge to ($BOOTSTRAP_HOSTNAME)...\n"
 
     scp_with_opts_up $CHALLENGE_1  "/tmp/verify.age" $SSH_USER
     scp_with_opts_up $YUBIKEY_PUB  "/tmp/yubikey_identity.pub"  $SSH_USER
@@ -100,7 +101,7 @@ def main [TARGET_HOSTNAME: string] {
     scp_with_opts_down /tmp/verified.txt  $"($ARTIFACTS)/c1_returned.txt" $SSH_USER
     scp_with_opts_down /tmp/facter.json $"($TARGET_DIR)/facter.json" $SSH_USER
     let challenge_match = (open $"($ARTIFACTS)/c1.txt" | str trim) == (open $"($ARTIFACTS)/c1_returned.txt" | str trim)
-    if !$challenge_match {
+    if not $challenge_match {
         print "!!!!!! SECURITY ALERT !!!!!!"
         print "Attestation Failed! Remote content does not match local challenge."
         exit 1
