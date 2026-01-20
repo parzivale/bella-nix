@@ -42,6 +42,7 @@ def scp_with_opts_down [
     host: string
 ] { scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=($ARTIFACTS)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host):($infile)" $outfile }
 def init [TARGET_DIR: string] {
+    prompt_key_local
     print "==> Adding key to agent\n"
     ssh-add -K
     print $"==> Checking for ($BOOTSTRAP_HOSTNAME)...\n"
@@ -67,7 +68,6 @@ def verify_identity [addr: string, TARGET_DIR: string] {
     age -r (
         open $YUBIKEY_PUB | lines | first | split words | last
     ) -o $CHALLENGE_1 $"($ARTIFACTS)/c1.txt"
-    prompt_key_local
     print "==> initial ssh connection\n"
     ssh_with_opts "echo '==> Connected to host\n'" $SSH_USER $addr
     print $"==> Uploading challenge to ($BOOTSTRAP_HOSTNAME)...\n"
@@ -91,5 +91,5 @@ def verify_identity [addr: string, TARGET_DIR: string] {
 def main [TARGET_HOSTNAME: string] {
     let TARGET_DIR = $"($HOSTS_DIR)/($TARGET_HOSTNAME)"
     let bootstrap_ip = init $TARGET_DIR
-    verify_identity bootstrap_ip TARGET_DIR
+    verify_identity $bootstrap_ip $TARGET_DIR
 }
