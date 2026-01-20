@@ -10,6 +10,8 @@ in {
     home.stateVersion = "25.11";
   };
 
+  services.getty.autologinUser = user;
+
   environment.systemPackages = [pkgs.nixos-facter pkgs.age pkgs.age-plugin-fido2-hmac];
   programs.ssh.startAgent = true;
   services.avahi.enable = true;
