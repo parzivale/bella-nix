@@ -6,6 +6,8 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+
     agenix = {
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +36,6 @@
       url = "github:nix-community/haumea/v0.2.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
   };
 
@@ -42,6 +43,8 @@
     self,
     nixpkgs,
     haumea,
+    agenix-rekey,
+    flake-utils,
     ...
   }: let
     vars = import ./vars.nix;
@@ -83,12 +86,28 @@
     in
       nixpkgs.lib.mapAttrs (mkSystemForHost commonModules)
       hostsModules;
-  in {
-    nixosConfigurations = mkSystems ./src/hosts ./src/common;
+  in
+    {
+      nixosConfigurations = mkSystems ./src/hosts ./src/common;
 
-    agenix-rekey = inputs.agenix-rekey.configure {
-      userFlake = self;
-      nixosConfigurations = self.nixosConfigurations;
-    };
-  };
+      agenix-rekey = inputs.agenix-rekey.configure {
+        userFlake = self;
+        nixosConfigurations = self.nixosConfigurations;
+      };
+    }
+    // flake-utils.lib.eachDefaultSystem (system: rec {
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [agenix-rekey.overlays.default];
+      };
+      devShells.default = pkgs.mkShell {
+        packages = [
+          pkgs.agenix-rekey
+          pkgs.age-plugin-fido2-hmac
+          pkgs.nushell
+          pkgs.openssl
+          pkgs.coreutils
+        ];
+      };
+    });
 }
