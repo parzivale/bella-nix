@@ -6,7 +6,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-parts.url = "github:hercules-ci/flake-parts";
 
     agenix = {
       url = "github:yaxitech/ragenix";
@@ -40,11 +40,11 @@
   };
 
   outputs = inputs @ {
-    self,
     nixpkgs,
     haumea,
+    flake-parts,
     agenix-rekey,
-    flake-utils,
+    self,
     ...
   }: let
     vars = import ./vars.nix;
@@ -87,27 +87,46 @@
       nixpkgs.lib.mapAttrs (mkSystemForHost commonModules)
       hostsModules;
   in
-    {
-      nixosConfigurations = mkSystems ./src/hosts ./src/common;
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [
+        agenix-rekey.flakeModule
+      ];
 
-      agenix-rekey = inputs.agenix-rekey.configure {
-        userFlake = self;
-        nixosConfigurations = self.nixosConfigurations;
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+
+      flake.nixosConfigurations = mkSystems ./src/hosts ./src/common;
+
+      perSystem = {
+        config,
+        pkgs,
+        ...
+      }: {
+        agenix-rekey.nixosConfigurations = self.nixosConfigurations;
+
+        devShells = {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              nushell
+              age
+              openssl
+              coreutils
+              avahi
+            ];
+
+            nativeBuildInputs = [
+              config.agenix-rekey.package
+            ];
+
+            shellHook = ''
+              exec nu -e "use scripts *"
+            '';
+          };
+        };
       };
-    }
-    // flake-utils.lib.eachDefaultSystem (system: rec {
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [agenix-rekey.overlays.default];
-      };
-      devShells.default = pkgs.mkShell {
-        packages = [
-          pkgs.agenix-rekey
-          pkgs.age-plugin-fido2-hmac
-          pkgs.nushell
-          pkgs.openssl
-          pkgs.coreutils
-        ];
-      };
-    });
+    };
 }

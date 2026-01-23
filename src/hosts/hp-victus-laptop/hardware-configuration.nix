@@ -6,7 +6,7 @@
 }: {
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   fileSystems."/" = {
-    device = "/dev/sad";
+    device = "/dev/sda";
     fsType = "ext4";
   };
 }
