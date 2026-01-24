@@ -1,7 +1,7 @@
 use lib
 
-export def main [target_hostname: string]: string -> nothing {
-    let target_hostname = $target_hostname | default $in
+export def main [target_hostname: string]: nothing -> nothing {
+    let target_hostname = $target_hostname
     let user = lib user
     let TARGET_DIR = $"($lib.HOSTS_DIR)/($target_hostname)"
     
