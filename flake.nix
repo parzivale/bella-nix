@@ -123,7 +123,7 @@
             ];
 
             shellHook = ''
-              exec nu -e "with-env {NU_LIB_DIRS : '${inputs.self}/scripts'} {use scripts/mod.nu *}"
+              exec nu -I '${inputs.self}' -e "use scripts/mod.nu *"
             '';
           };
         };

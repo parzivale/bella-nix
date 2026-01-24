@@ -12,7 +12,7 @@ export def user []: nothing -> string {
   nix eval --raw -f ../../vars.nix username
 }
 
-def --env ssh_with_opts [command: string, user: string, host: string, host_key_check: bool = true, ] {
+export def --env ssh_with_opts [command: string, user: string, host: string, host_key_check: bool = true ]: nothing -> nothing {
   
   if $host_key_check {
     ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=(artifacts)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host)" $command
@@ -22,7 +22,7 @@ def --env ssh_with_opts [command: string, user: string, host: string, host_key_c
 
 }
 
-export def --env scp_with_opts [infile: string, outfile: string, host_key_checking: bool = true] {
+export def --env scp_with_opts [infile: string, outfile: string, host_key_checking: bool = true]: nothing -> nothing {
   if $host_key_checking {
     scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=(artifacts)/ssh-%r@%h:%p" -o ControlPersist=10m $infile $outfile
   } else {
@@ -30,11 +30,15 @@ export def --env scp_with_opts [infile: string, outfile: string, host_key_checki
   }
 }
 
-export def --env scp_down [infile: string, outfile: string, host_key_checking: bool = true] {
-  scp_with_opts $infile $outfile  $host_key_checking
+export def --env scp_down [infile: string, outfile: string, user: string, host: string, host_key_checking: bool = true]: nothing -> nothing {
+  scp_with_opts $"($user)@($host):($infile)" $outfile  $host_key_checking
 }
 
-export def prompt_key_local [] {
+export def --env scp_up [infile: string, outfile: string, user: string, host: string, host_key_checking: bool = true]: nothing -> nothing {
+  scp_with_opts $infile $"($user)@($host):($outfile)"   $host_key_checking
+}
+
+export def prompt_key_local []: nothing -> nothing {
     print ""
     print "=================================================================="
     print " 🔌  ACTION REQUIRED: YUBIKEY -> LOCAL "
@@ -45,7 +49,7 @@ export def prompt_key_local [] {
     input "Press [Enter] when the key is connected locally..."
 }
 
-export def prompt_key_remote [host: string] {
+export def prompt_key_remote [host: string]: nothing -> nothing {
     print ""
     print "=================================================================="
     print $" 🔌  ACTION REQUIRED: YUBIKEY -> REMOTE ({host})"
