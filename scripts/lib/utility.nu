@@ -1,3 +1,5 @@
+use constants.nu *
+
 def --env setup_artifacts []: nothing -> nothing {
   let dir = mktemp -d -t bootstrap-XXXXXX | str trim
   $env.ARTIFACTS = $dir;
@@ -9,7 +11,7 @@ export def --env artifacts []: nothing -> string {
 }
 
 export def user []: nothing -> string {
-  nix eval --raw -f ../../vars.nix username
+  nix eval --raw -f $VARS_DIR username
 }
 
 export def --env ssh_with_opts [command: string, user: string, host: string, host_key_check: bool = true ]: nothing -> nothing {
