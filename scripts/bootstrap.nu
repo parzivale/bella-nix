@@ -34,7 +34,7 @@ export def main [target_hostname: string]: nothing -> nothing {
     print "==> Initial ssh connection\n"
     lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr false
     lib verify $addr $TARGET_DIR false
-    lib ssh_with_opts $"disktui; echo 'Scanning Hardware'; sudo nixos-facter > ($remote_facter_file)" $user $addr false
+    lib ssh_with_opts $"sudo disktui; echo 'Scanning Hardware'; sudo nixos-facter > ($remote_facter_file)" $user $addr false
     lib scp_down $remote_facter_file $local_facter_file $user $addr false
    
     
