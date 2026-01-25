@@ -5,13 +5,15 @@ export def --env main [addr: string, TARGET_DIR: string, host_key_checking: bool
     let challenge = $"(artifacts)/c1.txt"
     let challenge_encrypted = $"(artifacts)/c1.age"
     let returned_challenge = $"(artifacts)/c1_returned.txt"
+    print (artifacts)
+    print (artifacts)
     let ssh_user = user
 
     print "==> Generating Challenge...\n"
     openssl rand -hex 32 | str trim | save $challenge
     age -r (
         open $YUBIKEY_PUB | lines | first | split words | last
-    ) -o $challenge_encrypted $"(artifacts)/c1.txt"
+    ) -o $challenge_encrypted $challenge
 
     print $"==> Uploading challenge to ($BOOTSTRAP_HOSTNAME)...\n"
     utility scp_with_opts_up $challenge_encrypted "/tmp/verify.age" $ssh_user $addr
