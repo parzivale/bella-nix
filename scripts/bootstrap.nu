@@ -7,6 +7,11 @@ export def main [target_hostname: string]: nothing -> nothing {
     
     let remote_facter_file = "/tmp/facter.json"
     let local_facter_file = $"($TARGET_DIR)/facter.json"
+
+    if ($TARGET_DIR | path exists) {
+        print $"==> Error: Host directory ($TARGET_DIR) already exists."
+        exit 1
+    }
     
     lib prompt_key_local
 
@@ -22,10 +27,6 @@ export def main [target_hostname: string]: nothing -> nothing {
         exit 1
     }
 
-    if ($TARGET_DIR | path exists) {
-        print $"==> Error: Host directory ($TARGET_DIR) already exists."
-        exit 1
-    }
 
     print $"==> Scaffolding ($TARGET_DIR)...\n"
     mkdir $lib.HOSTS_DIR
