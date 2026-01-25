@@ -32,10 +32,12 @@ export def main [target_hostname: string]: nothing -> nothing {
     cp -r $lib.TEMPLATE_DIR $TARGET_DIR
     let addr = avahi-resolve-host-name $lib.BOOTSTRAP_HOSTNAME | str substring 15.. | str trim
     print "==> Initial ssh connection\n"
-    lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr
-    lib verify $addr $TARGET_DIR
-    lib ssh_with_opts $"echo 'Scanning Hardware'; sudo nixos-facter > ($remote_facter_file)" $user $addr
-    lib scp_down $remote_facter_file $local_facter_file $user $addr
+    lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr false
+    lib verify $addr $TARGET_DIR false
+    lib ssh_with_opts $"echo 'Scanning Hardware'; sudo nixos-facter > ($remote_facter_file)" $user $addr false
+    lib scp_down $remote_facter_file $local_facter_file $user $addr false
    
-    lib ssh_with_opts disktui $user $addr
+    lib ssh_with_opts disktui $user $addr false
+    
+    let devices = open $local_facter_file | get hardware.disk
 }

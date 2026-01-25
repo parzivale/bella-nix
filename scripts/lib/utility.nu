@@ -21,7 +21,7 @@ export def user []: nothing -> string {
 
 export def --env ssh_with_opts [command: string, user: string, host: string, host_key_check: bool = true ]: nothing -> nothing {
   
-  if $host_key_check {
+  if not $host_key_check {
     ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=(artifacts)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host)" $command
   } else {
     ssh -t  -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=(artifacts)/ssh-%r@%h:%p" -o ControlPersist=10m $"($user)@($host)" $command
@@ -30,7 +30,7 @@ export def --env ssh_with_opts [command: string, user: string, host: string, hos
 }
 
 export def --env scp_with_opts [infile: string, outfile: string, host_key_checking: bool = true]: nothing -> nothing {
-  if $host_key_checking {
+  if not $host_key_checking {
     scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=(artifacts)/ssh-%r@%h:%p" -o ControlPersist=10m $infile $outfile
   } else {
     scp -o ConnectTimeout=10 -o ControlMaster=auto -o $"ControlPath=(artifacts)/ssh-%r@%h:%p" -o ControlPersist=10m $infile $outfile
