@@ -5,7 +5,9 @@ export def --env main [addr: string, TARGET_DIR: string, host_key_checking: bool
     let challenge = $"(artifacts)/c1.txt"
     let challenge_encrypted = $"(artifacts)/c1.age"
     let returned_challenge = $"(artifacts)/c1_returned.txt"
+    print $env
     print (artifacts)
+    print $env
     print (artifacts)
     let ssh_user = user
 

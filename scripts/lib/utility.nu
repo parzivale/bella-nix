@@ -7,7 +7,7 @@ def --env setup_artifacts []: nothing -> nothing {
 }
 
 export def --env artifacts []: nothing -> string {
-  $env.ARTIFACTS? | default (setup_artifacts)
+  $env | get --optional ARTIFACTS | default (setup_artifacts)
 }
 
 export def user []: nothing -> string {
