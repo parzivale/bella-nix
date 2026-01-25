@@ -5,10 +5,6 @@ export def --env main [addr: string, TARGET_DIR: string, host_key_checking: bool
     let challenge = $"(artifacts)/c1.txt"
     let challenge_encrypted = $"(artifacts)/c1.age"
     let returned_challenge = $"(artifacts)/c1_returned.txt"
-    print $env
-    print (artifacts)
-    print $env
-    print (artifacts)
     let ssh_user = user
 
     print "==> Generating Challenge...\n"
@@ -18,7 +14,7 @@ export def --env main [addr: string, TARGET_DIR: string, host_key_checking: bool
     ) -o $challenge_encrypted $challenge
 
     print $"==> Uploading challenge to ($BOOTSTRAP_HOSTNAME)...\n"
-    utility scp_with_opts_up $challenge_encrypted "/tmp/verify.age" $ssh_user $addr
+    scp_with_opts_up $challenge_encrypted "/tmp/verify.age" $ssh_user $addr
     scp_up $YUBIKEY_PUB "/tmp/yubikey_identity.pub" $ssh_user $addr
     prompt_key_remote $BOOTSTRAP_HOSTNAME
     print "==> Verifying identity on remote...\n"
