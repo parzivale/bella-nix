@@ -1,14 +1,19 @@
 use constants.nu *
 
-def --env setup_artifacts []: nothing -> nothing {
+def --env setup_artifacts []: nothing -> string {
   let dir = mktemp -d -t bootstrap-XXXXXX | str trim
   $env.ARTIFACTS = $dir;
   $dir
 }
 
 export def --env artifacts []: nothing -> string {
-  $env | get --optional ARTIFACTS | default (setup_artifacts)
+  let arts = $env.ARTIFACTS?
+  if not ($arts == null) {
+    return $arts
+  }
+  setup_artifacts
 }
+
 
 export def user []: nothing -> string {
   nix eval --raw -f $VARS_DIR username
