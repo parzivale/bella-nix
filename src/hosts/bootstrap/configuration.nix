@@ -17,7 +17,7 @@ in {
     pkgs.nixos-facter
     pkgs.age
     pkgs.age-plugin-fido2-hmac
-    inputs.disktui.packages.${pkgs.stdenv.hostPlatform.system}
+    inputs.disktui.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   programs.ssh.startAgent = true;
