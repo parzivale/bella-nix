@@ -1,6 +1,7 @@
 {
   vars,
   pkgs,
+  inputs,
   ...
 }: let
   user = vars.username;
@@ -16,7 +17,7 @@ in {
     pkgs.nixos-facter
     pkgs.age
     pkgs.age-plugin-fido2-hmac
-    pkgs.disktui
+    inputs.disktui.packages.${pkgs.stdenv.hostPlatform.system}
   ];
 
   programs.ssh.startAgent = true;

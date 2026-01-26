@@ -12,6 +12,12 @@
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    disktui = {
+      url = "github:parzivale/disktui";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     agenix-rekey = {
       url = "github:oddlama/agenix-rekey";
       inputs.nixpkgs.follows = "nixpkgs";
