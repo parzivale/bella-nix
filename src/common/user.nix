@@ -1,6 +1,7 @@
 {
   lib,
   vars,
+  pkgs,
   ...
 }: let
   user = vars.username;
@@ -16,6 +17,7 @@ in {
       hashedPassword = "$y$j9T$3SYXqLHQFhpwfTY8BHXmw.$cQGsYVD7CIWC22AJu1sX8qg4Po8Cyd00KzL9mAXa5F7";
       extraGroups = ["wheel"];
       uid = vars.uid;
+      shell = pkgs.nushell;
     };
   };
 

@@ -5,8 +5,10 @@ export def main [target_hostname: string]: nothing -> nothing {
     let user = lib user
     let TARGET_DIR = $"($lib.HOSTS_DIR)/($target_hostname)"
     
-    let remote_facter_file = "/tmp/facter.json"
-    let local_facter_file = $"($TARGET_DIR)/facter.json"
+    let remote_facter = "/tmp/facter.json"
+    let local_facter = $"($TARGET_DIR)/facter.json"
+
+    let first_pass_known_hosts = $"(lib artifacts)/known_hosts_1" 
 
     if ($TARGET_DIR | path exists) {
         print $"==> Error: Host directory ($TARGET_DIR) already exists."
@@ -33,11 +35,12 @@ export def main [target_hostname: string]: nothing -> nothing {
     cp -r $lib.TEMPLATE_DIR $TARGET_DIR
     let addr = avahi-resolve-host-name $lib.BOOTSTRAP_HOSTNAME | str substring 15.. | str trim
     print "==> Initial ssh connection\n"
-    lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr false
-    lib verify $addr $TARGET_DIR false
-    lib ssh_with_opts $"sudo disktui; echo 'Scanning Hardware'; sudo nixos-facter > ($remote_facter_file)" $user $addr false
-    lib scp_down $remote_facter_file $local_facter_file $user $addr false
-   
+    lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr $first_pass_known_hosts
+    lib verify $addr $TARGET_DIR $first_pass_known_hosts
+    let command = $"ls -s /dev/disk/by-id/ | get name | to text | fzf --header 'Select boot disk' | save /tmp/boot_disk; print 'Scanning Hardware'; sudo nixos-facter > ($remote_facter);"
+    lib ssh_with_opts $command $user $addr $first_pass_known_hosts
+    lib scp_down $remote_facter $local_facter $user $addr $first_pass_known_hosts
+    lib scp_down /tmp/boot_disk $"($TARGET_DIR)/boot_disk" $user $addr $first_pass_known_hosts
+    nixos-anywhere --flake $"(lib.PROJECT_ROOT)/flake.nix#bootstrap" --target-host $lib.BOOTSTRAP_HOSTNAME
     
-    let devices = open $local_facter_file | get hardware.disk
 }

@@ -18,6 +18,7 @@ in {
     pkgs.age
     pkgs.age-plugin-fido2-hmac
     inputs.disktui.packages.${pkgs.stdenv.hostPlatform.system}.default
+    pkgs.fzf
   ];
 
   programs.ssh.startAgent = true;

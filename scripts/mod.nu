@@ -1,4 +1,5 @@
 use bootstrap.nu *
+use delete_host.nu *
 
 export def bnix []: nothing -> nothing {
   help bnix
@@ -15,4 +16,11 @@ export def "bnix bootstrap" [
   target_hostname: string # The name to set the new host as
 ]: nothing -> nothing {
   bootstrap $target_hostname
+}
+
+# Deletes a host from the repo
+export def "bnix delete_host" [
+  target_hostname: string # The host to delete
+]: nothing -> nothing {
+  delete_host $target_hostname
 }

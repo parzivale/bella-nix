@@ -42,6 +42,12 @@
       url = "github:nix-community/haumea/v0.2.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
   };
 
@@ -50,6 +56,7 @@
     haumea,
     flake-parts,
     agenix-rekey,
+    deploy-rs,
     self,
     ...
   }: let
@@ -86,12 +93,24 @@
           ++ (flattenModules common) ++ (flattenModules hostInfo);
       };
 
+    mkDeployForHost = hostName: hostInfo: {
+      hostname = hostName + "." + vars.tailscale_dns;
+      profiles.system.path = deploy-rs.lib.${self.nixosConfigurations.${hostName}.pkgs.stdenv.hostPlatform.system}.activate.nixos self.nixosConfigurations.${hostName};
+    };
+
     mkSystems = hosts: src: let
       commonModules = load src;
       hostsModules = load hosts;
-    in
-      nixpkgs.lib.mapAttrs (mkSystemForHost commonModules)
-      hostsModules;
+    in {
+      nixosConfigurations =
+        nixpkgs.lib.mapAttrs (mkSystemForHost commonModules)
+        hostsModules;
+
+      deploy = {
+        user = vars.username;
+        nodes = nixpkgs.lib.mapAttrs mkDeployForHost hostsModules;
+      };
+    };
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
@@ -105,15 +124,17 @@
         "aarch64-darwin"
       ];
 
-      flake.nixosConfigurations = mkSystems ./src/hosts ./src/common;
+      flake = mkSystems ./src/hosts ./src/common;
 
       perSystem = {
         config,
         pkgs,
+        getSystem,
         ...
       }: {
         agenix-rekey.nixosConfigurations = self.nixosConfigurations;
 
+        checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
         devShells = {
           default = pkgs.mkShell {
             packages = with pkgs; [
@@ -122,6 +143,7 @@
               openssl
               coreutils
               avahi
+              nixos-anywhere
             ];
 
             nativeBuildInputs = [

@@ -1,7 +1,7 @@
 use utility.nu *
 use constants.nu *
 
-export def --env main [addr: string, TARGET_DIR: string, host_key_checking: bool = true]: nothing -> nothing {
+export def --env main [addr: string, TARGET_DIR: string, known_hosts_file: string = ""]: nothing -> nothing {
     let challenge = $"(artifacts)/c1.txt"
     let challenge_encrypted = $"(artifacts)/c1.age"
     let returned_challenge = $"(artifacts)/c1_returned.txt"
@@ -14,14 +14,14 @@ export def --env main [addr: string, TARGET_DIR: string, host_key_checking: bool
     ) -o $challenge_encrypted $challenge
 
     print $"==> Uploading challenge to ($BOOTSTRAP_HOSTNAME)...\n"
-    scp_up $challenge_encrypted "/tmp/verify.age" $ssh_user $addr
-    scp_up $YUBIKEY_PUB "/tmp/yubikey_identity.pub" $ssh_user $addr
+    scp_up $challenge_encrypted "/tmp/verify.age" $ssh_user $addr $known_hosts_file
+    scp_up $YUBIKEY_PUB "/tmp/yubikey_identity.pub" $ssh_user $addr $known_hosts_file
     prompt_key_remote $BOOTSTRAP_HOSTNAME
     print "==> Verifying identity on remote...\n"
-    ssh_with_opts $'echo "Decrypting..."; age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age' $ssh_user $addr $host_key_checking
+    ssh_with_opts $'echo "Decrypting..."; age -d -i /tmp/yubikey_identity.pub -o /tmp/verified.txt /tmp/verify.age' $ssh_user $addr $known_hosts_file
     prompt_key_local
     print "==> Retrieving proof...\n"
-    scp_down /tmp/verified.txt $returned_challenge $ssh_user $addr
+    scp_down /tmp/verified.txt $returned_challenge $ssh_user $addr $known_hosts_file
     let challenge_match = (open $challenge | str trim) == (open $returned_challenge | str trim)
 
     if not $challenge_match {
