@@ -144,6 +144,7 @@
               coreutils
               avahi
               nixos-anywhere
+              age-plugin-fido2-hmac
             ];
 
             nativeBuildInputs = [

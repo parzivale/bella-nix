@@ -9,5 +9,6 @@
   };
 
   age.secrets = {
+    tailscale_token.rekeyFile = ./tailscale_key.age;
   };
 }
