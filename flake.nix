@@ -48,7 +48,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
+    nixos-anywhere = {
+      url = "github:parzivale/nixos-anywhere";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -57,6 +60,7 @@
     flake-parts,
     agenix-rekey,
     deploy-rs,
+    nixos-anywhere,
     self,
     ...
   }: let
@@ -82,7 +86,6 @@
           [
             inputs.stylix.nixosModules.stylix
             inputs.home-manager.nixosModules.default
-            inputs.nixos-facter-modules.nixosModules.facter
             inputs.agenix.nixosModules.default
             inputs.agenix-rekey.nixosModules.default
             inputs.disko.nixosModules.disko
@@ -93,12 +96,15 @@
           ++ (flattenModules common) ++ (flattenModules hostInfo);
       };
 
-    mkDeployForHost = hostName: hostInfo: {
+    mkDeployForHost = hostName: hostInfo: let
+      nixConf = self.nixosConfigurations;
+      getSystem = hostName: nixConf.${hostName}.pkgs.stdenv.hostPlatform.system;
+    in {
       hostname = hostName + "." + vars.tailscale_dns;
-      profiles.system.path = deploy-rs.lib.${self.nixosConfigurations.${hostName}.pkgs.stdenv.hostPlatform.system}.activate.nixos self.nixosConfigurations.${hostName};
+      profiles.system.path = deploy-rs.lib.${(getSystem hostName)}.activate.nixos self.nixosConfigurations.${hostName};
     };
 
-    mkSystems = hosts: src: let
+    mkFlake = hosts: src: let
       commonModules = load src;
       hostsModules = load hosts;
     in {
@@ -110,6 +116,8 @@
         user = vars.username;
         nodes = nixpkgs.lib.mapAttrs mkDeployForHost hostsModules;
       };
+
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -124,28 +132,30 @@
         "aarch64-darwin"
       ];
 
-      flake = mkSystems ./src/hosts ./src/common;
+      flake = mkFlake ./src/hosts ./src/common;
 
       perSystem = {
         config,
         pkgs,
-        getSystem,
+        system,
         ...
       }: {
         agenix-rekey.nixosConfigurations = self.nixosConfigurations;
 
-        checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs; [
-              nushell
-              age
-              openssl
-              coreutils
-              avahi
-              nixos-anywhere
-              age-plugin-fido2-hmac
-            ];
+            packages = with pkgs;
+              [
+                nushell
+                age
+                openssl
+                coreutils
+                avahi
+                age-plugin-fido2-hmac
+              ]
+              ++ [
+                nixos-anywhere.packages.${system}.default
+              ];
 
             nativeBuildInputs = [
               config.agenix-rekey.package
