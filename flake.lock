@@ -620,11 +620,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1769902739,
-        "narHash": "sha256-vU2Y4Icyam/SBK2uJy+IpmJdNI1sAtYCJqHlWA8TxQE=",
+        "lastModified": 1769903254,
+        "narHash": "sha256-zcl3rUpLml3O51KjQBcwjAUVxAhjm75Xj55PhWuBJeQ=",
         "owner": "parzivale",
         "repo": "nixos-anywhere",
-        "rev": "5cbe181eceb594857758a993541aa2c8b4359aa3",
+        "rev": "64bd420b5708618c8b63f263b14328c269b76504",
         "type": "github"
       },
       "original": {
