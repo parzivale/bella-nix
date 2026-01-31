@@ -1,5 +1,6 @@
 use bootstrap.nu *
 use delete_host.nu *
+use lib;
 
 export def bnix []: nothing -> nothing {
   help bnix
