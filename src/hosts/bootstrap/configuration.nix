@@ -20,7 +20,7 @@ in {
 
   services.getty.autologinUser = user;
   services.tailscale.enable = false;
-
+  services.openssh.settings.AllowUsers = ["nixos-anywhere"];
   environment.systemPackages = [
     pkgs.nixos-facter
     pkgs.age
