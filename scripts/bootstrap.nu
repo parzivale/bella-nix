@@ -10,6 +10,9 @@ export def main [target_hostname: string]: nothing -> nothing {
 
     let first_pass_known_hosts = $"(lib artifacts)/known_hosts_1" 
 
+    let ssh_key_path = "/etc/ssh/ssh_host_ed25519_key"
+    let local_ssh_key_path = $"($TARGET_DIR)/ssh_host_ed25519_key"
+
     if ($TARGET_DIR | path exists) {
         print $"==> Error: Host directory ($TARGET_DIR) already exists."
         exit 1
@@ -43,5 +46,10 @@ export def main [target_hostname: string]: nothing -> nothing {
     lib scp_down /tmp/boot_disk $"($TARGET_DIR)/boot_disk" $user $addr $first_pass_known_hosts
     git add --intent-to-add $TARGET_DIR
     nixos-anywhere --flake $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)" --target-host nixos-anywhere@($addr)
+
+    let second_pass_known_hosts = $"(lib artifacts)/known_hosts_1"
     
+    lib scp_down $ssh_key_path $local_ssh_key_path $user $addr $second_pass_known_hosts
+
+    deploy -i $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)"    
 }

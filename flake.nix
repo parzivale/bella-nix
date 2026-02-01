@@ -146,6 +146,7 @@
               avahi
               age-plugin-fido2-hmac
               nixos-anywhere
+              pkgs.deploy-rs
             ];
 
             nativeBuildInputs = [
