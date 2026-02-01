@@ -19,6 +19,7 @@ in {
   };
 
   services.getty.autologinUser = user;
+  services.tailscale.enable = false;
 
   environment.systemPackages = [
     pkgs.nixos-facter
