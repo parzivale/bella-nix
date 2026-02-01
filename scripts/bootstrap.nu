@@ -32,7 +32,7 @@ export def main [target_hostname: string]: nothing -> nothing {
 
     print $"==> Scaffolding ($TARGET_DIR)...\n"
     mkdir $lib.HOSTS_DIR
-    cp -r $lib.TEMPLATE_DIR $TARGET_DIR
+    cp -r $"($lib.TEMPLATE_DIR)/host" $TARGET_DIR
     let addr = avahi-resolve-host-name $lib.BOOTSTRAP_HOSTNAME | str substring 15.. | str trim
     print "==> Initial ssh connection\n"
     lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr $first_pass_known_hosts
