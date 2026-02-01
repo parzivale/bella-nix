@@ -10,7 +10,7 @@ export def --env main [addr: string, TARGET_DIR: string, known_hosts_file: strin
     print "==> Generating Challenge...\n"
     openssl rand -hex 32 | str trim | save $challenge
     age -r (
-        open $YUBIKEY_PUB | lines | fist | split words | last
+        open $YUBIKEY_PUB | lines | first | split words | last
     ) -o $challenge_encrypted $challenge
 
     print $"==> Uploading challenge to ($BOOTSTRAP_HOSTNAME)...\n"
