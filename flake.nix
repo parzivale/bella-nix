@@ -55,7 +55,6 @@
     flake-parts,
     agenix-rekey,
     deploy-rs,
-    nixos-anywhere,
     self,
     ...
   }: let
