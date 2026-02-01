@@ -41,6 +41,7 @@ export def main [target_hostname: string]: nothing -> nothing {
     lib ssh_with_opts $command $user $addr $first_pass_known_hosts
     lib scp_down $remote_facter $local_facter $user $addr $first_pass_known_hosts
     lib scp_down /tmp/boot_disk $"($TARGET_DIR)/boot_disk" $user $addr $first_pass_known_hosts
+    git add $TARGET_DIR
     nixos-anywhere --flake $"($lib.PROJECT_ROOT)/flake.nix#bootstrap" --target-host nixos-anywhere@($lib.BOOTSTRAP_HOSTNAME)
     
 }
