@@ -47,11 +47,6 @@
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    nixos-anywhere = {
-      url = "github:parzivale/nixos-anywhere";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs @ {
@@ -144,18 +139,15 @@
 
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs;
-              [
-                nushell
-                age
-                openssl
-                coreutils
-                avahi
-                age-plugin-fido2-hmac
-              ]
-              ++ [
-                nixos-anywhere.packages.${system}.default
-              ];
+            packages = with pkgs; [
+              nushell
+              age
+              openssl
+              coreutils
+              avahi
+              age-plugin-fido2-hmac
+              nixos-anywhere
+            ];
 
             nativeBuildInputs = [
               config.agenix-rekey.package
