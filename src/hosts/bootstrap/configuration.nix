@@ -8,9 +8,8 @@ in {
   home-manager.users.${user} = {
     xdg.userDirs.enable = false;
     home.stateVersion = "25.11";
+    programs.home-manager.enable = false;
   };
-
-  home-manager.programs.home-manager.enable = false;
 
   users.users.nixos-anywhere = {
     openssh.authorizedKeys.keyFiles = [../../common/secrets/yubikey_sshkey.pub];
