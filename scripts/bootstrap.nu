@@ -10,8 +10,8 @@ export def main [target_hostname: string]: nothing -> nothing {
 
     let first_pass_known_hosts = $"(lib artifacts)/known_hosts_1" 
 
-    let ssh_key_path = "/etc/ssh/ssh_host_ed25519_key"
-    let local_ssh_key_path = $"($TARGET_DIR)/ssh_host_ed25519_key"
+    let ssh_key_path = "/etc/ssh/ssh_host_ed25519_key.pub"
+    let local_ssh_key_path = $"($TARGET_DIR)/ssh_host_ed25519_key.pub"
 
     if ($TARGET_DIR | path exists) {
         print $"==> Error: Host directory ($TARGET_DIR) already exists."

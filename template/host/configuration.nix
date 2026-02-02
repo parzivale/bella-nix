@@ -4,7 +4,7 @@
   lib,
   ...
 }: let
-  key = builtins.readFile ./ssh_host_ed25519_key;
+  key = builtins.readFile ./ssh_host_ed25519_key.pub;
 in {
   system.stateVersion = "25.11";
   home-manager.users.${vars.username}.home.stateVersion = "25.11";
