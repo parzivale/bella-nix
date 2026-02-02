@@ -47,6 +47,8 @@ export def main [target_hostname: string]: nothing -> nothing {
     git add --intent-to-add $TARGET_DIR
     nixos-anywhere --flake $"($lib.PROJECT_ROOT)#($target_hostname)" --target-host nixos-anywhere@($addr)
 
+    lib remove_usb
+
     loop {
     let result = try { ping -c 1 $addr }
 

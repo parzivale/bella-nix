@@ -66,3 +66,14 @@ export def prompt_key_remote [host: string]: nothing -> nothing {
     print "------------------------------------------------------------------"
     input "Press [Enter] when the key is connected remotely..."
 }
+
+export def remove_usb []: nothing -> nothing {
+    print ""
+    print "=================================================================="
+    print " 🔌  ACTION REQUIRED: SHUTDOWN AND REMOVE USB "
+    print "=================================================================="
+    print "Please shutdown the machine and remove the boot usb."
+    print "Once done please restart the machine."
+    print "------------------------------------------------------------------"
+    input "Press[Enter] when the machine is on again"
+}
