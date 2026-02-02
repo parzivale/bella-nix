@@ -47,7 +47,7 @@ export def main [target_hostname: string]: nothing -> nothing {
     git add --intent-to-add $TARGET_DIR
     nixos-anywhere --flake $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)" --target-host nixos-anywhere@($addr)
 
-    let second_pass_known_hosts = $"(lib artifacts)/known_hosts_1"
+    let second_pass_known_hosts = $"(lib artifacts)/known_hosts_2"
     
     lib scp_down $ssh_key_path $local_ssh_key_path $user $addr $second_pass_known_hosts
 
