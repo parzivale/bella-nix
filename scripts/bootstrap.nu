@@ -63,7 +63,8 @@ export def main [target_hostname: string]: nothing -> nothing {
     
     let second_pass_known_hosts = $"(lib artifacts)/known_hosts_2"
     
+    lib verify $addr $TARGET_DIR $second_pass_known_hosts
     lib scp_down $ssh_key_path $local_ssh_key_path $user $addr $second_pass_known_hosts
-
-    deploy -i $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)"    
+    agenix rekey
+    deploy -i --hostname $"($addr)" --ssh-user "bella" $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)"    
 }
