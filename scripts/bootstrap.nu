@@ -45,8 +45,20 @@ export def main [target_hostname: string]: nothing -> nothing {
     lib scp_down $remote_facter $local_facter $user $addr $first_pass_known_hosts
     lib scp_down /tmp/boot_disk $"($TARGET_DIR)/boot_disk" $user $addr $first_pass_known_hosts
     git add --intent-to-add $TARGET_DIR
-    nixos-anywhere --flake $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)" --target-host nixos-anywhere@($addr)
+    nixos-anywhere --flake $"($lib.PROJECT_ROOT)#($target_hostname)" --target-host nixos-anywhere@($addr)
 
+    loop {
+    let result = try { ping -c 1 $addr }
+
+    if $result != null {
+        echo "Host is reachable!"
+        break
+    } else {
+        echo "Host unreachable, retrying in 2s..."
+        sleep 2sec
+        }
+    }
+    
     let second_pass_known_hosts = $"(lib artifacts)/known_hosts_2"
     
     lib scp_down $ssh_key_path $local_ssh_key_path $user $addr $second_pass_known_hosts
