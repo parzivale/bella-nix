@@ -1,5 +1,6 @@
 {lib, ...}: {
   services.avahi = {
+    enable = lib.mkDefault true;
     nssmdns4 = lib.mkDefault true;
     publish = {
       enable = lib.mkDefault true;

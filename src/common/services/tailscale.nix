@@ -9,6 +9,7 @@
     authKeyParameters = {
       preauthorized = true;
     };
+    extraUpFlags = ["--advertise-tags=tag:nixos"];
     disableTaildrop = true;
   };
 }
