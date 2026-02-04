@@ -7,8 +7,6 @@
   user = vars.username;
 in {
   home-manager.users.${user}.programs.git = {
-    enable = lib.mkDefault true;
-
     settings = {
       user = {
         name = "${user}";
