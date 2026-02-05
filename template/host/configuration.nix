@@ -5,6 +5,7 @@
   ...
 }: let
   key = builtins.readFile ./ssh_host_ed25519_key.pub;
+  user = vars.username;
 in {
   system.stateVersion = "25.11";
   home-manager.users.${vars.username}.home.stateVersion = "25.11";
@@ -16,5 +17,6 @@ in {
     age-plugin-fido2-hmac
   ];
 
+  services.getty.autologinUser = user;
   programs.ssh.startAgent = true;
 }
