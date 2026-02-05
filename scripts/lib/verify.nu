@@ -8,7 +8,7 @@ export def --env main [addr: string, TARGET_DIR: string, known_hosts_file: strin
     let ssh_user = user
 
     print "==> Generating Challenge...\n"
-    openssl rand -hex 32 | str trim | save $challenge
+    openssl rand -hex 32 | str trim | save -f $challenge
     age -r (
         open $YUBIKEY_PUB | lines | first | split words | last
     ) -o $challenge_encrypted $challenge

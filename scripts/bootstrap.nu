@@ -50,14 +50,14 @@ export def main [target_hostname: string]: nothing -> nothing {
     lib remove_usb
 
     loop {
-    let result = try { ping -c 1 $addr }
+        let result = try { ping -c 1 $addr }
 
-    if $result != null {
-        echo "Host is reachable!"
-        break
-    } else {
-        echo "Host unreachable, retrying in 2s..."
-        sleep 2sec
+        if $result != null {
+            print "Host is reachable!"
+            break
+        } else {
+            print "Host unreachable, retrying in 2s..."
+            sleep 2sec
         }
     }
     
