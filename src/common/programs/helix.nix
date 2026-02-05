@@ -5,7 +5,7 @@
 }: let
   user = vars.username;
 in {
-  home-manager.users.${user}.programs = {
+  home-manager.users.${user}.programs.helix = {
     defaultEditor = true;
     extraPackages = with pkgs; [
       cargo
@@ -140,6 +140,16 @@ in {
           formatter = {
             command = "${pkgs.alejandra}/bin/alejandra";
           };
+          language-servers = ["nil" "harper-ls"];
+        }
+        {
+          name = "nu";
+          auto-format = true;
+          formatter = {
+            command = "${pkgs.nufmt}/bin/nufmt";
+            args = ["--stdin"];
+          };
+          language-servers = ["nu-lsp" "harper-ls"];
         }
       ];
 
@@ -183,6 +193,10 @@ in {
         };
         nil = {
           command = "${pkgs.nil}/bin/nil";
+        };
+        nu-lsp = {
+          command = "${pkgs.nushell}/bin/nu";
+          args = ["--lsp"];
         };
       };
     };

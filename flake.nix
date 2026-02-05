@@ -47,6 +47,14 @@
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    cosmic-manager = {
+      url = "github:HeitorAugustoLN/cosmic-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
   };
 
   outputs = inputs @ {
@@ -83,6 +91,7 @@
             inputs.agenix.nixosModules.default
             inputs.agenix-rekey.nixosModules.default
             inputs.disko.nixosModules.disko
+            inputs.cosmic-manager.homeManagerModules.cosmic-manager
             {
               networking.hostName = "${hostName}";
             }
