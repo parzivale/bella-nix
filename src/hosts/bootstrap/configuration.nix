@@ -24,11 +24,11 @@ in {
   services.getty.autologinUser = user;
   services.tailscale.enable = false;
 
-  environment.systemPackages = [
-    pkgs.nixos-facter
-    pkgs.age
-    pkgs.age-plugin-fido2-hmac
-    pkgs.fzf
+  environment.systemPackages = with pkgs; [
+    nixos-facter
+    age
+    age-plugin-fido2-hmac
+    fzf
   ];
 
   # No secrets allowed in bootstrap

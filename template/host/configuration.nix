@@ -11,5 +11,10 @@ in {
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
+  environment.systemPackages = with pkgs; [
+    age
+    age-plugin-fido2-hmac
+  ];
+
   programs.ssh.startAgent = true;
 }
