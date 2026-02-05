@@ -91,7 +91,6 @@
             inputs.agenix.nixosModules.default
             inputs.agenix-rekey.nixosModules.default
             inputs.disko.nixosModules.disko
-            inputs.cosmic-manager.homeManagerModules.cosmic-manager
             {
               networking.hostName = "${hostName}";
             }
