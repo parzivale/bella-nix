@@ -63,7 +63,7 @@ export def main [target_hostname: string]: nothing -> nothing {
     
     let second_pass_known_hosts = $"(lib artifacts)/known_hosts_2"
     lib prompt_key_local
-    lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr $first_pass_known_hosts
+    lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr $second_pass_known_hosts
     lib verify $addr $TARGET_DIR $second_pass_known_hosts
     lib scp_down $ssh_key_path $local_ssh_key_path $user $addr $second_pass_known_hosts
     agenix rekey
