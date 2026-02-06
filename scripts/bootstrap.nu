@@ -67,5 +67,10 @@ export def main [target_hostname: string]: nothing -> nothing {
     lib verify $addr $TARGET_DIR $second_pass_known_hosts
     lib scp_down $ssh_key_path $local_ssh_key_path $user $addr $second_pass_known_hosts
     agenix rekey
-    deploy -i --hostname $"($addr)" --ssh-user "bella" $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)"    
+
+    print "THIS WILL FAIL THIS IS EXPECTED"
+    try {deploy --hostname $"($addr)" --ssh-user "bella" $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)"}
+    
+    print "RUNNING THE REAL DEPLOYMENT"
+    deploy -i --hostname $"($addr)" --ssh-user "bella" $"($lib.PROJECT_ROOT)/flake.nix#($target_hostname)"
 }
