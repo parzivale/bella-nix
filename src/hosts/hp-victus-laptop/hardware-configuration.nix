@@ -40,7 +40,6 @@
       modesetting.enable = true;
       powerManagement = {
         enable = true;
-        finegrained = true;
       };
       open = true;
       prime = {
