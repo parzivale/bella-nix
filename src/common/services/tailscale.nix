@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  systemd.services.tailscaled.after = ["agenix-install-secrets.service"];
+  systemd.services.tailscaled-autoconnect.after = ["agenix-install-secrets.service"];
 
   services.tailscale = {
     enable = lib.mkDefault true;
