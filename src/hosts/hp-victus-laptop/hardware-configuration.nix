@@ -31,11 +31,11 @@
 
   networking.networkmanager.enable = true;
 
+  services.xserver.videoDrivers = ["nvidia"];
   hardware = {
     bluetooth.enable = true;
     cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
     graphics.enable = true;
-    xserver.videoDrivers = ["nvidia"];
     nvidia = {
       modesetting.enable = true;
       powerManagement = {
