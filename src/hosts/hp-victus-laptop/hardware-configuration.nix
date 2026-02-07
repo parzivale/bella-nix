@@ -35,6 +35,7 @@
     bluetooth.enable = true;
     cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
     graphics.enable = true;
+    xserver.videoDrivers = ["nvidia"];
     nvidia = {
       modesetting.enable = true;
       powerManagement = {
