@@ -9,7 +9,7 @@
 in {
   system.stateVersion = "25.11";
   home-manager.users.${vars.username}.home.stateVersion = "25.11";
-
+  hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
   environment.systemPackages = with pkgs; [

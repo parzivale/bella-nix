@@ -117,6 +117,7 @@
       deploy = {
         sshUser = vars.username;
         user = "root";
+        interactiveSudo = true;
         nodes = nixpkgs.lib.mapAttrs mkDeployForHost hostsModules;
       };
 
