@@ -52,6 +52,12 @@ in {
           how = "symlink";
           configureParent = true;
         }
+        {
+          file = "/var/lib/systemd/random-seed";
+          how = "symlink";
+          inInitrd = true;
+          configureParent = true;
+        }
       ];
       users.${user} = {
         directories = [
