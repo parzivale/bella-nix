@@ -10,26 +10,20 @@
     kernelPackages = pkgs.linuxPackages_latest;
     initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
     kernelModules = ["kvm-amd"];
-    kernelParams = [
-      "fbcon=map:1" # map TTY to second framebuffer (NVIDIA)
-      "video=HDMI-A-1:e" # force external monitor enabled
-      "video=HDMI-A-1:e"
-      "nouveau.modeset=1" # ensure Nouveau KMS is active
-    ];
   };
 
   fileSystems."/persistent" = {
-    device = "/dev/disk/by-uuid/c27eee90-ed81-4375-6f6b-a5513573a11d";
+    device = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBPNTY-512G-1006_210862801954-part4";
     neededForBoot = true;
     fsType = "btrfs";
-    options = ["subvol=@persistent"];
+    options = ["subvol=persistent"];
   };
 
   fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/c27eee90-ed81-4375-6f6b-a5513573a11d";
+    device = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBPNTY-512G-1006_210862801954-part4";
     neededForBoot = true;
     fsType = "btrfs";
-    options = ["subvol=@nix"];
+    options = ["subvol=nix"];
   };
 
   fileSystems."/" = {
@@ -39,7 +33,7 @@
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/7521-8BA0";
+    device = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBPNTY-512G-1006_210862801954-part1";
     fsType = "vfat";
     options = ["fmask=0077" "dmask=0077"];
   };
