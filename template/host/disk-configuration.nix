@@ -20,8 +20,7 @@
             persistent = {
               size = "100%";
               content = {
-                type = "filesystem";
-                format = "btrfs";
+                type = "btrfs";
                 extraArgs = ["-f"]; # Override existing partition
                 subvolumes = {
                   nix = {
