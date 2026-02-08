@@ -1,5 +1,6 @@
 use bootstrap.nu *
 use delete_host.nu *
+use template_host.nu *
 export use lib
 
 export def bnix []: nothing -> nothing {
@@ -13,15 +14,23 @@ export def bnix []: nothing -> nothing {
 # - create host pubkey
 # - setup tailscale client
 # - deploy a template config
-export def "bnix bootstrap" [
+export def "bnix host bootstrap" [
   target_hostname: string # The name to set the new host as
 ]: nothing -> nothing {
   bootstrap $target_hostname
 }
 
 # Deletes a host from the repo
-export def "bnix delete_host" [
+export def "bnix host delet" [
   target_hostname: string # The host to delete
 ]: nothing -> nothing {
   delete_host $target_hostname
 }
+
+# Creates a new host template for a given hostname
+export def "bnix host template" [
+  target_hostname: string # The name of the new host
+]: nothing -> nothing {
+  template_host $target_hostname
+}
+
