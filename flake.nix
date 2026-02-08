@@ -92,9 +92,11 @@
             inputs.disko.nixosModules.disko
             inputs.preservation.nixosModules.preservation
             inputs.mango.nixosModules.mango
-            inputs.mango.hmModules.mango
             {
               networking.hostName = "${hostName}";
+              home-manager.users.${vars.username}.imports = [
+                inputs.mango.hmModules.mango
+              ];
             }
           ]
           ++ (flattenModules common) ++ (flattenModules hostInfo);
