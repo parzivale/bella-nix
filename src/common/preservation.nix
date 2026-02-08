@@ -1,19 +1,19 @@
 {lib, ...}: {
-  # systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
+  systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
 
-  # systemd.services.systemd-machine-id-commit = {
-  #   unitConfig.ConditionPathIsMountPoint = [
-  #     ""
-  #     "/persistant/etc/machine-id"
-  #   ];
-  #   serviceConfig.ExecStart = [
-  #     ""
-  #     "systemd-machine-id-setup --commit --root /persistant"
-  #   ];
-  # };
+  systemd.services.systemd-machine-id-commit = {
+    unitConfig.ConditionPathIsMountPoint = [
+      ""
+      "/persistant/etc/machine-id"
+    ];
+    serviceConfig.ExecStart = [
+      ""
+      "systemd-machine-id-setup --commit --root /persistant"
+    ];
+  };
 
   preservation = {
-    # enable = lib.mkDefault true;
+    enable = lib.mkDefault true;
     preserveAt."/persistant" = {
       directories = [
         "/etc/secureboot"
@@ -29,6 +29,22 @@
         {
           directory = "/var/lib/nixos";
           inInitrd = true;
+        }
+      ];
+      files = [
+        {
+          file = "/etc/machine-id";
+          inInitrd = true;
+        }
+        {
+          file = "/etc/ssh/ssh_host_ed25519_key";
+          how = "symlink";
+          configureParent = true;
+        }
+        {
+          file = "/etc/ssh/ssh_host_ed25519_key.pub";
+          how = "symlink";
+          configureParent = true;
         }
       ];
     };

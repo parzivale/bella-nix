@@ -31,6 +31,8 @@ in {
     fzf
   ];
 
+  preservation.enable = false;
+
   # No secrets allowed in bootstrap
   nix.settings.secret-key-files = [];
 

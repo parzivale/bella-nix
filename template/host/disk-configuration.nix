@@ -1,4 +1,10 @@
 {...}: {
+  fileSystems."/nix" = {
+    device = "/persistent/nix";
+    fsType = "none";
+    options = ["bind"];
+  };
+
   disko.devices = {
     disk = {
       main = {
@@ -17,17 +23,25 @@
                 mountOptions = ["umask=0077"];
               };
             };
-            root = {
+            persistent = {
               size = "100%";
               content = {
                 type = "filesystem";
                 format = "ext4";
-                mountpoint = "/";
+                mountpoint = "/persistent";
               };
             };
           };
         };
       };
+    };
+    nodev."/" = {
+      fsType = "tmpfs";
+      mountOptions = [
+        "defaults"
+        "size=6G"
+        "mode=755"
+      ];
     };
   };
 }
