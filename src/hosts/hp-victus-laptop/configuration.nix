@@ -1,8 +1,11 @@
 {
   pkgs,
   vars,
+  lib,
   ...
-}: {
+}: let
+  key = builtins.readFile ./ssh_host_ed25519_key.pub;
+in {
   # TODO copy over config from laptop
 
   time.timeZone = "Europe/Stockholm";
@@ -21,6 +24,8 @@
     };
   };
 
+  age.rekey.hostPubkey = lib.mkIf (key != "") key;
+
   services = {
     xserver.xkb.layout = "us";
     pipewire = {
@@ -32,6 +37,8 @@
       pulse.enable = true;
     };
   };
+
+  programs.mango.enable = true;
 
   system.stateVersion = "25.05";
   home-manager.users.${vars.username}.home.stateVersion = "25.11";

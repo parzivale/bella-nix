@@ -48,6 +48,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    mango = {
+      url = "github:DreamMaoMao/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     preservation.url = "github:nix-community/preservation";
   };
 
@@ -86,6 +91,8 @@
             inputs.agenix-rekey.nixosModules.default
             inputs.disko.nixosModules.disko
             inputs.preservation.nixosModules.preservation
+            inputs.mango.nixosModules.mango
+            inputs.mango.hmModules.mango
             {
               networking.hostName = "${hostName}";
             }
