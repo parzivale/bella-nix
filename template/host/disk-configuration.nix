@@ -1,10 +1,4 @@
 {...}: {
-  fileSystems."/nix" = {
-    device = "/persistent/nix";
-    fsType = "none";
-    options = ["bind"];
-  };
-
   disko.devices = {
     disk = {
       main = {
