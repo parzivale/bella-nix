@@ -6,8 +6,6 @@
 }: let
   key = builtins.readFile ./ssh_host_ed25519_key.pub;
 in {
-  # TODO copy over config from laptop
-
   time.timeZone = "Europe/Stockholm";
   i18n = {
     defaultLocale = "en_US.UTF-8";

@@ -5,7 +5,7 @@
 }: let
   user = vars.username;
 in {
-  home-mamanger = {
+  home-manager = {
     users.${user} = {
       wayland.windowManager.mango = {
         enable = config.programs.mango.enable;
