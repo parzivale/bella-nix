@@ -4,17 +4,17 @@
   systemd.services.systemd-machine-id-commit = {
     unitConfig.ConditionPathIsMountPoint = [
       ""
-      "/persistant/etc/machine-id"
+      "/persistent/etc/machine-id"
     ];
     serviceConfig.ExecStart = [
       ""
-      "systemd-machine-id-setup --commit --root /persistant"
+      "systemd-machine-id-setup --commit --root /persistent"
     ];
   };
 
   preservation = {
     enable = lib.mkDefault true;
-    preserveAt."/persistant" = {
+    preserveAt."/persistent" = {
       directories = [
         "/etc/secureboot"
         "/var/lib/bluetooth"
