@@ -1,4 +1,10 @@
-{lib, ...}: {
+{
+  lib,
+  vars,
+  ...
+}: let
+  user = vars.username;
+in {
   systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
 
   systemd.services.systemd-machine-id-commit = {
@@ -47,6 +53,14 @@
           configureParent = true;
         }
       ];
+      users.${user} = {
+        directories = [
+          {
+            directory = ".ssh";
+            mode = "0700";
+          }
+        ];
+      };
     };
   };
 }

@@ -12,10 +12,26 @@
     kernelModules = ["kvm-amd"];
   };
 
-  fileSystems."/" = {
+  fileSystems."/persistent" = {
     device = "/dev/disk/by-uuid/c27eee90-ed81-4375-6f6b-a5513573a11d";
-    fsType = "ext4";
+    neededForBoot = true;
+    fsType = "btrfs";
+    options = ["subvol=@persistent"];
   };
+
+  fileSystems."/nix" = {
+    device = "/dev/disk/by-uuid/c27eee90-ed81-4375-6f6b-a5513573a11d";
+    neededForBoot = true;
+    fsType = "btrfs";
+    options = ["subvol=@nix"];
+  };
+
+  fileSystems."/" = {
+    device = "none";
+    fsType = "tmpfs";
+    options = ["defaults" "size=6G" "mode=755"];
+  };
+
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/7521-8BA0";
     fsType = "vfat";
