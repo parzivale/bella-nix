@@ -10,6 +10,12 @@
     kernelPackages = pkgs.linuxPackages_latest;
     initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
     kernelModules = ["kvm-amd"];
+    kernelParams = [
+      "fbcon=map:1" # map TTY to second framebuffer (NVIDIA)
+      "video=HDMI-A-1:e" # force external monitor enabled
+      "video=HDMI-A-1:e"
+      "nouveau.modeset=1" # ensure Nouveau KMS is active
+    ];
   };
 
   fileSystems."/persistent" = {
