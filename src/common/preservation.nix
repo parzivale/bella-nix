@@ -30,11 +30,6 @@
           directory = "/var/lib/nixos";
           inInitrd = true;
         }
-        {
-          directory = "/nix";
-          inInitrd = true;
-          how = "bindmount";
-        }
       ];
       files = [
         {

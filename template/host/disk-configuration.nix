@@ -21,8 +21,25 @@
               size = "100%";
               content = {
                 type = "filesystem";
-                format = "ext4";
-                mountpoint = "/persistent";
+                format = "btrfs";
+                extraArgs = ["-f"]; # Override existing partition
+                subvolumes = {
+                  nix = {
+                    mountOptions = [
+                      "compress=zstd"
+                      "discard=async"
+                      "noatime"
+                    ];
+                    mountpoint = "/nix";
+                  };
+                  persistent = {
+                    mountpoint = "/persistent";
+                    mountOptions = [
+                      "discard=async"
+                      "compress=zstd"
+                    ];
+                  };
+                };
               };
             };
           };
