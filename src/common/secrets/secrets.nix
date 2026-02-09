@@ -1,5 +1,5 @@
 {vars, ...}: {
-  nix.settings.extra-sandbox-paths = ["/tmp/agenix-rekey.\"${toString vars.uid}\""];
+  nix.settings.extra-sandbox-paths = ["/tmp/agenix-rekey.${toString vars.uid}"];
   age.rekey = {
     masterIdentities = [
       ./yubikey_identity.pub
