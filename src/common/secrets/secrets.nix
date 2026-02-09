@@ -1,6 +1,14 @@
-{vars, ...}: {
-  nix.settings.extra-sandbox-paths = ["/tmp/agenix-rekey.\"${toString vars.uid}\""];
+{
+  vars,
+  config,
+  lib,
+  ...
+}: let
+  cacheDir = /tmp/agenix-rekey;
+in {
+  nix.settings.extra-sandbox-paths = [config.age.rekey.cacheDir];
   age.rekey = {
+    inherit cacheDir;
     masterIdentities = [
       ./yubikey_identity.pub
     ];
