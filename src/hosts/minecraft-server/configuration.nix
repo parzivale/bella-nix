@@ -17,7 +17,10 @@ in {
     age-plugin-fido2-hmac
   ];
 
-  programs.niri.enable = true;
+  programs = {
+    niri.enable = true;
+    git.enable = true;
+  };
 
   services.getty.autologinUser = user;
   programs.ssh.startAgent = true;
