@@ -4,7 +4,7 @@
   lib,
   ...
 }: let
-  cacheDir = "/tmp/agenix-rekey";
+  cacheDir = "/tmp/agenix-rekey.${toString vars.uid}";
 in {
   nix.settings.extra-sandbox-paths = [config.age.rekey.cacheDir];
   age.rekey = {
