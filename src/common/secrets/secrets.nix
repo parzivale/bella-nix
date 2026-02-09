@@ -6,7 +6,7 @@
 }: let
   cacheDir = "/tmp/agenix-rekey";
 in {
-  #nix.settings.extra-sandbox-paths = [config.age.rekey.cacheDir];
+  nix.settings.extra-sandbox-paths = [config.age.rekey.cacheDir];
   age.rekey = {
     inherit cacheDir;
     masterIdentities = [
