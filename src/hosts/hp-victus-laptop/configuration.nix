@@ -4,7 +4,11 @@
   lib,
   ...
 }: let
-  key = builtins.readFile ./ssh_host_ed25519_key.pub;
+  path = ./ssh_host_ed25519_key.pub;
+  key =
+    if builtins.pathExists path
+    then builtins.readFile path
+    else null;
 in {
   time.timeZone = "Europe/Stockholm";
   i18n = {
