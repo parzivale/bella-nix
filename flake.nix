@@ -48,8 +48,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    mango = {
-      url = "github:DreamMaoMao/mango";
+    niri-flake = {
+      url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -91,11 +91,13 @@
             inputs.agenix-rekey.nixosModules.default
             inputs.disko.nixosModules.disko
             inputs.preservation.nixosModules.preservation
-            inputs.mango.nixosModules.mango
             {
+              nixpkgs.overlay = [
+                inputs.niri-flake.overlays.niri
+              ];
               networking.hostName = "${hostName}";
-              home-manager.users.${vars.username}.imports = [
-                inputs.mango.hmModules.mango
+              home-manager.sharedModules = [
+                inputs
               ];
             }
           ]
