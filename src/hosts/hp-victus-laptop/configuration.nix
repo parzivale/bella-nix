@@ -8,7 +8,7 @@
   key =
     if builtins.pathExists path
     then builtins.readFile path
-    else null;
+    else "";
 in {
   time.timeZone = "Europe/Stockholm";
   i18n = {
