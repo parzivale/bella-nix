@@ -21,7 +21,7 @@ export def "bnix host bootstrap" [
 }
 
 # Deletes a host from the repo
-export def "bnix host delet" [
+export def "bnix host delete" [
   target_hostname: string # The host to delete
 ]: nothing -> nothing {
   delete_host $target_hostname
