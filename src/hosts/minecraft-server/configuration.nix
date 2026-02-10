@@ -22,7 +22,7 @@ in {
     git.enable = true;
   };
 
-  home-manger.programs = {
+  home-manager.users.${user}.programs = {
     helix.enable = true;
   };
 
