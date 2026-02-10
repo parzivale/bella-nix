@@ -11,7 +11,6 @@ in {
       cargo
     ];
     settings = {
-      theme = "catppuccin_macchiato";
       editor = {
         bufferline = "multiple";
         statusline = {
