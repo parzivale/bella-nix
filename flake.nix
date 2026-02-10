@@ -92,7 +92,7 @@
             inputs.disko.nixosModules.disko
             inputs.preservation.nixosModules.preservation
             {
-              nixpkgs.overlay = [
+              nixpkgs.overlays = [
                 inputs.niri-flake.overlays.niri
               ];
               networking.hostName = "${hostName}";
