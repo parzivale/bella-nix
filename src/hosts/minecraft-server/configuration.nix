@@ -12,9 +12,12 @@ in {
     home.stateVersion = "25.11";
     programs = {
       helix.enable = true;
-      niri.enable = true;
       git.enable = true;
     };
+  };
+
+  programs = {
+    niri.enable = true;
   };
 
   hardware.facter.reportPath = ./facter.json;
