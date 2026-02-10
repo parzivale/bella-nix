@@ -40,8 +40,6 @@ in {
     };
   };
 
-  programs.mango.enable = true;
-
   system.stateVersion = "25.05";
   home-manager.users.${vars.username}.home.stateVersion = "25.11";
 }
