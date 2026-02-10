@@ -13,12 +13,7 @@ in {
     programs = {
       helix.enable = true;
       git.enable = true;
-      wezterm.enable = true;
     };
-  };
-
-  programs = {
-    niri.enable = true;
   };
 
   hardware.facter.reportPath = ./facter.json;
@@ -29,8 +24,6 @@ in {
     age-plugin-fido2-hmac
   ];
 
-  # fuck you gnome
-  services.gnome.gcr-ssh-agent.enable = false;
   services.getty.autologinUser = user;
   programs.ssh.startAgent = true;
 }
