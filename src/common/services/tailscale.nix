@@ -13,7 +13,6 @@
     authKeyFile = config.age.secrets.tailscale_token.path;
     authKeyParameters = {
       preauthorized = true;
-      ephemeral = false;
     };
     extraUpFlags = ["--advertise-tags=tag:nixos"];
     disableTaildrop = true;
