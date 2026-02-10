@@ -13,6 +13,7 @@ in {
     programs = {
       helix.enable = true;
       niri.enable = true;
+      git.enable = true;
     };
   };
 
@@ -23,10 +24,6 @@ in {
     age
     age-plugin-fido2-hmac
   ];
-
-  programs = {
-    git.enable = true;
-  };
 
   services.getty.autologinUser = user;
   programs.ssh.startAgent = true;
