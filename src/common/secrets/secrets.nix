@@ -2,6 +2,7 @@
   vars,
   config,
   lib,
+  pkgs,
   ...
 }: let
   user = vars.username;
@@ -16,6 +17,8 @@ in {
     masterIdentities = [
       ./yubikey_identity.pub
     ];
+
+    agePlugins = [pkgs.age-plugin-fido2-hmac];
 
     storageMode = "derivation";
   };
