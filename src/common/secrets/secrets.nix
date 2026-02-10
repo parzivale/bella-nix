@@ -10,7 +10,7 @@
 in {
   systemd.services.agenix-install-secrets = {
     after = ["preservation.target"];
-    wants = ["preservation.target"];
+    requires = ["preservation.target"];
   };
 
   nix.settings.extra-sandbox-paths = [config.age.rekey.cacheDir];
