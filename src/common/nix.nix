@@ -9,7 +9,7 @@
   documentation.enable = false;
   nix = {
     settings = {
-      secret-key-files = lib.mkDefault [config.age.secrets.deploy-key.path];
+      # secret-key-files = lib.mkDefault [config.age.secrets.deploy-key.path];
       experimental-features = "nix-command flakes";
       use-xdg-base-directories = true;
       substituters = [
