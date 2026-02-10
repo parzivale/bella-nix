@@ -46,6 +46,7 @@ in {
           file = "/etc/ssh/ssh_host_ed25519_key";
           how = "symlink";
           configureParent = true;
+          inInitrd = true;
         }
         {
           file = "/swapfile";
@@ -54,6 +55,7 @@ in {
           file = "/etc/ssh/ssh_host_ed25519_key.pub";
           how = "symlink";
           configureParent = true;
+          inInitrd = true;
         }
         {
           file = "/var/lib/systemd/random-seed";
