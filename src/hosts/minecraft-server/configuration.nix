@@ -28,6 +28,8 @@ in {
     age-plugin-fido2-hmac
   ];
 
+  # fuck you gnome
+  services.gnome.gcr-ssh-agent.enable = false;
   services.getty.autologinUser = user;
   programs.ssh.startAgent = true;
 }
