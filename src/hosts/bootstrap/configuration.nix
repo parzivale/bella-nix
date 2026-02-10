@@ -1,6 +1,8 @@
 {
   vars,
   pkgs,
+  lib,
+  config,
   ...
 }: let
   user = vars.username;
@@ -34,7 +36,7 @@ in {
   preservation.enable = false;
 
   # No secrets allowed in bootstrap
-  nix.settings.secret-key-files = [];
+  nix.settings = lib.attrsets.removeAttrs config.nix.settings "secret-key-files";
 
   system.stateVersion = "25.11";
 }
