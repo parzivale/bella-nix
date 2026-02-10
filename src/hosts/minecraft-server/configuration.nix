@@ -22,6 +22,10 @@ in {
     git.enable = true;
   };
 
+  home-manger.programs = {
+    helix.enable = true;
+  };
+
   services.getty.autologinUser = user;
   programs.ssh.startAgent = true;
 }
