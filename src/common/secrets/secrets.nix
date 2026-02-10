@@ -8,6 +8,11 @@
   user = vars.username;
   cacheDir = "/tmp/agenix-rekey.${toString vars.uid}";
 in {
+  systemd.services.agenix-install-secrets = {
+    after = ["preservation.target"];
+    wants = ["preservation.target"];
+  };
+
   nix.settings.extra-sandbox-paths = [config.age.rekey.cacheDir];
   systemd.tmpfiles.rules = [
     "d ${cacheDir} 1777 ${user} ${user}"
