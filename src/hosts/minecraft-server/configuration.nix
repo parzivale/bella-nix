@@ -11,9 +11,9 @@ in {
   home-manager.users.${user} = {
     home.stateVersion = "25.11";
     programs = {
-      # helix.enable = true;
+      helix.enable = true;
       niri.enable = true;
-      # git.enable = true;
+      git.enable = true;
     };
   };
 

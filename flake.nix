@@ -97,9 +97,7 @@
                 inputs.niri-flake.overlays.niri
               ];
               networking.hostName = "${hostName}";
-              home-manager.sharedModules = [
-                inputs
-              ];
+              home-manager.sharedModules = [];
             }
           ]
           ++ (flattenModules common) ++ (flattenModules hostInfo);
