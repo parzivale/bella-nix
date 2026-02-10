@@ -38,13 +38,6 @@
     options = ["fmask=0077" "dmask=0077"];
   };
 
-  swapDevices = [
-    {
-      device = "/swapfile";
-      size = 16 * 1024;
-    }
-  ];
-
   networking.networkmanager.enable = true;
 
   services.xserver.videoDrivers = ["nvidia"];
