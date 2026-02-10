@@ -13,6 +13,7 @@ in {
     programs = {
       helix.enable = true;
       git.enable = true;
+      wezterm.enable = true;
     };
   };
 
