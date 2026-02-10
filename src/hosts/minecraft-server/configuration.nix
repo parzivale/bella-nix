@@ -8,7 +8,14 @@
   user = vars.username;
 in {
   system.stateVersion = "25.11";
-  home-manager.users.${user}.home.stateVersion = "25.11";
+  home-manager.users.${user} = {
+    home.stateVersion = "25.11";
+    programs = {
+      helix.enable = true;
+      niri.enable = true;
+    };
+  };
+
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
@@ -19,11 +26,6 @@ in {
 
   programs = {
     git.enable = true;
-  };
-
-  home-manager.users.${user}.programs = {
-    helix.enable = true;
-    niri.enable = true;
   };
 
   services.getty.autologinUser = user;
