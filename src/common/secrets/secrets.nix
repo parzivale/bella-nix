@@ -7,6 +7,16 @@
 }: let
   user = vars.username;
   cacheDir = "/tmp/agenix-rekey.${toString vars.uid}";
+  rekey = {
+    inherit cacheDir;
+    masterIdentities = [
+      ./yubikey_identity.pub
+    ];
+
+    agePlugins = [pkgs.age-plugin-fido2-hmac];
+
+    storageMode = "derivation";
+  };
 in {
   systemd.services.agenix-install-secrets = {
     after = ["preservation.target"];
@@ -17,23 +27,19 @@ in {
   systemd.tmpfiles.rules = [
     "d ${cacheDir} 1777 ${user} ${user}"
   ];
-  age.rekey = {
-    inherit cacheDir;
-    masterIdentities = [
-      ./yubikey_identity.pub
-    ];
 
-    agePlugins = [pkgs.age-plugin-fido2-hmac];
-
-    storageMode = "derivation";
+  age = {
+    inherit rekey;
+    secrets = {
+      tailscale_token.rekeyFile = ./tailscale_key.age;
+      deploy-key.rekeyFile = ./deploy-key.age;
+    };
   };
 
-  age.secrets = {
-    tailscale_token.rekeyFile = ./tailscale_key.age;
-    deploy-key.rekeyFile = ./deploy-key.age;
-  };
-
-  home-manager.users.${user}.age.secrets = {
-    github-key.rekeyFile = ./github-key.age;
+  home-manager.users.${user}.age = {
+    inherit rekey;
+    secrets = {
+      github-key.rekeyFile = ./github-key.age;
+    };
   };
 }
