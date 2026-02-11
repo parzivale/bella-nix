@@ -19,6 +19,10 @@ export def user []: nothing -> string {
   nix eval --raw -f $VARS_DIR username
 }
 
+export def tailscale_domain []: nothing -> string {
+  nix eval --raw -f $VARS_DIR tailscale_dns
+}
+
 export def --env ssh_with_opts [command: string, user: string, host: string, known_hosts_file:string = ""]: nothing -> nothing {
   
   if not ($known_hosts_file == "") {

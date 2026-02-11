@@ -1,6 +1,7 @@
 use bootstrap.nu *
 use delete_host.nu *
 use template_host.nu *
+use deploy_host.nu *
 export use lib
 
 export def bnix []: nothing -> nothing {
@@ -34,3 +35,7 @@ export def "bnix host template" [
   template_host $target_hostname
 }
 
+# Deploys a configuration to a known host
+export def "bnix host deploy" []: nothing -> nothing {
+  deploy_host
+} 
