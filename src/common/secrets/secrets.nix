@@ -35,7 +35,7 @@ in {
   };
 
   home-manager.users.${user}.age.secrets = {
-    rekey = builtins.removeAttrs rekey ["agePlugins"];
+    rekey = builtins.removeAttrs rekey ["agePlugins" "cacheDir"];
     github-key.rekeyFile = ./github-key.age;
   };
 }
