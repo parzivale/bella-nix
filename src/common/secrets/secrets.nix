@@ -6,6 +6,7 @@
   ...
 }: let
   user = vars.username;
+
   cacheDir = "/tmp/agenix-rekey.${toString vars.uid}";
 in {
   systemd.services.agenix-install-secrets = {
