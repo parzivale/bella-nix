@@ -8,9 +8,14 @@
   user = vars.username;
 in {
   home-manager.users.${user} = {
-    xdg.userDirs.enable = false;
-    home.stateVersion = "25.11";
-    programs.home-manager.enable = false;
+    home = {
+      stateVersion = "25.11";
+      packages = with pkgs; [
+        nixos-facter
+        age
+        age-plugin-fido2-hmac
+      ];
+    };
   };
 
   # Nixos anywhere is a fragile fickle thing that needs its own user who has a posix
@@ -25,13 +30,6 @@ in {
 
   services.getty.autologinUser = user;
   services.tailscale.enable = false;
-
-  environment.systemPackages = with pkgs; [
-    nixos-facter
-    age
-    age-plugin-fido2-hmac
-    fzf
-  ];
 
   preservation.enable = false;
 

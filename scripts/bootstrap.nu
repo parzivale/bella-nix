@@ -39,7 +39,7 @@ export def main [target_hostname: string]: nothing -> nothing {
     print "==> Initial ssh connection\n"
     lib ssh_with_opts "echo '==> Connected to host\n'" $user $addr $first_pass_known_hosts
     lib verify $addr $TARGET_DIR $first_pass_known_hosts
-    let command = $"ls -s /dev/disk/by-id/ | get name | to text | fzf --header 'Select boot disk' | str trim | save -f /tmp/boot_disk; print 'Scanning Hardware'; sudo nixos-facter -o ($remote_facter); sudo chmod a+rw ($remote_facter)"
+    let command = $"ls -s /dev/disk/by-id/ | input -d name 'Select boot disk' | str trim | save -f /tmp/boot_disk; print 'Scanning Hardware'; sudo nixos-facter -o ($remote_facter); sudo chmod a+rw ($remote_facter)"
     lib ssh_with_opts $command $user $addr $first_pass_known_hosts
     lib scp_down $remote_facter $local_facter $user $addr $first_pass_known_hosts
     lib scp_down /tmp/boot_disk $"($TARGET_DIR)/boot_disk" $user $addr $first_pass_known_hosts
