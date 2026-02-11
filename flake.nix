@@ -97,7 +97,9 @@
                 inputs.niri-flake.overlays.niri
               ];
               networking.hostName = "${hostName}";
-              home-manager.sharedModules = [];
+              home-manager.sharedModules = [
+                inputs.agenix-rekey.homeManager.default
+              ];
             }
           ]
           ++ (flattenModules common) ++ (flattenModules hostInfo);
