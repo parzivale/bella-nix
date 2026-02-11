@@ -1,7 +1,6 @@
 {
   vars,
   config,
-  lib,
   pkgs,
   ...
 }: let
@@ -12,7 +11,6 @@
     masterIdentities = [
       ./yubikey_identity.pub
     ];
-
     agePlugins = [pkgs.age-plugin-fido2-hmac];
 
     storageMode = "derivation";
@@ -37,7 +35,7 @@ in {
   };
 
   home-manager.users.${user}.age.secrets = {
-    inherit rekey;
+    rekey = builtins.removeAttrs rekey ["agePlugins"];
     github-key.rekeyFile = ./github-key.age;
   };
 }
