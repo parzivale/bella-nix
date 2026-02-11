@@ -31,6 +31,9 @@ in {
   age.secrets = {
     tailscale_token.rekeyFile = ./tailscale_key.age;
     deploy-key.rekeyFile = ./deploy-key.age;
+  };
+
+  home-manager.users.${user}.age.secrets = {
     github-key.rekeyFile = ./github-key.age;
   };
 }

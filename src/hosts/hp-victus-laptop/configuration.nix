@@ -41,5 +41,16 @@ in {
   };
 
   system.stateVersion = "25.05";
-  home-manager.users.${vars.username}.home.stateVersion = "25.11";
+  home-manager.users.${vars.username} = {
+    home.stateVersion = "25.11";
+    packages = with pkgs; [
+      age
+      age-plugin-fido2-hmac
+    ];
+    programs = {
+      helix.enable = true;
+      git.enable = true;
+      nh.enable = true;
+    };
+  };
 }

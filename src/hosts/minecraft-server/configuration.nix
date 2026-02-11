@@ -9,20 +9,22 @@
 in {
   system.stateVersion = "25.11";
   home-manager.users.${user} = {
-    home.stateVersion = "25.11";
+    home = {
+      stateVersion = "25.11";
+      packages = with pkgs; [
+        age
+        age-plugin-fido2-hmac
+      ];
+    };
     programs = {
       helix.enable = true;
       git.enable = true;
+      nh.enable = true;
     };
   };
 
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
-
-  environment.systemPackages = with pkgs; [
-    age
-    age-plugin-fido2-hmac
-  ];
 
   services.getty.autologinUser = user;
   programs.ssh.startAgent = true;
