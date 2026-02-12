@@ -142,7 +142,7 @@
         "aarch64-darwin"
       ];
 
-      flake = mkFlake ./src/hosts ./src/common;
+      flake = mkFlake ./src/hosts ./src/modules;
 
       perSystem = {
         config,
