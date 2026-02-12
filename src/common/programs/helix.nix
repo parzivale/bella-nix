@@ -68,7 +68,7 @@ in {
           auto-format = true;
         }
         {
-          name = "typscript";
+          name = "typescript";
           auto-format = true;
           language-servers = [
             {
