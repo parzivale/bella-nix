@@ -14,10 +14,6 @@ in {
         };
         push.autoSetupRemote = true;
         init.defaultBranch = "main";
-        "credential \"https://github.com\"" = {
-          username = "parzivale";
-          helper = "store --file ${config.age.secrets.github-key.path}";
-        };
       };
     };
   };

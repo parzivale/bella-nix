@@ -20,12 +20,10 @@ in {
       helix.enable = true;
       git.enable = true;
       nh.enable = true;
+      ssh.enable = true;
     };
   };
 
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
-
-  services.getty.autologinUser = user;
-  programs.ssh.startAgent = true;
 }

@@ -21,6 +21,7 @@ in {
       helix.enable = true;
       git.enable = true;
       nh.enable = true;
+      ssh.enable = true;
     };
   };
 
@@ -28,5 +29,4 @@ in {
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
   services.getty.autologinUser = user;
-  programs.ssh.startAgent = true;
 }
