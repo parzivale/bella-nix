@@ -6,7 +6,7 @@
 }: let
   user = vars.username;
 in {
-  home-manager.user.${user}.programs.ssh = {
+  home-manager.users.${user}.programs.ssh = {
     startAgent = lib.mkDefault true;
     matchBlocks = {
       "github.com" = {
