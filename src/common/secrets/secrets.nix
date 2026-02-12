@@ -31,13 +31,10 @@ in {
     secrets = {
       tailscale_token.rekeyFile = ./tailscale_key.age;
       deploy-key.rekeyFile = ./deploy-key.age;
-    };
-  };
-
-  home-manager.users.${user}.age = {
-    inherit rekey;
-    secrets = {
-      github-key.rekeyFile = ./github-key.age;
+      github-key = {
+        rekeyFile = ./github-key.age;
+        owner = user;
+      };
     };
   };
 }

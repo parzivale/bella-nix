@@ -98,8 +98,6 @@
               ];
               networking.hostName = "${hostName}";
               home-manager.sharedModules = [
-                inputs.agenix-rekey.homeManagerModules.default
-                inputs.agenix.homeManagerModules.default
               ];
             }
           ]

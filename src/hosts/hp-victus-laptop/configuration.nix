@@ -42,7 +42,6 @@ in {
 
   system.stateVersion = "25.05";
   home-manager.users.${vars.username} = {
-    age.rekey.hostPubkey = lib.mkIf (key != "") key;
     home = {
       stateVersion = "25.11";
       packages = with pkgs; [
