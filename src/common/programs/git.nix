@@ -1,7 +1,11 @@
-{vars, ...}: let
+{
+  vars,
+  config,
+  ...
+}: let
   user = vars.username;
 in {
-  home-manager.users.${user} = {config, ...}: {
+  home-manager.users.${user} = {
     programs.git = {
       settings = {
         user = {
