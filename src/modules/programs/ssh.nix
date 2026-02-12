@@ -7,7 +7,7 @@
   user = vars.username;
 in {
   flake.modules.bella.ssh = {
-    import = with self.modules.bella; [secrets home-manager openssh];
+    import = with self.modules.bella; [secrets openssh];
     home-manager.users.${user}.programs.ssh = {
       enable = true;
       enableDefaultConfig = false;

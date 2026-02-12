@@ -1,6 +1,5 @@
 {
   self,
-  pkgs,
   vars,
   lib,
   ...
@@ -12,10 +11,10 @@
     else "";
 in {
   inputs = with self.modules.bella; [
-    helix
-    git
-    ssh
+    cli
+    deployer
     localization
+    systemd-boot
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
@@ -37,19 +36,5 @@ in {
   };
 
   system.stateVersion = "25.05";
-  home-manager.users.${vars.username} = {
-    home = {
-      stateVersion = "25.11";
-      packages = with pkgs; [
-        age
-        age-plugin-fido2-hmac
-      ];
-    };
-    programs = {
-      helix.enable = true;
-      git.enable = true;
-      nh.enable = true;
-      ssh.enable = true;
-    };
-  };
+  home-manager.users.${vars.username}.home.stateVersion = "25.11";
 }

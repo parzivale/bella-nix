@@ -4,14 +4,12 @@
   ...
 }: {
   flake.modules.bella.nix = {
-    inputs = [self.modules.bella.secrets];
     nixpkgs.config.allowUnfree = true;
     documentation.nixos.enable = false;
     documentation.man.enable = false;
     documentation.enable = false;
     nix = {
       settings = {
-        secret-key-files = [config.age.secrets.deploy-key.path];
         experimental-features = "nix-command flakes";
         use-xdg-base-directories = true;
         substituters = [

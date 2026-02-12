@@ -92,6 +92,7 @@
             inputs.disko.nixosModules.disko
             inputs.preservation.nixosModules.preservation
             inputs.niri-flake.nixosModules.niri
+            self.modules.bella.base
             {
               nixpkgs.overlays = [
                 inputs.niri-flake.overlays.niri

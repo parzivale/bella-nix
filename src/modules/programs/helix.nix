@@ -7,7 +7,6 @@
   user = vars.username;
 in {
   flake.modules.bella.helix = {
-    inputs = [self.modules.bella.home-mananger];
     home-manager.users.${user}.programs.helix = {
       enable = true;
       defaultEditor = true;

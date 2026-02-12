@@ -8,6 +8,13 @@
   cacheDir = "/tmp/agenix-rekey.${toString vars.uid}";
 in {
   flake.modules.bella.secrets = {
+    home-manager.users.${user} = {
+      packages = with pkgs; [
+        age
+        age-plugin-fido2-hmac
+      ];
+    };
+
     systemd.services.agenix-install-secrets = {
       after = ["preservation.target"];
       requires = ["preservation.target"];

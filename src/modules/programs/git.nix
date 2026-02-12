@@ -1,12 +1,7 @@
-{
-  self,
-  vars,
-  ...
-}: let
+{vars, ...}: let
   user = vars.username;
 in {
   flake.modules.bella.git = {
-    imports = [self.modules.bella.ssh self.modules.bella.home-manager];
     home-manager.users.${user} = {
       programs.git = {
         enable = true;

@@ -21,7 +21,6 @@ in {
       preserveAt."/persistent" = {
         directories = [
           "/etc/secureboot"
-          "/var/lib/bluetooth"
           "/var/lib/fprint"
           "/var/lib/fwupd"
           "/var/lib/libvirt"
@@ -47,9 +46,6 @@ in {
             inInitrd = true;
           }
           {
-            file = "/swapfile";
-          }
-          {
             file = "/etc/ssh/ssh_host_ed25519_key.pub";
             how = "symlink";
             configureParent = true;
@@ -62,13 +58,6 @@ in {
             configureParent = true;
           }
         ];
-        users.${user} = {
-          directories = [
-            {
-              directory = "bella-nix";
-            }
-          ];
-        };
       };
     };
   };

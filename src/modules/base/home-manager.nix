@@ -1,12 +1,7 @@
-{
-  self,
-  vars,
-  ...
-}: let
+{vars, ...}: let
   user = vars.username;
 in {
   flake.modules.bella.home-manager = {
-    inputs = [self.modules.bella.user];
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;

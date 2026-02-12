@@ -7,7 +7,7 @@
   user = vars.username;
 in {
   flake.modules.bella.niri = {
-    inputs = [self.modules.bella.home-manager];
+    services.getty.autologinUser = user;
     programs.niri.enable = true;
     home-manager.users.${user}.programs.niri.settings = {
       binds = with config.lib.niri.actions; {
