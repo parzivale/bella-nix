@@ -57,7 +57,7 @@ in {
         }
         {
           name = "markdown";
-          softwrap.enable = "true";
+          soft-wrap.enable = "true";
           text-width = 80;
           soft-wrap.wrap-at-text-width = true;
           language-servers = ["marksman" "harper-ls"];
