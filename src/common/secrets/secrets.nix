@@ -33,7 +33,9 @@ in {
     };
   };
 
-  home-manager.users.${user}.age.secrets = {
-    github-key.rekeyFile = ./github-key.age;
+  home-manager.users.${user}.age = {
+    secrets = {
+      github-key.rekeyFile = ./github-key.age;
+    };
   };
 }
