@@ -40,6 +40,10 @@ in {
     };
   };
 
+  programs = {
+    niri.enable = true;
+  };
+
   system.stateVersion = "25.05";
   home-manager.users.${vars.username} = {
     home = {
@@ -54,7 +58,6 @@ in {
       git.enable = true;
       nh.enable = true;
       ssh.enable = true;
-      niri.enable = true;
     };
   };
 }
