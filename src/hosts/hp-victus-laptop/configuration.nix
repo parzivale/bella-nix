@@ -38,6 +38,11 @@ in {
       };
       pulse.enable = true;
     };
+    greetd.enable = true;
+  };
+
+  programs = {
+    regreet.enable = true;
   };
 
   system.stateVersion = "25.05";
@@ -54,6 +59,7 @@ in {
       git.enable = true;
       nh.enable = true;
       ssh.enable = true;
+      niri.enable = true;
     };
   };
 }
