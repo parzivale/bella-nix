@@ -38,11 +38,6 @@ in {
       };
       pulse.enable = true;
     };
-    greetd.enable = true;
-  };
-
-  programs = {
-    regreet.enable = true;
   };
 
   system.stateVersion = "25.05";
