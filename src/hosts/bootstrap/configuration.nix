@@ -1,13 +1,11 @@
-{
-  self,
-  vars,
+{inputs}: {
+  config,
   pkgs,
   ...
 }: let
-  user = vars.username;
+  user = config.systemConstants.username;
 in {
-  inputs = with self.modules.bella; [
-    user
+  imports = with inputs.self.modules.nixos; [
     openssh
     stylix
     avahi
@@ -24,7 +22,6 @@ in {
       ];
     };
   };
-
   # Nixos anywhere is a fragile fickle thing that needs its own user who has a posix
   # complient user shell
   users.users.nixos-anywhere = {

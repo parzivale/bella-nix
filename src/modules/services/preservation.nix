@@ -1,7 +1,5 @@
-{vars, ...}: let
-  user = vars.username;
-in {
-  flake.modules.bella.preservation-base = {
+{
+  flake.modules.nixos.preservation-base = {
     boot.initrd.systemd.enable = true;
     systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
 

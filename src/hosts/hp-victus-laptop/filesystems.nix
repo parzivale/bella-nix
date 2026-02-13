@@ -1,4 +1,4 @@
-{
+{inputs}: {
   fileSystems."/persistent" = {
     device = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBPNTY-512G-1006_210862801954-part4";
     neededForBoot = true;

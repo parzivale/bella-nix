@@ -1,6 +1,6 @@
 {self, ...}: {
-  flakes.modules.bella.deployable = {
-    imports = with self.modules.bella; [
+  flake.modules.nixos.deployable = {
+    imports = with self.modules.nixos; [
       openssh
       tailscale
     ];

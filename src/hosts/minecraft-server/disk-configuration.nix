@@ -1,4 +1,4 @@
-{...}: {
+{inputs}: {
   disko.devices = {
     disk = {
       main = {

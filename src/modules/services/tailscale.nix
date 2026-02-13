@@ -1,9 +1,9 @@
 {
-  config,
-  lib,
-  ...
-}: {
-  flake.modules.bella.tailscale = {
+  flake.modules.nixos.tailscale = {
+    config,
+    lib,
+    ...
+  }: {
     systemd.services = {
       tailscaled-autoconnect.after = ["agenix-install-secrets.service" "network-online.target"];
       tailscaled-autoconnect.requires = ["agenix-install-secrets.service" "network-online.target"];

@@ -1,6 +1,6 @@
 {self, ...}: {
-  flakes.modules.bella.server = {
-    imports = with self.modules.bella; [
+  flake.modules.nixos.server = {
+    imports = with self.modules.nixos; [
       stylix
       preservation
     ];

@@ -1,6 +1,6 @@
-{self, ...}: {
-  flakes.modules.bella.cli = {
-    imports = with self.modules.bella; [
+{inputs, ...}: {
+  flake.modules.nixos.cli = {
+    imports = with inputs.self.modules.nixos; [
       lazygit
       git
       nh

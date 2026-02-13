@@ -1,6 +1,5 @@
-{
-  self,
-  vars,
+{inputs}: {
+  config,
   lib,
   ...
 }: let
@@ -9,9 +8,9 @@
     if builtins.pathExists path
     then builtins.readFile path
     else "";
-  user = vars.username;
+  user = config.systemConstants.username;
 in {
-  inputs = with self.modules.bella; [
+  imports = with inputs.self.modules.nixos; [
     deployable
     cli
     localization

@@ -1,6 +1,6 @@
-{vars, ...}: {
-  flakes.modules.bella.nh = {
-    home-manager.users.${vars.username} = {
+{
+  flake.modules.nixos.nh = {config, ...}: {
+    home-manager.users.${config.systemConstants.username} = {
       programs = {
         nh.enable = true;
       };

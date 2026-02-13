@@ -1,13 +1,8 @@
-{
-  self,
-  vars,
-  config,
-  ...
-}: let
-  user = vars.username;
-in {
-  flake.modules.bella.ssh = {
-    import = with self.modules.bella; [secrets openssh];
+{inputs, ...}: {
+  flake.modules.nixos.ssh = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    imports = with inputs.self.modules.nixos; [secrets openssh];
     home-manager.users.${user}.programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
@@ -34,7 +29,7 @@ in {
       };
     };
 
-    preservation.users.${user} = {
+    preservation.preserveAt."/persistent".users.${user} = {
       directories = [
         {
           directory = ".ssh";

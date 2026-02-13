@@ -1,12 +1,7 @@
 {
-  self,
-  config,
-  vars,
-  ...
-}: let
-  user = vars.username;
-in {
-  flake.modules.bella.niri = {
+  flake.modules.nixos.niri = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
     services.getty.autologinUser = user;
     programs.niri.enable = true;
     home-manager.users.${user}.programs.niri.settings = {

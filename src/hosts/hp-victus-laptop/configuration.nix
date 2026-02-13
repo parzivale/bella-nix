@@ -1,6 +1,5 @@
-{
-  self,
-  vars,
+{inputs}: {
+  config,
   lib,
   ...
 }: let
@@ -10,7 +9,7 @@
     then builtins.readFile path
     else "";
 in {
-  inputs = with self.modules.bella; [
+  imports = with inputs.self.modules.nixos; [
     cli
     deployer
     localization
@@ -36,5 +35,5 @@ in {
   };
 
   system.stateVersion = "25.05";
-  home-manager.users.${vars.username}.home.stateVersion = "25.11";
+  home-manager.users.${config.systemConstants.username}.home.stateVersion = "25.11";
 }

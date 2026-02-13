@@ -1,6 +1,6 @@
 {self, ...}: {
-  flakes.modules.bella.deployer = {
-    imports = with self.modules.bella; [
+  flake.modules.nixos.deployer = {
+    imports = with self.modules.nixos; [
       nh
       ssh
       git

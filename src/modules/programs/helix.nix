@@ -1,12 +1,11 @@
 {
-  self,
-  pkgs,
-  vars,
-  ...
-}: let
-  user = vars.username;
-in {
-  flake.modules.bella.helix = {
+  flake.modules.nixos.helix = {
+    config,
+    pkgs,
+    ...
+  }: let
+    user = config.systemConstants.username;
+  in {
     home-manager.users.${user}.programs.helix = {
       enable = true;
       defaultEditor = true;

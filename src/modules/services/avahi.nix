@@ -1,5 +1,5 @@
 {
-  flake.modules.bella.avahi = {
+  flake.modules.nixos.avahi = {
     services.avahi = {
       enable = true;
       nssmdns4 = true;

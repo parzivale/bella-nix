@@ -1,14 +1,13 @@
 {
-  vars,
-  config,
-  pkgs,
-  ...
-}: let
-  user = vars.username;
-  cacheDir = "/tmp/agenix-rekey.${toString vars.uid}";
-in {
-  flake.modules.bella.secrets = {
-    home-manager.users.${user} = {
+  flake.modules.nixos.secrets = {
+    config,
+    pkgs,
+    ...
+  }: let
+    user = config.systemConstants.username;
+    cacheDir = "/tmp/agenix-rekey.${toString config.systemConstants.uid}";
+  in {
+    home-manager.users.${user}.home = {
       packages = with pkgs; [
         age
         age-plugin-fido2-hmac
@@ -28,9 +27,6 @@ in {
     age = {
       rekey = {
         inherit cacheDir;
-        masterIdentities = [
-          ../secrets/yubikey/yubikey_identity.pub
-        ];
         agePlugins = [pkgs.age-plugin-fido2-hmac];
 
         storageMode = "derivation";

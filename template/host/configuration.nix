@@ -1,6 +1,5 @@
-{
-  self,
-  vars,
+{inputs}: {
+  config,
   lib,
   ...
 }: let
@@ -9,9 +8,9 @@
     if builtins.pathExists path
     then builtins.readFile path
     else "";
-  user = vars.username;
+  user = config.systemConstants.username;
 in {
-  inputs = with self.modules.bella; [
+  inputs = with inputs.self.modules.bella; [
     helix
     git
     ssh
@@ -20,7 +19,7 @@ in {
     systemd-boot
   ];
   system.stateVersion = "25.11";
-  home-manager.users.${vars.username}.home.stateVersion = "25.11";
+  home-manager.users.${user}.home.stateVersion = "25.11";
 
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;

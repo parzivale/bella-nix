@@ -1,16 +1,12 @@
 {
-  vars,
-  lib,
-  ...
-}: {
-  flake.modules.bella.openssh = {
+  flake.modules.nixos.openssh = {config, ...}: {
     services.openssh = {
       enable = true;
       settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
         PermitRootLogin = "no";
-        AllowUsers = [vars.username];
+        AllowUsers = [config.systemConstants.username];
       };
 
       generateHostKeys = true;

@@ -1,5 +1,5 @@
-{self, ...}: {
-  flake.modules.bella.base = {
-    imports = with self.modules.bella; [user home-manager nix];
+{inputs, ...}: {
+  flake.modules.nixos.base = {
+    imports = with inputs.self.modules.nixos; [user home-manager nix systemConstants];
   };
 }

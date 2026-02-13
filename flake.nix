@@ -48,11 +48,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    niri-flake = {
-      url = "github:sodiboo/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    # niri-flake = {
+    #   url = "github:sodiboo/niri-flake";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     preservation.url = "github:nix-community/preservation";
   };
 
@@ -78,34 +77,15 @@
         loader = [(haumea.lib.matchers.nix haumea.lib.loaders.path)];
       };
 
-    mkSystemForHost = common: hostName: hostInfo:
+    mkSystemForHost = hostName:
       nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit inputs vars hostName;
+          inherit vars hostName;
         };
-        modules =
-          [
-            inputs.stylix.nixosModules.stylix
-            inputs.home-manager.nixosModules.default
-            inputs.agenix.nixosModules.default
-            inputs.agenix-rekey.nixosModules.default
-            inputs.disko.nixosModules.disko
-            inputs.preservation.nixosModules.preservation
-            inputs.niri-flake.nixosModules.niri
-            self.modules.bella.base
-            {
-              nixpkgs.overlays = [
-                inputs.niri-flake.overlays.niri
-              ];
-              networking.hostName = "${hostName}";
-              home-manager.sharedModules = [
-              ];
-            }
-          ]
-          ++ (flattenModules common) ++ (flattenModules hostInfo);
+        modules = [inputs.self.modules.nixos.${hostName}];
       };
 
-    mkDeployForHost = hostName: hostInfo: let
+    mkDeployForHost = hostName: let
       nixConf = self.nixosConfigurations;
       getSystem = hostName: nixConf.${hostName}.pkgs.stdenv.hostPlatform.system;
     in {
@@ -113,28 +93,53 @@
       profiles.system.path = deploy-rs.lib.${(getSystem hostName)}.activate.nixos self.nixosConfigurations.${hostName};
     };
 
-    mkFlake = hosts: src: let
-      commonModules = load src;
-      hostsModules = load hosts;
-    in {
+    mkHosts = hostNames: {
       nixosConfigurations =
-        nixpkgs.lib.mapAttrs (mkSystemForHost commonModules)
-        hostsModules;
+        nixpkgs.lib.genAttrs hostNames mkSystemForHost;
 
       deploy = {
         sshUser = vars.username;
         user = "root";
         interactiveSudo = true;
-        nodes = nixpkgs.lib.mapAttrs mkDeployForHost hostsModules;
+        nodes = nixpkgs.lib.genAttrs hostNames mkDeployForHost;
       };
 
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
+
+    hosts = load ./src/hosts;
+    modules = load ./src/modules;
   in
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-        agenix-rekey.flakeModule
-      ];
+    flake-parts.lib.mkFlake {
+      inherit inputs;
+    } {
+      imports =
+        [inputs.flake-parts.flakeModules.modules]
+        ++ flattenModules modules
+        ++ (nixpkgs.lib.mapAttrsToList (name: value: {
+            flake.modules.nixos.${name}.imports =
+              [
+                inputs.self.modules.nixos.base
+                inputs.stylix.nixosModules.stylix
+                inputs.home-manager.nixosModules.default
+                inputs.agenix.nixosModules.default
+                inputs.agenix-rekey.nixosModules.default
+                inputs.disko.nixosModules.disko
+                inputs.preservation.nixosModules.preservation
+                # inputs.niri-flake.nixosModules.niri
+                {
+                  age.rekey.masterIdentities = [../secrets/yubikey/yubikey_identity.pub];
+                  # nixpkgs.hostPlatform = "x86_64-linux";
+                  nixpkgs.overlays = [
+                    # inputs.niri-flake.overlays.niri
+                  ];
+                  networking.hostName = "${name}";
+                  home-manager.sharedModules = [];
+                }
+              ]
+              ++ builtins.map (dep: inputs.flake-parts.lib.importApply dep {inherit inputs;}) (flattenModules value);
+          })
+          hosts);
 
       systems = [
         "x86_64-linux"
@@ -143,7 +148,7 @@
         "aarch64-darwin"
       ];
 
-      flake = mkFlake ./src/hosts ./src/modules;
+      flake = mkHosts (builtins.attrNames hosts);
 
       perSystem = {
         config,
@@ -163,7 +168,7 @@
               avahi
               age-plugin-fido2-hmac
               nixos-anywhere
-              pkgs.deploy-rs
+              deploy-rs
             ];
 
             nativeBuildInputs = [

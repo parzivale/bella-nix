@@ -1,6 +1,6 @@
 {self, ...}: {
-  flakes.modules.bella.desktop = {
-    imports = with self.modules.bella; [
+  flake.modules.nixos.desktop = {
+    imports = with self.modules.nixos; [
       preservation
       stylix
       niri

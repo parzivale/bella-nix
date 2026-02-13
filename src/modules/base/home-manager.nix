@@ -1,7 +1,7 @@
-{vars, ...}: let
-  user = vars.username;
-in {
-  flake.modules.bella.home-manager = {
+{
+  flake.modules.nixos.home-manager = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
