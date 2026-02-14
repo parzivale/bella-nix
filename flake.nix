@@ -60,7 +60,6 @@
     haumea,
     flake-parts,
     agenix-rekey,
-    deploy-rs,
     self,
     ...
   }: let
@@ -90,7 +89,7 @@
       getSystem = hostName: nixConf.${hostName}.pkgs.stdenv.hostPlatform.system;
     in {
       hostname = hostName + "." + vars.tailscale_dns;
-      profiles.system.path = deploy-rs.lib.${(getSystem hostName)}.activate.nixos self.nixosConfigurations.${hostName};
+      profiles.system.path = inputs.deploy-rs.lib.${(getSystem hostName)}.activate.nixos self.nixosConfigurations.${hostName};
     };
 
     mkHosts = hostNames: {
@@ -104,7 +103,7 @@
         nodes = nixpkgs.lib.genAttrs hostNames mkDeployForHost;
       };
 
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
     };
 
     hosts = load ./src/hosts;
@@ -156,10 +155,15 @@
         config,
         pkgs,
         system,
+        lib,
         ...
       }: {
         devShells = {
           default = pkgs.mkShell {
+            nativeBuildInputs = [
+              config.agenix-rekey.package
+            ];
+
             packages = with pkgs; [
               nushell
               age
@@ -171,17 +175,11 @@
               deploy-rs
             ];
 
-            nativeBuildInputs = [
-              config.agenix-rekey.package
-            ];
-
             shellHook = ''
               exec nu -I '${inputs.self}' -e "use scripts/mod.nu *"
             '';
           };
         };
-
-        agenix-rekey.nixosConfigurations = self.nixosConfigurations;
       };
     };
 }
