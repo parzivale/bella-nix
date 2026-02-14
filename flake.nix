@@ -48,10 +48,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # niri-flake = {
-    #   url = "github:sodiboo/niri-flake";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    niri-flake = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     preservation.url = "github:nix-community/preservation";
   };
 
@@ -128,11 +128,11 @@
                 inputs.agenix-rekey.nixosModules.default
                 inputs.disko.nixosModules.disko
                 inputs.preservation.nixosModules.preservation
-                # inputs.niri-flake.nixosModules.niri
+                inputs.niri-flake.nixosModules.niri
                 {
                   age.rekey.masterIdentities = [../secrets/yubikey/yubikey_identity.pub];
                   nixpkgs.overlays = [
-                    # inputs.niri-flake.overlays.niri
+                    inputs.niri-flake.overlays.niri
                   ];
                   networking.hostName = "${name}";
                   home-manager.sharedModules = [];
