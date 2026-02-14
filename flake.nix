@@ -114,7 +114,10 @@
       inherit inputs;
     } {
       imports =
-        [inputs.flake-parts.flakeModules.modules]
+        [
+          inputs.flake-parts.flakeModules.modules
+          inputs.agenix-rekey.flakeModule
+        ]
         ++ flattenModules modules
         ++ (nixpkgs.lib.mapAttrsToList (name: value: {
             flake.modules.nixos.${name}.imports =
@@ -129,7 +132,6 @@
                 # inputs.niri-flake.nixosModules.niri
                 {
                   age.rekey.masterIdentities = [../secrets/yubikey/yubikey_identity.pub];
-                  # nixpkgs.hostPlatform = "x86_64-linux";
                   nixpkgs.overlays = [
                     # inputs.niri-flake.overlays.niri
                   ];
@@ -156,8 +158,6 @@
         system,
         ...
       }: {
-        agenix-rekey.nixosConfigurations = self.nixosConfigurations;
-
         devShells = {
           default = pkgs.mkShell {
             packages = with pkgs; [
@@ -180,6 +180,8 @@
             '';
           };
         };
+
+        agenix-rekey.nixosConfigurations = self.nixosConfigurations;
       };
     };
 }

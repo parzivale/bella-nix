@@ -32,10 +32,10 @@
         storageMode = "derivation";
       };
       secrets = {
-        tailscale_token.rekeyFile = ../secrets/tailscale_key.age;
-        deploy-key.rekeyFile = ../secrets/deploy-key.age;
+        tailscale_token.rekeyFile = ../../secrets/tailscale/tailscale_key.age;
+        deploy-key.rekeyFile = ../../secrets/nix-deploy/deploy-key.age;
         github-key = {
-          rekeyFile = ../secrets/github-key.age;
+          rekeyFile = ../../secrets/github/github-key.age;
           owner = user;
         };
       };
