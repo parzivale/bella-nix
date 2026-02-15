@@ -5,6 +5,7 @@
       home-manager
       nix
       systemd-boot
+      systemd-resolvd
       systemConstants
     ];
   };
