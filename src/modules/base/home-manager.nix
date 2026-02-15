@@ -6,7 +6,7 @@
       inputs.home-manager.nixosModules.default
     ];
     home-manager = {
-      home-manager.backupFileExtension = "bak";
+      backupFileExtension = "bak";
 
       useGlobalPkgs = true;
       useUserPackages = true;
