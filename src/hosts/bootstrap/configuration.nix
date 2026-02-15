@@ -21,6 +21,7 @@ in {
       ];
     };
   };
+
   # Nixos anywhere is a fragile fickle thing that needs its own user who has a posix
   # complient user shell
   users.users.nixos-anywhere = {
@@ -30,6 +31,8 @@ in {
     extraGroups = ["wheel"];
   };
 
+  #this must be set no matter what
+  age.rekey.masterIdentities = [./src/secrets/yubikey/yubikey_identity.pub];
   services.openssh.settings.AllowUsers = ["nixos-anywhere"];
 
   networking.nameservers = ["1.1.1.1" "8.8.8.8"];

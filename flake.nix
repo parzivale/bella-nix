@@ -126,6 +126,7 @@
                 inputs.self.modules.nixos.base
                 inputs.disko.nixosModules.disko
                 inputs.agenix.nixosModules.default
+                inputs.agenix-rekey.nixosModules.default
                 {
                   nixpkgs.overlays = [
                     inputs.niri-flake.overlays.niri

@@ -7,12 +7,6 @@
     user = config.systemConstants.username;
     cacheDir = "/run/agenix-rekey.${toString config.systemConstants.uid}";
   in {
-    imports = [
-      {
-        key = "agenix-rekey";
-        imports = [inputs.agenix-rekey.nixosModules.default];
-      }
-    ];
     home-manager.users.${user}.home = {
       packages = with pkgs; [
         age
