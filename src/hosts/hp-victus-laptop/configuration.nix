@@ -13,6 +13,7 @@ in {
     cli
     deployer
     localization
+    niri
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
