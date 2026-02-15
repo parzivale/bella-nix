@@ -5,7 +5,7 @@
     ...
   }: let
     user = config.systemConstants.username;
-    cacheDir = "/tmp/agenix-rekey.${toString config.systemConstants.uid}";
+    cacheDir = "/run/agenix-rekey.${toString config.systemConstants.uid}";
   in {
     imports = [
       {
