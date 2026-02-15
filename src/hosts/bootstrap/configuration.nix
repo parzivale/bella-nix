@@ -33,6 +33,8 @@ in {
 
   #this must be set no matter what
   age.rekey.masterIdentities = [./src/secrets/yubikey/yubikey_identity.pub];
+  age.rekey.storageMode = "derivation";
+
   services.openssh.settings.AllowUsers = ["nixos-anywhere"];
 
   networking.nameservers = ["1.1.1.1" "8.8.8.8"];
