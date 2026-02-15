@@ -1,5 +1,8 @@
-{
-  flake.modules.nixos.preservation-base = {
+{inputs, ...}: {
+  flake.modules.nixos.preservation = {
+    imports = [
+      inputs.preservation.nixosModules.preservation
+    ];
     boot.initrd.systemd.enable = true;
     systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
 

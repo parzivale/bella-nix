@@ -13,7 +13,6 @@ in {
     cli
     deployer
     localization
-    systemd-boot
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
@@ -28,10 +27,6 @@ in {
       };
       pulse.enable = true;
     };
-  };
-
-  programs = {
-    niri.enable = true;
   };
 
   system.stateVersion = "25.05";

@@ -81,7 +81,9 @@
         specialArgs = {
           inherit vars hostName;
         };
-        modules = [inputs.self.modules.nixos.${hostName}];
+        modules = [
+          inputs.self.modules.nixos.${hostName}
+        ];
       };
 
     mkDeployForHost = hostName: let
@@ -122,15 +124,9 @@
             flake.modules.nixos.${name}.imports =
               [
                 inputs.self.modules.nixos.base
-                inputs.stylix.nixosModules.stylix
-                inputs.home-manager.nixosModules.default
-                inputs.agenix.nixosModules.default
-                inputs.agenix-rekey.nixosModules.default
                 inputs.disko.nixosModules.disko
-                inputs.preservation.nixosModules.preservation
-                inputs.niri-flake.nixosModules.niri
+                inputs.agenix.nixosModules.default
                 {
-                  age.rekey.masterIdentities = [../secrets/yubikey/yubikey_identity.pub];
                   nixpkgs.overlays = [
                     inputs.niri-flake.overlays.niri
                   ];
@@ -158,6 +154,8 @@
         lib,
         ...
       }: {
+        agenix-rekey.nixosConfigurations = inputs.self.nixosConfigurations; # (not technically needed, as it is already the default)
+
         devShells = {
           default = pkgs.mkShell {
             nativeBuildInputs = [

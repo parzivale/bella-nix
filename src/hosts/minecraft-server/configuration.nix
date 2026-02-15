@@ -14,7 +14,6 @@ in {
     deployable
     cli
     localization
-    systemd-boot
   ];
 
   system.stateVersion = "25.11";

@@ -5,6 +5,7 @@
       ssh
       git
       tailscale
+      preservation
     ];
   };
 }

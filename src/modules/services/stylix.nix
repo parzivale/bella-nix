@@ -1,9 +1,10 @@
-{
+{inputs, ...}: {
   flake.modules.nixos.stylix = {
     pkgs,
     config,
     ...
   }: {
+    imports = [inputs.stylix.nixosModules.default];
     stylix = {
       enable = true;
       image = config.systemConstants.bg_img;

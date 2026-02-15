@@ -3,6 +3,7 @@
     imports = with self.modules.nixos; [
       openssh
       tailscale
+      preservation
     ];
   };
 }

@@ -10,6 +10,7 @@
     kernelPackages = pkgs.linuxPackages_latest;
     initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
     kernelModules = ["kvm-amd"];
+    kernelParams = ["video=eDP-1:d"];
   };
 
   networking.networkmanager.enable = true;

@@ -9,7 +9,6 @@ in {
     openssh
     stylix
     avahi
-    systemd-boot
   ];
 
   home-manager.users.${user} = {
