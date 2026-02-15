@@ -14,6 +14,7 @@ in {
     deployer
     localization
     niri
+    wezterm
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
