@@ -27,7 +27,7 @@
     age = {
       rekey = {
         inherit cacheDir;
-        masterIdentities = [./src/secrets/yubikey/yubikey_identity.pub];
+        masterIdentities = [../../secrets/yubikey/yubikey_identity.pub];
         agePlugins = [pkgs.age-plugin-fido2-hmac];
 
         storageMode = "derivation";
