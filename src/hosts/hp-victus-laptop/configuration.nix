@@ -12,11 +12,7 @@ in {
   imports = with inputs.self.modules.nixos; [
     cli
     deployer
-    localization
-    niri
-    wezterm
-    stylix
-    lazygit
+    desktop
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;

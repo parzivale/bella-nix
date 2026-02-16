@@ -8,6 +8,7 @@
       wezterm
       lazygit
       localization
+      yazi
     ];
   };
 }
