@@ -8,11 +8,17 @@
 
     # autolaunch niri
 
-    services.greetd = {
-      enable = true;
-      settings.default_session = {
-        command = "niri";
-        user = user;
+    services = {
+      greetd = {
+        enable = true;
+        settings.default_session = {
+          command = "niri";
+          user = user;
+        };
+      };
+      dbus = {
+        enable = true;
+        implementation = "broker";
       };
     };
 
