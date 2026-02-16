@@ -15,6 +15,7 @@ in {
     localization
     niri
     wezterm
+    stylix
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
