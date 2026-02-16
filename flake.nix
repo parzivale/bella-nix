@@ -52,6 +52,17 @@
       url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake/feat/hm-module-sine-reusing-src-and-bootloader-everywhere";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager = {
+          follows = "home-manager";
+          inputs.nixpkgs.follows = "nixpkgs";
+        };
+    };
+
     preservation.url = "github:nix-community/preservation";
   };
 

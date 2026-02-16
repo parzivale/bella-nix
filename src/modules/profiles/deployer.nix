@@ -6,6 +6,7 @@
       git
       tailscale
       preservation
+      signed-nix
     ];
   };
 }
