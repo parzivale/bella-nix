@@ -9,6 +9,7 @@
       lazygit
       localization
       yazi
+      zen
     ];
   };
 }
