@@ -7,5 +7,12 @@
         enable = true;
       };
     };
+    preservation.preserveAt."/persistent".users.${user} = {
+      directories = [
+        {
+          directory = "/Games";
+        }
+      ];
+    };
   };
 }
