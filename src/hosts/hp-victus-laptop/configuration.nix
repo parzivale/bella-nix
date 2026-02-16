@@ -16,6 +16,7 @@ in {
     niri
     wezterm
     stylix
+    lazygit
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
