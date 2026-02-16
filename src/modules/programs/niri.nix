@@ -22,6 +22,7 @@
     home-manager.users.${user} = {
       config,
       pkgs,
+      lib,
       ...
     }: {
       programs.niri = {
@@ -29,7 +30,7 @@
         settings = {
           xwayland-satellite = {
             enable = true;
-            path = pkgs.xwayland-satellite;
+            path = lib.getExe pkgs.xwayland-satellite;
           };
           binds = with config.lib.niri.actions; {
             "Mod+Return".action.spawn = "wezterm";
