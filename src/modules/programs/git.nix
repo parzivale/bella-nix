@@ -6,9 +6,14 @@
       programs.git = {
         enable = true;
         settings = {
+          url = {
+            "git@github.com" = {
+              insteadOf = "https://github.com/";
+            };
+          };
           user = {
-            name = "${user}";
-            email = "${config.systemConstants.email}";
+            name = "parzivale";
+            email = "zeus@theolivers.org";
           };
           push.autoSetupRemote = true;
           init.defaultBranch = "main";
