@@ -61,6 +61,7 @@
           follows = "home-manager";
           inputs.nixpkgs.follows = "nixpkgs";
         };
+      };
     };
 
     preservation.url = "github:nix-community/preservation";
