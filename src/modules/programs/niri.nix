@@ -66,7 +66,6 @@
             "Mod+Q".action = close-window;
             "Mod+R".action = switch-preset-column-width;
             "Mod+Tab".action = toggle-overview;
-            "Mod+T".action = toggle-column-tabbed-display;
 
             "Mod+Shift+E".action.quit.skip-confirmation = true;
           };
