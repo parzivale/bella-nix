@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  user = config.systemConstants.username;
+  user = config.vars.username;
 in {
   imports = with inputs.self.modules.nixos; [
     openssh

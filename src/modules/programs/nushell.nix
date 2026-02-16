@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.nushell = {config, ...}: let
-    user = config.systemConstants.username;
+    user = config.vars.username;
   in {
     home-manager.users.${user} = {
       home.shell.enableNushellIntegration = true;

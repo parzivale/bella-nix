@@ -7,7 +7,7 @@
     imports = [inputs.stylix.nixosModules.default];
     stylix = {
       enable = true;
-      image = config.systemConstants.bg_img;
+      image = config.vars.bg_img;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-macchiato.yaml";
       cursor = {
         package = pkgs.nordzy-cursor-theme;

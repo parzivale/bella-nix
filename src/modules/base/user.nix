@@ -4,7 +4,7 @@
     pkgs,
     ...
   }: let
-    user = config.systemConstants.username;
+    user = config.vars.username;
   in {
     # Declaritivly manage users
     services.userborn.enable = true;
@@ -17,7 +17,7 @@
           isNormalUser = true;
           hashedPassword = "$y$j9T$3SYXqLHQFhpwfTY8BHXmw.$cQGsYVD7CIWC22AJu1sX8qg4Po8Cyd00KzL9mAXa5F7";
           extraGroups = ["wheel" "networkmanager"];
-          uid = config.systemConstants.uid;
+          uid = config.vars.uid;
           shell = pkgs.nushell;
         };
       };

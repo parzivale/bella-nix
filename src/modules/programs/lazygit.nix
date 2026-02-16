@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.lazygit = {config, ...}: let
-    user = config.systemConstants.username;
+    user = config.vars.username;
   in {
     home-manager.users.${user}.programs.lazygit = {
       enableNushellIntegration = true;
