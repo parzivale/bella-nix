@@ -30,7 +30,7 @@
         settings = {
           xwayland-satellite = {
             enable = true;
-            path = lib.getExe pkgs.xwayland-satellite;
+            path = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
           };
           binds = with config.lib.niri.actions; {
             "Mod+Return".action.spawn = "wezterm";
