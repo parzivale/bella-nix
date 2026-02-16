@@ -738,7 +738,8 @@
         "niri-flake": "niri-flake",
         "nixpkgs": "nixpkgs",
         "preservation": "preservation",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "zen-browser": "zen-browser"
       }
     },
     "rust-overlay": {
@@ -1006,6 +1007,30 @@
       "original": {
         "owner": "Supreeeme",
         "repo": "xwayland-satellite",
+        "type": "github"
+      }
+    },
+    "zen-browser": {
+      "inputs": {
+        "home-manager": [
+          "home-manager"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771001274,
+        "narHash": "sha256-qs4w0TxPL6+1nZrkE1l9Dwsp73GzbMJFW09ijfeXLIg=",
+        "owner": "0xc000022070",
+        "repo": "zen-browser-flake",
+        "rev": "bf6b47574412ea6f1a8c11b64778786252ed3adb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "0xc000022070",
+        "ref": "feat/hm-module-sine-reusing-src-and-bootloader-everywhere",
+        "repo": "zen-browser-flake",
         "type": "github"
       }
     }
