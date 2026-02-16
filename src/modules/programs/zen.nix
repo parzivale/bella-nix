@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flakes.modules.nixos.zen = {
+  flake.modules.nixos.zen = {
     config,
     pkgs,
     ...
