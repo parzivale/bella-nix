@@ -7,7 +7,7 @@
         enable = true;
         settings = {
           url = {
-            "git@github.com" = {
+            "git@github.com:" = {
               insteadOf = "https://github.com/";
             };
           };
