@@ -19,7 +19,12 @@
     services.getty.autologinUser = user;
     programs.niri.enable = true;
 
-    home-manager.users.${user} = {config, ...}: {
+    home-manager.users.${user} = {
+      config,
+      pkgs,
+      ...
+    }: {
+      home.packages = with pkgs; [xwayland-satellite];
       programs.niri.settings = {
         binds = with config.lib.niri.actions; {
           "Mod+Return".action.spawn = "wezterm";
