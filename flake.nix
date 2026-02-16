@@ -118,26 +118,6 @@
         [
           inputs.flake-parts.flakeModules.modules
           inputs.agenix-rekey.flakeModule
-          {
-            flake.modules = {
-              generic.vars = {
-                lib,
-                config,
-                ...
-              }: {
-                options.vars = lib.mkOption {
-                  type = lib.types.attrsOf lib.types.unspecified;
-                  default = {};
-                };
-                config.vars = import ./vars.nix;
-              };
-              homeManager.vars.imports = [inputs.self.modules.generic.vars];
-              nixos.vars = {lib, ...}: {
-                imports = [inputs.self.modules.generic.vars];
-                home-manager.sharedModules = [inputs.self.modules.homeManager.vars];
-              };
-            };
-          }
         ]
         ++ flattenModules modules
         ++ (nixpkgs.lib.mapAttrsToList (name: value: {

@@ -33,5 +33,5 @@ in {
   };
 
   system.stateVersion = "25.05";
-  home-manager.users.${config.vars.username}.home.stateVersion = "25.11";
+  home-manager.users.${config.systemConstants.username}.home.stateVersion = "25.11";
 }

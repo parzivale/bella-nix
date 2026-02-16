@@ -4,7 +4,7 @@
     pkgs,
     ...
   }: let
-    user = config.vars.username;
+    user = config.systemConstants.username;
   in {
     home-manager.users.${user}.programs.helix = {
       enable = true;

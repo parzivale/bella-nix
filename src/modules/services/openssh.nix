@@ -6,7 +6,7 @@
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
         PermitRootLogin = "no";
-        AllowUsers = [config.vars.username];
+        AllowUsers = [config.systemConstants.username];
       };
 
       generateHostKeys = true;

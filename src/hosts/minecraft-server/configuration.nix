@@ -8,7 +8,7 @@
     if builtins.pathExists path
     then builtins.readFile path
     else "";
-  user = config.vars.username;
+  user = config.systemConstants.username;
 in {
   imports = with inputs.self.modules.nixos; [
     deployable

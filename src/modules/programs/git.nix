@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.git = {config, ...}: let
-    user = config.vars.username;
+    user = config.systemConstants.username;
   in {
     home-manager.users.${user} = {
       programs.git = {
@@ -8,7 +8,7 @@
         settings = {
           user = {
             name = "${user}";
-            email = "${config.vars.email}";
+            email = "${config.systemConstants.email}";
           };
           push.autoSetupRemote = true;
           init.defaultBranch = "main";

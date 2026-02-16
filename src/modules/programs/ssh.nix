@@ -1,6 +1,6 @@
 {inputs, ...}: {
   flake.modules.nixos.ssh = {config, ...}: let
-    user = config.vars.username;
+    user = config.systemConstants.username;
   in {
     imports = with inputs.self.modules.nixos; [secrets openssh preservation];
     home-manager.users.${user}.programs.ssh = {

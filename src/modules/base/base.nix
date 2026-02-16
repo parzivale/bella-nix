@@ -6,7 +6,7 @@
       nix
       systemd-boot
       systemd-resolved
-      vars
+      systemConstants
     ];
   };
 }
