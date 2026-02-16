@@ -4,6 +4,10 @@
       preservation
       stylix
       niri
+      nushell
+      wezterm
+      lazygit
+      localization
     ];
   };
 }
