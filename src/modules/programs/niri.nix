@@ -27,7 +27,10 @@
       programs.niri = {
         package = pkgs.niri-unstable;
         settings = {
-          xwayland-satellite.enable = true;
+          xwayland-satellite = {
+            enable = true;
+            path = pkgs.xwayland-satellite;
+          };
           binds = with config.lib.niri.actions; {
             "Mod+Return".action.spawn = "wezterm";
 
