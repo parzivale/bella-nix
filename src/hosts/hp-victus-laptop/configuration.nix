@@ -13,6 +13,8 @@ in {
     cli
     deployer
     desktop
+    lutris
+    discord
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
