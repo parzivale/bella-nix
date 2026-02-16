@@ -10,6 +10,7 @@
       localization
       yazi
       zen
+      walker
     ];
   };
 }
