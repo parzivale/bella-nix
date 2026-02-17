@@ -1,5 +1,9 @@
 {inputs, ...}: {
-  flake.modules.nixos.niri = {config, ...}: let
+  flake.modules.nixos.niri = {
+    config,
+    pkgs,
+    ...
+  }: let
     user = config.systemConstants.username;
   in {
     imports = [
@@ -20,6 +24,12 @@
         enable = true;
         implementation = "broker";
       };
+    };
+
+    xdg.portal = {
+      enable = true;
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
+      config.common.default = "gtk";
     };
 
     services.getty.autologinUser = user;

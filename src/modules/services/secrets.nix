@@ -21,7 +21,7 @@
 
     nix.settings.extra-sandbox-paths = [config.age.rekey.cacheDir];
     systemd.tmpfiles.rules = [
-      "d ${cacheDir} 1777 ${user} ${user}"
+      "d ${cacheDir} 1777 ${user} ${config.systemConstants.uid}"
     ];
 
     age = {
