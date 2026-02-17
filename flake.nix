@@ -178,9 +178,9 @@
                         dontUnpack = true;
                         installPhase = ''
                           mkdir -p $out/bin
-                          cp $src/bash-env.nu $out/bin/bash-env.nu
+                          cp $src/bash-env.nu $out/bin/nu_plugin_bash_env.nu
                         '';
-                        meta.mainProgram = "bash-env.nu";
+                        meta.mainProgram = "nu_plugin_bash_env.nu";
                       };
                     })
                   ];
