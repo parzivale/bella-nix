@@ -165,6 +165,13 @@
           harper-ls = {
             command = "${pkgs.harper}/bin/harper-ls";
             args = ["--stdio"];
+            config = {
+              harper-ls = {
+                linters = {
+                  SpellCheck = true;
+                };
+              };
+            };
           };
           marksman = {
             command = "${pkgs.marksman}/bin/marksman";

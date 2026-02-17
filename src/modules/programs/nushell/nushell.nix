@@ -5,8 +5,8 @@
     home-manager.users.${user} = {
       programs.nushell = {
         enable = true;
-        # configFile.source = ./configuration.nu;
-        # extraEnv = builtins.readfile;
+        extraConfig = builtins.readFile ./configuration.nu;
+        # extraEnv = builtins.readFile ./env.nu;
       };
       home.shell.enableNushellIntegration = true;
     };
