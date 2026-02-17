@@ -16,7 +16,7 @@
       greetd = {
         enable = true;
         settings.default_session = {
-          command = "niri";
+          command = "niri-session";
           user = user;
         };
       };
