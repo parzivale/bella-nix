@@ -141,7 +141,7 @@
             formatter = {
               command = "${pkgs.alejandra}/bin/alejandra";
             };
-            language-servers = ["nil" "harper-ls"];
+            language-servers = ["nil"];
           }
           {
             name = "nu";

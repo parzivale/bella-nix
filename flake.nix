@@ -89,7 +89,7 @@
     };
 
     bash-env-nushell = {
-      url = "https://github.com/tesujimath/bash-env-nushell.git";
+      url = "github:tesujimath/bash-env-nushell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -171,6 +171,9 @@
                 {
                   nixpkgs.overlays = [
                     inputs.niri-flake.overlays.niri
+                    (final: prev: {
+                      bash-env-nushell = inputs.bash-env-nushell.packages.${prev.system}.default;
+                    })
                   ];
                   networking.hostName = "${name}";
                   home-manager.sharedModules = [];
