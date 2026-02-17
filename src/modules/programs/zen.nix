@@ -1,20 +1,25 @@
-{inputs, ...}: {
-  flake.modules.nixos.zen = {
-    config,
+{
+  moduleWithSystem,
+  inputs,
+  ...
+}: {
+  flake.modules.nixos.zen = moduleWithSystem ({
     pkgs,
+    inputs',
     ...
-  }: let
+  }: {config, ...}: let
     user = config.systemConstants.username;
   in {
     home-manager.sharedModules = [
       inputs.zen-browser.homeModules.twilight
     ];
     home-manager.users.${user} = {
+      stylix.targets.zen-browser.profileNames = [user];
       programs.zen-browser = {
         enable = true;
         configPath = ".config/zen";
-        profiles."*" = {
-          extensions.packages = with inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
+        profiles.${user} = {
+          extensions.packages = with inputs'.firefox-addons.packages; [
             ublock-origin
           ];
 
@@ -125,5 +130,5 @@
         };
       };
     };
-  };
+  });
 }

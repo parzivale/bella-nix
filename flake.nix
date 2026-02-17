@@ -171,18 +171,6 @@
                 {
                   nixpkgs.overlays = [
                     inputs.niri-flake.overlays.niri
-                    (final: prev: {
-                      bash-env-nushell = prev.stdenv.mkDerivation {
-                        name = "bash-env-nushell-wrapped";
-                        src = inputs.bash-env-nushell.packages.${prev.system}.default;
-                        dontUnpack = true;
-                        installPhase = ''
-                          mkdir -p $out/bin
-                          cp $src/bash-env.nu $out/bin/nu_plugin_bash_env.nu
-                        '';
-                        meta.mainProgram = "nu_plugin_bash_env.nu";
-                      };
-                    })
                   ];
                   networking.hostName = "${name}";
                   home-manager.sharedModules = [];
