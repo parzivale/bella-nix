@@ -7,11 +7,13 @@
       extra-trusted-public-keys = ["walker.cachix.org-1:fG8q+uAaMqhsMxWjwvk0IMb4mFPFLqHjuvfwQxE4oJM=" "walker-git.cachix.org-1:vmC0ocfPWh0S/vRAQGtChuiZBTAe4wiKDeyyXM0/7pM="];
     };
 
-    home-manager.users.${user}.programs.walker = {
+    home-manager.users.${user} = {
       imports = [inputs.walker.homeManagerModules.default];
-      enable = true;
-      runAsService = true;
-      config.theme = "default";
+      programs.walker = {
+        enable = true;
+        runAsService = true;
+        config.theme = "default";
+      };
     };
   };
 }
