@@ -1,4 +1,4 @@
-{
+{inputs, ...}: {
   flake.modules.nixos.walker = {config, ...}: let
     user = config.systemConstants.username;
   in {
@@ -8,6 +8,7 @@
     };
 
     home-manager.users.${user}.programs.walker = {
+      imports = [inputs.walker.homeManagerModules.default];
       enable = true;
       runAsService = true;
       config.theme = "default";
