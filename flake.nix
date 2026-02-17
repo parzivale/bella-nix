@@ -180,6 +180,7 @@
                           mkdir -p $out/bin
                           cp $src/bash-env.nu $out/bin/bash-env.nu
                         '';
+                        meta.mainProgram = "bash-env-nushell";
                       };
                     })
                   ];
