@@ -39,8 +39,6 @@
             path = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
           };
           binds = with config.lib.niri.actions; {
-            "Mod+Return".action.spawn = "wezterm";
-
             "Mod+H".action = focus-column-or-monitor-left;
             "Mod+L".action = focus-column-or-monitor-right;
             "Mod+J".action = focus-window-or-workspace-down;
@@ -63,7 +61,7 @@
 
             "Mod+F".action = maximize-column;
             "Mod+Shift+F".action = fullscreen-window;
-            "Mod+Q".action = close-window;
+            "Mod+W".action = close-window;
             "Mod+R".action = switch-preset-column-width;
             "Mod+Tab".action = toggle-overview;
 

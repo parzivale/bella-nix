@@ -3,7 +3,10 @@
     user = config.systemConstants.username;
   in {
     home-manager.users.${user} = {
-      programs.wezterm.enable = true;
+      programs = {
+        wezterm.enable = true;
+        niri.settings.binds."Mod+Return".action.spawn = "wezterm";
+      };
     };
   };
 }
