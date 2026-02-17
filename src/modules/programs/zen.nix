@@ -6,9 +6,7 @@
   }: let
     user = config.systemConstants.username;
   in {
-    nixpkgs.overlays = [inputs.nur.overlays.default];
     home-manager.sharedModules = [
-      inputs.self.modules.homeManager.zen-browser
       inputs.zen-browser.homeModules.twilight
     ];
     home-manager.users.${user} = {
