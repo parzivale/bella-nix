@@ -5,7 +5,6 @@
     home-manager.users.${user} = {
       programs.yazi = {
         enable = true;
-        enableNushellIntegration = true;
       };
     };
   };

@@ -13,11 +13,19 @@
     home-manager.sharedModules = [
       inputs.zen-browser.homeModules.twilight
     ];
+
+    preservation.preserveAt."/persistent".users.${user} = {
+      directories = [
+        {
+          directory = ".zen";
+        }
+      ];
+    };
+
     home-manager.users.${user} = {
       stylix.targets.zen-browser.profileNames = [user];
       programs.zen-browser = {
         enable = true;
-        configPath = ".config/zen";
         profiles.${user} = {
           extensions.packages = with inputs'.firefox-addons.packages; [
             ublock-origin
@@ -30,6 +38,8 @@
             "zen.welcome-screen.seen" = true;
             "zen.workspaces.continue-where-left-off" = true;
             "zen.view.show-newtab-button-top" = false;
+            "layout.css.prefers-color-scheme.content-override" = 0;
+            "ui.systemUsesDarkTheme" = 1;
           };
           search = {
             default = "ddg";

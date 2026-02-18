@@ -88,11 +88,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    bash-env-nushell = {
-      url = "github:parzivale/bash-env-nushell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     preservation.url = "github:nix-community/preservation";
   };
 

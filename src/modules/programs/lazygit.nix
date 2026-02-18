@@ -4,7 +4,6 @@
   in {
     home-manager.users.${user}.programs.lazygit = {
       enable = true;
-      enableNushellIntegration = true;
       settings = {
         git.autoForwardBranches = "allBranches";
       };
