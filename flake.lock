@@ -148,11 +148,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771377596,
-        "narHash": "sha256-2LHMJoLbuviNKFPubdDH9+Dgu4COVPU0O3FwOwDVENo=",
+        "lastModified": 1771378067,
+        "narHash": "sha256-1N3YdPwwHcjS9NZ5jeJrqWQov1T1VL3GGXZALNkkEiU=",
         "owner": "parzivale",
         "repo": "bash-env-nushell",
-        "rev": "d8cd432ca981473ab29ee58bd0f0e43e52db5458",
+        "rev": "029867a752de0962e02e7a420d5590c16e34cbf9",
         "type": "github"
       },
       "original": {
