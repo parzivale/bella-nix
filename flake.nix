@@ -89,7 +89,7 @@
     };
 
     bash-env-nushell = {
-      url = "github:tesujimath/bash-env-nushell";
+      url = "github:parzivale/bash-env-nushell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
