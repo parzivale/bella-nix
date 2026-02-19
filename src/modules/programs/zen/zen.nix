@@ -39,13 +39,6 @@
             "zen.workspaces.continue-where-left-off" = true;
             "zen.view.show-newtab-button-top" = false;
           };
-          search = {
-            default = "ddg";
-            privateDefault = "ddg";
-            order = [];
-            engines = {
-            };
-          };
         };
       };
     };
