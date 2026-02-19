@@ -6,6 +6,8 @@
       nh
       ssh
       helix
+      starship
+      nushell
     ];
   };
 }

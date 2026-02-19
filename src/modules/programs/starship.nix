@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.starship.programs.starship = {
+  flake.modules.nixos.starship.programs.starship = {
     enable = true;
     settings = {
       character = {

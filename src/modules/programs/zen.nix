@@ -38,8 +38,6 @@
             "zen.welcome-screen.seen" = true;
             "zen.workspaces.continue-where-left-off" = true;
             "zen.view.show-newtab-button-top" = false;
-            "layout.css.prefers-color-scheme.content-override" = 0;
-            "ui.systemUsesDarkTheme" = 1;
           };
           search = {
             default = "ddg";
