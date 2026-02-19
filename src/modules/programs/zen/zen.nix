@@ -35,9 +35,10 @@
             "browser.aboutConfig.showWarning" = false;
             "browser.ctrlTab.sortByRecentlyUsed" = true;
             "browser.warnOnQuitShortcut" = false;
-            "zen.welcome-screen.seen" = true;
             "zen.workspaces.continue-where-left-off" = true;
             "zen.view.show-newtab-button-top" = false;
+            "ui.systemUsesDarkTheme" = 1;
+            "browser.theme.dark-private-windows" = true;
           };
         };
       };
