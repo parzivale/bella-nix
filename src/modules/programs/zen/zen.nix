@@ -17,7 +17,7 @@
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [
         {
-          directory = ".zen";
+          directory = config.home-manager.users.${user}.programs.zen-browser.configPath;
         }
       ];
     };
