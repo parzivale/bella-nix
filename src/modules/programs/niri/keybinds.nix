@@ -18,12 +18,20 @@
 
         "Mod+F".action = maximize-column;
         "Mod+Shift+F".action = fullscreen-window;
+        "Mod+Ctrl+F".action = expand-column-to-available-width;
+
+        "Mod+M".action = maximize-window-to-edges;
         "Mod+W".action = close-window;
         "Mod+R".action = switch-preset-column-width;
         "Mod+Tab".action = toggle-overview;
 
+        "Mod+C".action = center-column;
+        "Mod+Ctrl+C".action = center-visible-columns;
+
         "Mod+Home".action = focus-column-first;
         "Mod+End".action = focus-column-last;
+
+        "Mod+Shift+P".action = power-off-monitors;
 
         "Mod+Shift+U".action = move-workspace-down;
         "Mod+Shift+I".action = move-workspace-up;
