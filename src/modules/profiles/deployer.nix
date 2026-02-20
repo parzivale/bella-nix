@@ -15,8 +15,6 @@
       signed-nix
     ];
 
-    home-manager.users.${user}.home.packages = [pkgs.deploy-rs];
-
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [
         {
