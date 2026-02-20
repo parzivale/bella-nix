@@ -2,9 +2,9 @@
   flake.modules.nixos.niri = {config, ...}: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user}.programs.niri.binds = {config, ...}:
-      with config.lib.niri.actions; {
-        "Mod+Shift+/".action = show-hotkey-overlay;
+    home-manager.users.${user} = {config, ...}: {
+      programs.niri.settings.binds = with config.lib.niri.actions; {
+        "Mod+Shift+Slash".action = show-hotkey-overlay;
 
         "Mod+Left".action = focus-column-or-monitor-left;
         "Mod+Right".action = focus-column-or-monitor-right;
@@ -22,21 +22,22 @@
         "Mod+R".action = switch-preset-column-width;
         "Mod+Tab".action = toggle-overview;
 
-        "Mod+Home".actions = focus-column-first;
-        "Mod+End".actions = focus-column-last;
+        "Mod+Home".action = focus-column-first;
+        "Mod+End".action = focus-column-last;
 
-        "Mod+U".actions = focus-workspace-down;
-        "Mod+I".actions = focus-workspace-up;
+        "Mod+U".action = focus-workspace-down;
+        "Mod+I".action = focus-workspace-up;
 
-        "Mod+Ctrl+U".actions = move-column-to-workspace-down;
-        "Mod+Ctrl+I".actions = move-column-to-workspace-up;
+        "Mod+Ctrl+U".action = move-column-to-workspace-down;
+        "Mod+Ctrl+I".action = move-column-to-workspace-up;
 
-        "Mod+Shift+U".actions = move-workspace-down;
-        "Mod+Shift+I".actions = move-workspace-up;
+        "Mod+Shift+U".action = move-workspace-down;
+        "Mod+Shift+I".action = move-workspace-up;
 
         "Mod+Shift+E".action.quit.skip-confirmation = true;
 
         "Print".action.screenshot = [];
       };
+    };
   };
 }
