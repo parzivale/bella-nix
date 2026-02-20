@@ -9,7 +9,7 @@
       tailscaled-autoconnect.requires = ["agenix-install-secrets.service" "network-online.target"];
     };
 
-    preservation.preserveAt."/persist" = {
+    preservation.preserveAt."/persistent" = {
       directories = [
         {
           directory = "/var/lib/tailscale";
