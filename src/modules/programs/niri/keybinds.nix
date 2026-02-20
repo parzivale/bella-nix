@@ -25,12 +25,6 @@
         "Mod+Home".action = focus-column-first;
         "Mod+End".action = focus-column-last;
 
-        "Mod+U".action = focus-workspace-down;
-        "Mod+I".action = focus-workspace-up;
-
-        "Mod+Ctrl+U".action = move-column-to-workspace-down;
-        "Mod+Ctrl+I".action = move-column-to-workspace-up;
-
         "Mod+Shift+U".action = move-workspace-down;
         "Mod+Shift+I".action = move-workspace-up;
 
