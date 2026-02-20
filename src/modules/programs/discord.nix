@@ -9,7 +9,7 @@
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [
         {
-          directory = "discordcanary";
+          directory = "./config/discordcanary";
         }
       ];
     };
