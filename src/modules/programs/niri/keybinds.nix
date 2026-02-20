@@ -20,7 +20,7 @@
         "Mod+Shift+F".action = fullscreen-window;
         "Mod+Ctrl+F".action = expand-column-to-available-width;
 
-        "Mod+M".action = maximize-window-to-edges;
+        # "Mod+M".action = maximize-window-to-edges;
         "Mod+W".action = close-window;
         "Mod+R".action = switch-preset-column-width;
         "Mod+Tab".action = toggle-overview;
