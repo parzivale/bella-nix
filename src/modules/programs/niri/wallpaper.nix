@@ -48,6 +48,21 @@
           };
           Install.WantedBy = ["graphical-session.target"];
         };
+
+        swww-overview-set = {
+          Unit = {
+            Description = "Set swww overview wallpaper";
+            After = ["swww-overview.service" "graphical-session.target"];
+            Requires = ["swww-overview.service"];
+            PartOf = ["graphical-session.target"];
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.swww}/bin/swww img -t none -n overview ${image}";
+            RemainAfterExit = true;
+          };
+          Install.WantedBy = ["graphical-session.target"];
+        };
       };
     };
   };
