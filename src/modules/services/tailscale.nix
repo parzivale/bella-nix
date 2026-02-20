@@ -9,9 +9,12 @@
       tailscaled-autoconnect.requires = ["agenix-install-secrets.service" "network-online.target"];
     };
 
-    environment.persistence."/persist" = {
+    preservation.preserveAt."/persist" = {
       directories = [
-        "/var/lib/tailscale"
+        {
+          directory = "/var/lib/tailscale";
+          mode = "0700";
+        }
       ];
     };
     services.tailscale = {
@@ -19,7 +22,7 @@
       authKeyFile = config.age.secrets.tailscale_token.path;
       authKeyParameters = {
         preauthorized = true;
-        ephermeral = false;
+        ephemeral = false;
       };
       extraUpFlags = ["--advertise-tags=tag:nixos"];
       disableTaildrop = true;
