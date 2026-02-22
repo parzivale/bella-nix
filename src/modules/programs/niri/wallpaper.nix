@@ -8,6 +8,12 @@
     user = config.systemConstants.username;
   in {
     home-manager.users.${user} = {
+      programs.niri.settings.layer-rules = [
+        {
+          matches = [{namespace = "swww-daemonoverview$";}];
+          place-within-backdrop = true;
+        }
+      ];
       systemd.user.services = {
         swww = {
           Unit = {

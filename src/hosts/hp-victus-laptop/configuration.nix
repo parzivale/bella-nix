@@ -15,6 +15,7 @@ in {
     desktop
     lutris
     discord
+    zram
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
