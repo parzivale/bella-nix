@@ -5,6 +5,14 @@
     home-manager.users.${user} = {
       programs.yazi = {
         enable = true;
+        keymap = {
+          mgr.prepend_keymap = [
+            {
+              on = "d";
+              run = "remove --permanently";
+            }
+          ];
+        };
       };
     };
   };
