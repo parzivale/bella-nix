@@ -8,6 +8,11 @@
   in {
     home-manager.users.${user}.home.packages = [pkgs.prismlauncher];
 
-    preservation.preserveAt."/persistent".users.${user}.directories = [".local/share/PrismLauncher"];
+    preservation.preserveAt."/persistent".users.${user}.directories = [
+      {
+        directory = ".local/share/PrismLauncher";
+        mode = "0755";
+      }
+    ];
   };
 }
