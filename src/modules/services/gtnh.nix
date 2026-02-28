@@ -3,6 +3,9 @@
     imports = with inputs.gtnh-nix; [nixosModules.gtnh nixosModules."2.8.4"];
     programs.gtnh = {
       enable = true;
+      mods = {
+        GregTech.Pollution.pollution."Activate Pollution" = false;
+      };
       minecraft = {
         instance-options = {
           jvmMaxAllocation = "15G";
