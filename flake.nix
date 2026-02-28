@@ -144,6 +144,8 @@
         user = "root";
         interactiveSudo = true;
         nodes = nixpkgs.lib.genAttrs hostNames mkDeployForHost;
+        confirmTimeout = 120;
+        activationTimeout = 600;
       };
 
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
