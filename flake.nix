@@ -88,6 +88,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    gtnh-nix = {
+      url = "github:parzivale/gtnh-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     preservation.url = "github:nix-community/preservation";
   };
 

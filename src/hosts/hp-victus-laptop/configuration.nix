@@ -16,6 +16,7 @@ in {
     lutris
     discord
     zram
+    prismlauncher
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
