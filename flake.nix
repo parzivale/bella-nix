@@ -171,6 +171,7 @@
                 {
                   nixpkgs.overlays = [
                     inputs.niri-flake.overlays.niri
+                    inputs.gtnh-nix.overlays.default
                   ];
                   networking.hostName = "${name}";
                   home-manager.sharedModules = [];
