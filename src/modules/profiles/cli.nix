@@ -9,6 +9,7 @@
       helix
       starship
       nushell
+      btop
     ];
   };
 }

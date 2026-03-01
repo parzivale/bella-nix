@@ -16,7 +16,9 @@
         walker = {
           enable = true;
           runAsService = true;
-          config.theme = "default";
+          # config = {
+          # theme = "default";
+          # };
         };
         niri.settings.binds = {
           "Mod+Space".action.spawn = [

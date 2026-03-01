@@ -19,9 +19,19 @@
           username = "${user}";
         };
         xdg = {
-          userDirs = {
+          userDirs = let
+            dump = "${config.home-manager.users.${user}.home.homeDirectory}/dmp";
+          in {
             enable = true;
             createDirectories = true;
+            desktop = dump;
+            documents = dump;
+            download = dump;
+            music = dump;
+            pictures = dump;
+            templates = dump;
+            videos = dump;
+            publicShare = dump;
           };
         };
       };

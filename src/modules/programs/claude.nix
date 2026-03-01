@@ -1,18 +1,15 @@
 {
-  flake.modules.nixos.lazygit = {config, ...}: let
+  flake.modules.nixos.claude = {config, ...}: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user}.programs.lazygit = {
+    home-manager.users.${user}.programs.claude-code = {
       enable = true;
-      settings = {
-        git.autoForwardBranches = "allBranches";
-      };
     };
 
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [
         {
-          directory = ".local/state/lazygit";
+          directory = ".claude";
           mode = "0755";
         }
       ];

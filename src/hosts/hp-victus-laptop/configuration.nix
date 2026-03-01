@@ -17,6 +17,7 @@ in {
     discord
     zram
     prismlauncher
+    claude
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;

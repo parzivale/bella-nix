@@ -18,7 +18,7 @@
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [
         {
-          directory = "bella-nix";
+          directory = "develop";
         }
       ];
     };
