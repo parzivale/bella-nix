@@ -19,6 +19,7 @@
       directories = [
         {
           directory = "develop";
+          mode = "0755";
         }
       ];
     };
