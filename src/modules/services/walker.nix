@@ -21,25 +21,28 @@
             "/run/user/1000/walker/walker.sock"
           ];
         };
-        elephant = {
-          desktopapplications = {
-            "qt5ct.desktop" = {
-              hidden = true;
-            };
-            "qt6ct.desktop" = {
-              hidden = true;
-            };
-            "nvidia-settings.desktop" = {
-              hidden = true;
-            };
-            "kvantummanager.desktop" = {
-              hidden = true;
-            };
-          };
-        };
         walker = {
           enable = true;
           runAsService = true;
+
+          elephant = {
+            settings = {
+              desktopapplications = {
+                "qt5ct.desktop" = {
+                  hidden = true;
+                };
+                "qt6ct.desktop" = {
+                  hidden = true;
+                };
+                "nvidia-settings.desktop" = {
+                  hidden = true;
+                };
+                "kvantummanager.desktop" = {
+                  hidden = true;
+                };
+              };
+            };
+          };
           config = {
             actions_as_menu = false;
             as_window = false;
@@ -59,7 +62,6 @@
             resume_last_query = false;
             selection_wrap = false;
             single_click_activation = true;
-            theme = "default";
 
             columns.symbols = 3;
 
@@ -634,7 +636,6 @@
               layer = "overlay";
             };
           };
-          theme = "default";
         };
       };
     };
