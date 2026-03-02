@@ -17,6 +17,7 @@ in {
     zram
     prismlauncher
     claude
+    steam
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
