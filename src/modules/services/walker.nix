@@ -26,21 +26,14 @@
           runAsService = true;
 
           elephant = {
-            settings = {
-              desktopapplications = {
-                "qt5ct.desktop" = {
-                  hidden = true;
-                };
-                "qt6ct.desktop" = {
-                  hidden = true;
-                };
-                "nvidia-settings.desktop" = {
-                  hidden = true;
-                };
-                "kvantummanager.desktop" = {
-                  hidden = true;
-                };
-              };
+            provider.desktopapplications.settings = {
+              wm_integration = true;
+              blacklist = [
+                "qt5ct"
+                "qt6ct"
+                "nvidia-settings"
+                "kvantummanager"
+              ];
             };
           };
           config = {
