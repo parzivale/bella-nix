@@ -13,6 +13,13 @@
       ...
     }: {
       imports = [inputs.walker.homeManagerModules.default];
+      niri.settings.binds = {
+        "Mod+Space".action.spawn = [
+          "${pkgs.netcat}/bin/nc"
+          "-U"
+          "/run/user/1000/walker/walker.sock"
+        ];
+      };
       programs = {
         elephant = {
           desktopapplications = {
@@ -629,13 +636,6 @@
           };
           theme = "default";
         };
-      };
-      niri.settings.binds = {
-        "Mod+Space".action.spawn = [
-          "${pkgs.netcat}/bin/nc"
-          "-U"
-          "/run/user/1000/walker/walker.sock"
-        ];
       };
     };
   };
