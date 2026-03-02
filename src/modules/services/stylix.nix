@@ -9,6 +9,11 @@
       enable = true;
       image = config.systemConstants.bg_img;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-macchiato.yaml";
+      icons = {
+        package = pkgs.papirus-icon-theme;
+        dark = "Papirus-Dark";
+        enable = true;
+      };
       cursor = {
         package = pkgs.nordzy-cursor-theme;
         name = "Nordzy-cursors";
