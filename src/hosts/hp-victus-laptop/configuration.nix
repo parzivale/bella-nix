@@ -18,6 +18,7 @@ in {
     prismlauncher
     claude
     steam
+    bluetooth
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
