@@ -13,7 +13,6 @@ in {
     cli
     deployer
     desktop
-    lutris
     discord
     zram
     prismlauncher

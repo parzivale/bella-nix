@@ -20,6 +20,7 @@
     bluetooth.enable = true;
     cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
     graphics.enable = true;
+    graphics.enable32Bit = true;
     nvidia = {
       modesetting.enable = true;
       powerManagement = {
