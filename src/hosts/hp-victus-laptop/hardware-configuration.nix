@@ -17,6 +17,7 @@
 
   services.xserver.videoDrivers = ["nvidia"];
   hardware = {
+    enableAllFirmware = true;
     enableRedistributableFirmware = true;
     cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
     graphics.enable = true;
