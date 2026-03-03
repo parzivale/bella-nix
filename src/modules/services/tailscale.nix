@@ -4,7 +4,6 @@
     lib,
     ...
   }: {
-    key = "tailscale";
     systemd.services = {
       tailscaled-autoconnect.after = ["agenix-install-secrets.service" "network-online.target"];
       tailscaled-autoconnect.requires = ["agenix-install-secrets.service" "network-online.target"];

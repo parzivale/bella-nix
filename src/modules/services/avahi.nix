@@ -1,6 +1,5 @@
 {
   flake.modules.nixos.avahi = {
-    key = "avahi";
     services.avahi = {
       enable = true;
       nssmdns4 = true;
