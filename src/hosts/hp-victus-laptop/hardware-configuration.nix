@@ -17,6 +17,7 @@
 
   services.xserver.videoDrivers = ["nvidia"];
   hardware = {
+    firmware = with pkgs; [linux-firmware];
     enableAllFirmware = true;
     enableRedistributableFirmware = true;
     cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
