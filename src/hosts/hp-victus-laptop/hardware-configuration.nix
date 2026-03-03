@@ -17,7 +17,7 @@
 
   services.xserver.videoDrivers = ["nvidia"];
   hardware = {
-    bluetooth.enable = true;
+    enableRedistributableFirmware = true;
     cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
     graphics.enable = true;
     graphics.enable32Bit = true;
