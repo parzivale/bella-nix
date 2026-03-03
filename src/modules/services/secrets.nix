@@ -1,4 +1,4 @@
-{inputs, ...}: {
+{
   flake.modules.nixos.secrets = {
     config,
     pkgs,
@@ -7,6 +7,7 @@
     user = config.systemConstants.username;
     cacheDir = "/run/agenix-rekey.${toString config.systemConstants.uid}";
   in {
+    key = "secrets";
     home-manager.users.${user}.home = {
       packages = with pkgs; [
         age
