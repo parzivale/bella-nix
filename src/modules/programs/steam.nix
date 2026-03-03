@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   flake.modules.nixos.steam = {config, ...}: let
     user = config.systemConstants.username;
   in {
@@ -6,6 +6,7 @@
       enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       dedicatedServer.openFirewall = true; # Open ports for Source Dedicated Server hosting
+      extraPackages = [pkgs.faudio];
     };
     programs.gamemode.enable = true; # gamemoderun %command%
     preservation.preserveAt."/persistent".users.${user} = {
