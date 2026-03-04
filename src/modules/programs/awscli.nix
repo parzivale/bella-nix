@@ -1,6 +1,6 @@
 {
-  flake.modules.nixos.aws = {config, ...}: let
-    user = config.systemCoonstants.username;
+  flake.modules.nixos.awscli = {config, ...}: let
+    user = config.systemConstants.username;
   in {
     home-manager.users.${user}.programs.awscli = {
       enable = true;

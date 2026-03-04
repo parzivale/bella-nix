@@ -19,7 +19,7 @@ in {
     claude
     steam
     bluetooth
-    aws
+    awscli
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
