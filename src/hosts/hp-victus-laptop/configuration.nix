@@ -19,6 +19,7 @@ in {
     claude
     steam
     bluetooth
+    aws
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
