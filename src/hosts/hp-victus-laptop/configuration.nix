@@ -19,7 +19,6 @@ in {
     claude
     steam
     bluetooth
-    awscli
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
