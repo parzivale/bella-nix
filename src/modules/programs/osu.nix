@@ -6,6 +6,6 @@
   }: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user}.home.package = [pkgs.osu-lazer-bin];
+    home-manager.users.${user}.home.packages = [pkgs.osu-lazer-bin];
   };
 }
