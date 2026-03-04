@@ -1,5 +1,9 @@
-{pkgs, ...}: {
-  flake.modules.nixos.steam = {config, ...}: let
+{
+  flake.modules.nixos.steam = {
+    config,
+    pkgs,
+    ...
+  }: let
     user = config.systemConstants.username;
   in {
     programs.steam = {
