@@ -13,6 +13,21 @@
                 mods = 'CTRL',
                 action = wezterm.action.CloseCurrentTab { confirm = true },
               },
+              {
+                key = 'v',
+                mods = 'CTRL',
+                action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
+              },
+              {
+                key = 'h',
+                mods = 'CTRL',
+                action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
+              },
+              {
+                key = 'w',
+                mods = 'CTRL|SHIFT',
+                action = wezterm.action.CloseCurrentPane { confirm = true },
+              },
             }
           '';
         };
