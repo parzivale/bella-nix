@@ -39,6 +39,15 @@
         "Mod+Shift+E".action.quit.skip-confirmation = true;
 
         "Print".action.screenshot = [];
+
+        # Volume controls
+        "XF86AudioRaiseVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"];
+        "XF86AudioLowerVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"];
+        "XF86AudioMute".action.spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
+
+        # Brightness controls
+        "XF86MonBrightnessUp".action.spawn = ["brightnessctl" "set" "5%+"];
+        "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];
       };
     };
   };
