@@ -1,16 +1,18 @@
 {inputs, ...}: {
   flake.modules.nixos.ddcutil = {
+    config,
     pkgs,
     ...
   }: let
-    ddcutil = "${pkgs.ddcutil}/bin/ddcutil";
+    brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
   in {
     hardware.i2c.enable = true;
-    environment.systemPackages = [pkgs.ddcutil];
+    boot.extraModulePackages = [config.boot.kernelPackages.ddcci-driver];
+    boot.kernelModules = ["ddcci_backlight"];
 
     services.triggerhappy.bindings = [
-      { keys = ["BRIGHTNESSUP"];   cmd = "${ddcutil} --noverify setvcp 10 + 5"; }
-      { keys = ["BRIGHTNESSDOWN"]; cmd = "${ddcutil} --noverify setvcp 10 - 5"; }
+      { keys = ["BRIGHTNESSUP"];   cmd = "${brightnessctl} -c ddcci set 5%+"; }
+      { keys = ["BRIGHTNESSDOWN"]; cmd = "${brightnessctl} -c ddcci set 5%-"; }
     ];
   };
 }
