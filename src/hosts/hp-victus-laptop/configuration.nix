@@ -20,6 +20,7 @@ in {
     steam
     bluetooth
     osu
+    triggerhappy
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
