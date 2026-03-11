@@ -10,17 +10,18 @@
     else "";
 in {
   imports = with inputs.self.modules.nixos; [
+    bluetooth
+    claude
     cli
+    ddcutil
     deployer
     desktop
     discord
-    zram
-    prismlauncher
-    claude
-    steam
-    bluetooth
     osu
+    prismlauncher
+    steam
     triggerhappy
+    zram
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
