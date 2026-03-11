@@ -13,6 +13,11 @@
           mode = "0755";
         }
       ];
+      files = [
+        {
+          file = ".claude.json";
+        }
+      ];
     };
   };
 }
