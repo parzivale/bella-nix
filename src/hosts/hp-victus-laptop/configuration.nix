@@ -19,6 +19,7 @@ in {
     discord
     osu
     prismlauncher
+    tablet
     steam
     zram
     karere
