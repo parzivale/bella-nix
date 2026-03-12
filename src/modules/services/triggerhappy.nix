@@ -13,9 +13,18 @@
       enable = true;
       user = user;
       bindings = [
-        { keys = ["VOLUMEUP"];   cmd = "${runtime} ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%+"; }
-        { keys = ["VOLUMEDOWN"]; cmd = "${runtime} ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
-        { keys = ["MUTE"];       cmd = "${runtime} ${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+        {
+          keys = ["VOLUMEUP"];
+          cmd = "${runtime} ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%+";
+        }
+        {
+          keys = ["VOLUMEDOWN"];
+          cmd = "${runtime} ${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-";
+        }
+        {
+          keys = ["MUTE"];
+          cmd = "${runtime} ${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        }
       ];
     };
   };

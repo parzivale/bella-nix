@@ -22,6 +22,7 @@ in {
     steam
     triggerhappy
     zram
+    karere
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
