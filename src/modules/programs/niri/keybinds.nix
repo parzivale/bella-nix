@@ -1,8 +1,14 @@
 {
-  flake.modules.nixos.niri = {config, ...}: let
+  flake.modules.nixos.niri = {
+    config,
+    pkgs,
+    ...
+  }: let
     user = config.systemConstants.username;
   in {
     home-manager.users.${user} = {config, ...}: {
+      home.packages = [pkgs.playerctl pkgs.wireplumber];
+
       programs.niri.settings.binds = with config.lib.niri.actions; {
         "Mod+Shift+Slash".action = show-hotkey-overlay;
 
@@ -40,14 +46,15 @@
 
         "Print".action.screenshot = [];
 
-        # # Volume controls
-        # "XF86AudioRaiseVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"];
-        # "XF86AudioLowerVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"];
-        # "XF86AudioMute".action.spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
+        # Volume controls
+        "XF86AudioRaiseVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"];
+        "XF86AudioLowerVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"];
+        "XF86AudioMute".action.spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
 
-        # # Brightness controls
-        # "XF86MonBrightnessUp".action.spawn = ["brightnessctl" "set" "5%+"];
-        # "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];
+        # Playback controls
+        "XF86AudioPlay".action.spawn = ["playerctl" "play-pause"];
+        "XF86AudioNext".action.spawn = ["playerctl" "next"];
+        "XF86AudioPrev".action.spawn = ["playerctl" "previous"];
       };
     };
   };

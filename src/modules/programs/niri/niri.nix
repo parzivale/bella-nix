@@ -10,11 +10,6 @@
       inputs.niri-flake.nixosModules.niri
     ];
 
-    # ddcci for external monitor brightness control
-    hardware.i2c.enable = true;
-    boot.extraModulePackages = [config.boot.kernelPackages.ddcci-driver];
-    boot.kernelModules = ["ddcci_backlight"];
-
     # autolaunch niri
 
     services = {
@@ -40,22 +35,9 @@
       lib,
       ...
     }: {
-      home.packages = [pkgs.brightnessctl];
-
       programs.niri = {
         package = pkgs.niri-unstable;
-        settings = let
-          brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
-          wpctl = "${pkgs.wireplumber}/bin/wpctl";
-        in {
-          binds = {
-            "XF86AudioRaiseVolume".action.spawn = [wpctl "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"];
-            "XF86AudioLowerVolume".action.spawn = [wpctl "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"];
-            "XF86AudioMute".action.spawn = [wpctl "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
-            "XF86MonBrightnessUp".action.spawn = [brightnessctl "-d" "ddcci9" "set" "5%+"];
-            "XF86MonBrightnessDown".action.spawn = [brightnessctl "-d" "ddcci9" "set" "5%-"];
-          };
-
+        settings = {
           xwayland-satellite = {
             enable = true;
             path = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
