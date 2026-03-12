@@ -39,7 +39,18 @@
 
       programs.niri = {
         package = pkgs.niri-unstable;
-        settings = {
+        settings = let
+          brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
+          wpctl = "${pkgs.wireplumber}/bin/wpctl";
+        in {
+          binds = {
+            "XF86AudioRaiseVolume".action.spawn = [wpctl "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"];
+            "XF86AudioLowerVolume".action.spawn = [wpctl "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"];
+            "XF86AudioMute".action.spawn = [wpctl "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
+            "XF86MonBrightnessUp".action.spawn = [brightnessctl "-c" "ddcci" "set" "5%+"];
+            "XF86MonBrightnessDown".action.spawn = [brightnessctl "-c" "ddcci" "set" "5%-"];
+          };
+
           xwayland-satellite = {
             enable = true;
             path = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";

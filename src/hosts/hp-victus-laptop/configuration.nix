@@ -13,14 +13,12 @@ in {
     bluetooth
     claude
     cli
-    ddcutil
     deployer
     desktop
     discord
     osu
     prismlauncher
     steam
-    triggerhappy
     zram
     karere
   ];
