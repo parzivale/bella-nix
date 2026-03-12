@@ -86,3 +86,7 @@ Hosts live in `src/hosts/<hostname>/` with:
 ### External Inputs
 
 Key flake inputs: nixpkgs (unstable), home-manager, niri-flake (Wayland compositor), stylix (theming), disko (disk management), agenix/agenix-rekey (secrets), deploy-rs (deployment), preservation (state persistence).
+
+## User Environment
+
+The user's default shell is **Nushell**. When suggesting shell commands, use Nushell syntax instead of Bash.

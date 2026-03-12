@@ -15,12 +15,12 @@
               },
               {
                 key = 'v',
-                mods = 'CTRL',
+                mods = 'CTRL|SHIFT',
                 action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
               },
               {
                 key = 'h',
-                mods = 'CTRL',
+                mods = 'CTRL|SHIFT',
                 action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
               },
               {
