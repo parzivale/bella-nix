@@ -13,6 +13,7 @@ in {
     bluetooth
     claude
     cli
+    ddcutil
     deployer
     desktop
     discord
