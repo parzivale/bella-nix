@@ -14,10 +14,6 @@
           directory = ".local/share/karere";
           mode = "0700";
         }
-        {
-          directory = ".config/karere";
-          mode = "0700";
-        }
       ];
     };
   };
