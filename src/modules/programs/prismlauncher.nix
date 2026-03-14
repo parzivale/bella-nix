@@ -10,7 +10,7 @@
 
     programs.nix-ld = {
       enable = true;
-      libraries = [pkgs.nss];
+      libraries = with pkgs; [nss nspr];
     };
 
     preservation.preserveAt."/persistent".users.${user}.directories = [
