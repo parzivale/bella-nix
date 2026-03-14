@@ -35,6 +35,7 @@
       secrets = {
         tailscale_token.rekeyFile = ../../secrets/tailscale/tailscale_key.age;
         deploy-key.rekeyFile = ../../secrets/nix-deploy/deploy-key.age;
+        cloudflare-buckets.rekeyFile = ../../secrets/cloudflare-buckets/access_env.age;
         github-key = {
           rekeyFile = ../../secrets/github/github-key.age;
           owner = user;
