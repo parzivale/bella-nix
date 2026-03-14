@@ -14,7 +14,7 @@ in {
     deployable
     cli
     localization
-    gtnh
+    server
   ];
 
   system.stateVersion = "25.11";
