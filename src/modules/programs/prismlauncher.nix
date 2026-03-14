@@ -8,6 +8,11 @@
   in {
     home-manager.users.${user}.home.packages = [pkgs.prismlauncher];
 
+    programs.nix-ld = {
+      enable = true;
+      libraries = [pkgs.nss];
+    };
+
     preservation.preserveAt."/persistent".users.${user}.directories = [
       {
         directory = ".local/share/PrismLauncher";
