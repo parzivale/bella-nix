@@ -7,7 +7,7 @@
     user = config.systemConstants.username;
   in {
     home-manager.users.${user}.home.packages = [
-      (pkgs.prismlauncher.override {additionalLibs = with pkgs; [nss nspr];})
+      pkgs.prismlauncher
     ];
 
     preservation.preserveAt."/persistent".users.${user}.directories = [
