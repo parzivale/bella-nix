@@ -4,6 +4,7 @@
       openssh
       tailscale
       preservation
+      signed-nix
     ];
   };
 }
