@@ -9,7 +9,7 @@
     programs.steam = {
       enable = true;
       package = pkgs.steam.override {
-        extraArgs = "-no-browser -nofriendsui +open steam://open/minigameslist";
+        extraArgs = "-dev -console -nofriendsui -no-dwrite -nointro -nobigpicture -nofasthtml -nocrashmonitor -noshaders -no-shared-textures -disablehighdpi -cef-single-process -cef-in-process-gpu -single_core -cef-disable-d3d11 -cef-disable-sandbox -disable-winh264 -cef-force-32bit -no-cef-sandbox -vrdisable -cef-disable-breakpad";
       };
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       dedicatedServer.openFirewall = true; # Open ports for Source Dedicated Server hosting
