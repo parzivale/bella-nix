@@ -8,6 +8,9 @@
   in {
     programs.steam = {
       enable = true;
+      package = pkgs.steam.override {
+        extraArgs = "-no-browser -nofriendsui +open steam://open/minigameslist";
+      };
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       dedicatedServer.openFirewall = true; # Open ports for Source Dedicated Server hosting
       extraPackages = [pkgs.faudio];
