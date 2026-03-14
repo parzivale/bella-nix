@@ -6,12 +6,9 @@
   }: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user}.home.packages = [pkgs.prismlauncher];
-
-    programs.nix-ld = {
-      enable = true;
-      libraries = with pkgs; [nss nspr];
-    };
+    home-manager.users.${user}.home.packages = [
+      (pkgs.prismlauncher.override {additionalLibs = [pkgs.nss];})
+    ];
 
     preservation.preserveAt."/persistent".users.${user}.directories = [
       {
