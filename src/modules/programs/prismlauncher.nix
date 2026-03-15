@@ -20,6 +20,7 @@
       alsa-lib
       dbus
       at-spi2-core
+      cups
     ];
 
     # Wrap Java with CEF libraries for MCEF mod support
