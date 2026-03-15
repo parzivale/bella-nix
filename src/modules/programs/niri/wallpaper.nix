@@ -12,6 +12,7 @@
         spawn-at-startup = [
           {command = ["${pkgs.swaybg}/bin/swaybg" "-i" image "-m" "fill"];}
         ];
+        layout.background-color = "transparent";
         layer-rules = [
           {
             matches = [{namespace = "^swaybg$";}];
