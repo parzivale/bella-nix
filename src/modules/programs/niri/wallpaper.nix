@@ -52,7 +52,7 @@
             ExecStart = "${pkgs.swww}/bin/swww img -t none ${image}";
             RemainAfterExit = true;
           };
-          Install.WantedBy = ["graphical-session.target"];
+          Install.WantedBy = ["graphical-session.target" "sleep.target"];
         };
 
         swww-overview-set = {
@@ -67,7 +67,7 @@
             ExecStart = "${pkgs.swww}/bin/swww img -t none -n overview ${image}";
             RemainAfterExit = true;
           };
-          Install.WantedBy = ["graphical-session.target"];
+          Install.WantedBy = ["graphical-session.target" "sleep.target"];
         };
       };
     };
