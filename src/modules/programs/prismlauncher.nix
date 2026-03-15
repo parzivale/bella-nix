@@ -49,5 +49,9 @@
         mode = "0755";
       }
     ];
+
+    # Enable nix-ld for MCEF's dynamically linked jcef_helper binary
+    programs.nix-ld.enable = true;
+    programs.nix-ld.libraries = cefLibs;
   };
 }
