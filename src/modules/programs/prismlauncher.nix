@@ -23,19 +23,23 @@
     ];
 
     # Wrap Java with CEF libraries for MCEF mod support
-    java-with-cef = pkgs.symlinkJoin {
-      name = "java-with-cef";
-      paths = [pkgs.jdk21];
-      nativeBuildInputs = [pkgs.makeWrapper];
-      postBuild = ''
-        wrapProgram $out/bin/java \
-          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath cefLibs}"
-      '';
-    };
+    wrapJava = jdk:
+      pkgs.symlinkJoin {
+        name = "${jdk.pname}-with-cef";
+        paths = [jdk];
+        nativeBuildInputs = [pkgs.makeWrapper];
+        postBuild = ''
+          wrapProgram $out/bin/java \
+            --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath cefLibs}"
+        '';
+      };
   in {
     home-manager.users.${user}.home.packages = [
       (pkgs.prismlauncher.override {
-        jdks = [java-with-cef];
+        jdks = [
+          (wrapJava pkgs.jdk17)
+          (wrapJava pkgs.jdk21)
+        ];
       })
     ];
 
