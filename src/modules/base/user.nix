@@ -16,7 +16,7 @@
           openssh.authorizedKeys.keyFiles = [../../secrets/yubikey/yubikey_sshkey.pub];
           isNormalUser = true;
           hashedPassword = "$y$j9T$3SYXqLHQFhpwfTY8BHXmw.$cQGsYVD7CIWC22AJu1sX8qg4Po8Cyd00KzL9mAXa5F7";
-          extraGroups = ["wheel" "networkmanager" "video" "i2c"];
+          extraGroups = ["wheel"];
           uid = config.systemConstants.uid;
           shell = pkgs.nushell;
         };

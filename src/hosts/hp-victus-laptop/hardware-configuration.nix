@@ -13,7 +13,7 @@
     kernelParams = ["video=eDP-1:d"];
   };
 
-  networking.networkmanager.enable = true;
+  networking.useNetworkd = true;
 
   services.xserver.videoDrivers = ["nvidia"];
   hardware = {
