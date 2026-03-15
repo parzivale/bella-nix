@@ -7,7 +7,7 @@
   }: let
     user = config.systemConstants.username;
 
-    # CEF runtime dependencies for MCEF mod (Wayland)
+    # CEF runtime dependencies for MCEF mod
     cefLibs = with pkgs; [
       libgbm
       glib
@@ -21,6 +21,19 @@
       dbus
       at-spi2-core
       cups
+      xorg.libX11
+      xorg.libXcomposite
+      xorg.libXdamage
+      xorg.libXext
+      xorg.libXfixes
+      xorg.libXrandr
+      xorg.libxcb
+      xorg.libxshmfence
+      atk
+      at-spi2-atk
+      gtk3
+      pango
+      cairo
     ];
 
     # Wrap Java with CEF libraries for MCEF mod support
