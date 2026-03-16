@@ -10,7 +10,7 @@
       force = true;
       default = "duckduckgo";
       privateDefault = "duckduckgo";
-      order = ["4get" "Nix Packages" "Nix Options" "Nix Wiki" "Nix Home Manager Options" "Github" "Modrinth Mods" "Rust Standard Library" "Rust Libraries" "google" "Google Images"];
+      order = ["Nix Packages" "Nix Options" "Nix Wiki" "Nix Home Manager Options" "Github" "Rust Standard Library" "Rust Libraries" "google" "Google Images"];
       engines = {
         ddg.metaData.alias = "@ddg";
         bing.metaData.hidden = true;
@@ -18,10 +18,6 @@
         wikipedia.metaData.hidden = true;
         ecosia.metaData.hidden = true;
         perplexity.metaData.hidden = true;
-        "4get" = {
-          urls = [{template = "https://4get.lunar.icu/web?s={searchTerms}";}];
-          icon = "https://4get.lunar.icu/favicon.ico";
-        };
         "Nix Packages" = {
           urls = [{template = "https://search.nixos.org/packages?type=packages&channel=unstable&query={searchTerms}";}];
           icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
@@ -42,30 +38,10 @@
           icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
           definedAliases = ["@ho"];
         };
-        "Arch Linux Wiki" = {
-          urls = [{template = "https://wiki.archlinux.org/index.php?search={searchTerms}";}];
-          icon = "https://wiki.archlinux.org/favicon.ico";
-          definedAliases = ["@aw"];
-        };
         "Github" = {
           urls = [{template = "https://github.com/search?type=repositories&q={searchTerms}";}];
           icon = "https://github.com/favicon.ico";
           definedAliases = ["@gh"];
-        };
-        "Modrinth Mods" = {
-          urls = [{template = "https://modrinth.com/discover/mods?q={searchTerms}";}];
-          icon = "https://modrinth.com/favicon.ico";
-          definedAliases = ["@mrm"];
-        };
-        "Modrinth Resource Packs" = {
-          urls = [{template = "https://modrinth.com/discover/resourcepacks?q={searchTerms}";}];
-          icon = "https://modrinth.com/favicon.ico";
-          definedAliases = ["@mrr"];
-        };
-        "Minecraft Wiki" = {
-          urls = [{template = "https://minecraft.wiki/?search={searchTerms}";}];
-          icon = "https://minecraft.wiki/favicon.ico";
-          definedAliases = ["@mc"];
         };
         "Rust Standard Library" = {
           urls = [{template = "https://doc.rust-lang.org/std/?search={searchTerms}";}];
@@ -86,11 +62,6 @@
           urls = [{template = "https://youtube.com/results?search_query={searchTerms}";}];
           icon = "https://youtube.com/favicon.ico";
           definedAliases = ["@yt"];
-        };
-        "SoundCloud" = {
-          urls = [{template = "https://soundcloud.com/search?q={searchTerms}";}];
-          icon = "https://soundcloud.com/favicon.ico";
-          definedAliases = ["@sc"];
         };
       };
     };
