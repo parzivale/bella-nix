@@ -6,6 +6,9 @@
   }: let
     image = config.systemConstants.bg_img;
     user = config.systemConstants.username;
+    blurred-image = pkgs.runCommand "blurred-wallpaper.png" {} ''
+      ${pkgs.imagemagick}/bin/magick "${image}" -blur 0x8 $out
+    '';
   in {
     home-manager.users.${user} = {
       programs.niri.settings.layer-rules = [
@@ -21,10 +24,8 @@
             PartOf = ["graphical-session.target"];
           };
           Service = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            ExecStart = "${pkgs.swww}/bin/swww init";
-            ExecStop = "${pkgs.swww}/bin/swww kill";
+            ExecStart = "${pkgs.swww}/bin/swww-daemon";
+            Restart = "on-failure";
           };
           Install.WantedBy = ["graphical-session.target"];
         };
@@ -36,10 +37,8 @@
             PartOf = ["graphical-session.target"];
           };
           Service = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            ExecStart = "${pkgs.swww}/bin/swww init -n overview";
-            ExecStop = "${pkgs.swww}/bin/swww kill -n overview";
+            ExecStart = "${pkgs.swww}/bin/swww-daemon -n overview";
+            Restart = "on-failure";
           };
           Install.WantedBy = ["graphical-session.target"];
         };
@@ -56,7 +55,7 @@
             ExecStart = "${pkgs.swww}/bin/swww img -t none ${image}";
             RemainAfterExit = true;
           };
-          Install.WantedBy = ["graphical-session.target" "sleep.target"];
+          Install.WantedBy = ["graphical-session.target"];
         };
 
         swww-overview-set = {
@@ -68,10 +67,10 @@
           };
           Service = {
             Type = "oneshot";
-            ExecStart = "${pkgs.swww}/bin/swww img -t none -n overview ${image}";
+            ExecStart = "${pkgs.swww}/bin/swww img -t none -n overview ${blurred-image}";
             RemainAfterExit = true;
           };
-          Install.WantedBy = ["graphical-session.target" "sleep.target"];
+          Install.WantedBy = ["graphical-session.target"];
         };
       };
     };
