@@ -20,7 +20,7 @@
       systemd.user.services = {
         swww = {
           Unit = {
-            After = ["graphical-session.target"];
+            After = ["graphical-session.target" "niri.service"];
             PartOf = ["graphical-session.target"];
           };
           Service = {
@@ -33,7 +33,7 @@
         swww-overview = {
           Unit = {
             Description = "swww overview daemon";
-            After = ["graphical-session.target"];
+            After = ["graphical-session.target" "niri.service"];
             PartOf = ["graphical-session.target"];
           };
           Service = {

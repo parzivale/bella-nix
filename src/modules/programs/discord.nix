@@ -16,7 +16,7 @@
 
     xdg.portal = {
       enable = true;
-      extraPortals = [pkgs.xdg-desktop-portal-gnome]; # or wlr for wlroots-based
+      # extraPortals = [pkgs.xdg-desktop-portal-gnome]; # or wlr for wlroots-based
     };
 
     home-manager.users.${user} = {

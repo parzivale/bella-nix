@@ -21,14 +21,14 @@
       dbus
       at-spi2-core
       cups
-      xorg.libX11
-      xorg.libXcomposite
-      xorg.libXdamage
-      xorg.libXext
-      xorg.libXfixes
-      xorg.libXrandr
-      xorg.libxcb
-      xorg.libxshmfence
+      libX11
+      libXcomposite
+      libXdamage
+      libXext
+      libXfixes
+      libXrandr
+      libxcb
+      libxshmfence
       atk
       at-spi2-atk
       gtk3
@@ -47,15 +47,24 @@
             --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath cefLibs}"
         '';
       };
+    prismlauncherDgpu = pkgs.symlinkJoin {
+      name = "prismlauncher-dgpu";
+      paths = [
+        (pkgs.prismlauncher.override {
+          jdks = [
+            (wrapJava pkgs.jdk17)
+            (wrapJava pkgs.jdk21)
+          ];
+        })
+      ];
+      nativeBuildInputs = [pkgs.makeWrapper];
+      postBuild = ''
+        wrapProgram $out/bin/prismlauncher \
+          --set DRI_PRIME 1
+      '';
+    };
   in {
-    home-manager.users.${user}.home.packages = [
-      (pkgs.prismlauncher.override {
-        jdks = [
-          (wrapJava pkgs.jdk17)
-          (wrapJava pkgs.jdk21)
-        ];
-      })
-    ];
+    home-manager.users.${user}.home.packages = [prismlauncherDgpu];
 
     preservation.preserveAt."/persistent".users.${user}.directories = [
       {
