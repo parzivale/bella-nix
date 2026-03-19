@@ -38,10 +38,6 @@ in {
     };
   };
 
-  # Boot speed up
-  boot.blacklistedKernelModules = ["serial_8250"];
-  systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [];
-
   system.stateVersion = "25.05";
   home-manager.users.${config.systemConstants.username}.home.stateVersion = "25.11";
 }

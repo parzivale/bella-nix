@@ -156,9 +156,9 @@
 
         language-server = {
           rust-analyzer = {
-            command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
+            # command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
             config = {
-              check.command = "${pkgs.clippy}/bin/clippy";
+              # check.command = "${pkgs.clippy}/bin/cargo-clippy";
               cargo.features = "all";
             };
           };
