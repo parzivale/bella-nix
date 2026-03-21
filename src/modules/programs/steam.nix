@@ -35,7 +35,7 @@
     };
     programs.gamemode.enable = true;
     home-manager.users.${user} = {
-      home.packages = [pkgs.steamcmd pkgs.steam-tui];
+      home.packages = [pkgs.steamcmd pkgs.steam-tui st];
 
       xdg.desktopEntries.steam = {
         name = "Steam";
@@ -44,12 +44,10 @@
 
       xdg.desktopEntries.st = {
         name = "Steam TUI";
-        exec = "${st}";
+        exec = "${st}/bin/st";
         terminal = true;
         categories = ["Game"];
       };
-
-      programs.nushell.extraConfig = stScript;
     };
 
     preservation.preserveAt."/persistent".users.${user} = {
