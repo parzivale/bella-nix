@@ -17,7 +17,9 @@ in {
     deployer
     desktop
     discord
+    earlyoom
     osu
+    spotify-player
     prismlauncher
     steam
     zram

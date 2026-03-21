@@ -29,6 +29,7 @@
         # "Mod+M".action = maximize-window-to-edges;
         "Mod+W".action = close-window;
         "Mod+R".action = switch-preset-column-width;
+        "Mod+G".action = switch-preset-window-height;
         "Mod+Tab".action = toggle-overview;
 
         "Mod+C".action = center-column;
