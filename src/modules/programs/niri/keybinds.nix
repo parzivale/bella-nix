@@ -22,6 +22,9 @@
         "Mod+Ctrl+Down".action = move-window-down-or-to-workspace-down;
         "Mod+Ctrl+Up".action = move-window-up-or-to-workspace-up;
 
+        "Mod+Comma".action = consume-window-into-column;
+        "Mod+Period".action = expel-window-from-column;
+
         "Mod+F".action = maximize-column;
         "Mod+Shift+F".action = fullscreen-window;
         "Mod+Ctrl+F".action = expand-column-to-available-width;
@@ -29,7 +32,9 @@
         # "Mod+M".action = maximize-window-to-edges;
         "Mod+W".action = close-window;
         "Mod+R".action = switch-preset-column-width;
+        "Mod+Shift+R".action = reset-column-width;
         "Mod+G".action = switch-preset-window-height;
+        "Mod+Shift+G".action = reset-window-height;
         "Mod+Tab".action = toggle-overview;
 
         "Mod+C".action = center-column;
