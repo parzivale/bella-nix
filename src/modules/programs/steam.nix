@@ -5,6 +5,20 @@
     ...
   }: let
     user = config.systemConstants.username;
+    stScript = ''
+      def st [] {
+        let cred_path = $"($env.HOME)/.steam/steam/config/config.vdf"
+        if not ($cred_path | path exists) {
+          steamcmd +login (input "Steam username: ") +quit
+        }
+        steam-tui
+      }
+    '';
+    st = pkgs.writeScriptBin "st" ''
+      #!${pkgs.nushell}/bin/nu
+      ${stScript}
+      st
+    '';
   in {
     programs.steam = {
       enable = true;
@@ -30,20 +44,12 @@
 
       xdg.desktopEntries.st = {
         name = "Steam TUI";
-        exec = "st";
+        exec = "${st}";
         terminal = true;
         categories = ["Game"];
       };
 
-      programs.nushell.extraConfig = ''
-        def st [] {
-          let cred_path = $"($env.HOME)/.steam/steam/config/config.vdf"
-          if not ($cred_path | path exists) {
-            steamcmd +login (input "Steam username: ") +quit
-          }
-          steam-tui
-        }
-      '';
+      programs.nushell.extraConfig = stScript;
     };
 
     preservation.preserveAt."/persistent".users.${user} = {
