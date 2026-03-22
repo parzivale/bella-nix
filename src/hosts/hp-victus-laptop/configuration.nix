@@ -10,6 +10,7 @@
     else "";
 in {
   imports = with inputs.self.modules.nixos; [
+    _1password
     bluetooth
     claude
     cli
