@@ -18,7 +18,9 @@ in {
     desktop
     discord
     earlyoom
+    nvidia
     osu
+    pipewire
     spotify-player
     prismlauncher
     steam
@@ -28,17 +30,7 @@ in {
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
-  services = {
-    xserver.xkb.layout = "us";
-    pipewire = {
-      enable = true;
-      alsa = {
-        enable = true;
-        support32Bit = true;
-      };
-      pulse.enable = true;
-    };
-  };
+  services.xserver.xkb.layout = "us";
 
   system.stateVersion = "25.05";
   home-manager.users.${config.systemConstants.username}.home.stateVersion = "25.11";

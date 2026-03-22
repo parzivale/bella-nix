@@ -28,12 +28,6 @@
           elephant = {
             provider.desktopapplications.settings = {
               wm_integration = true;
-              blacklist = [
-                "qt5ct"
-                "qt6ct"
-                "nvidia-settings"
-                "kvantummanager"
-              ];
             };
           };
           config = {

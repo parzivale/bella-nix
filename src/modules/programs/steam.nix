@@ -5,8 +5,8 @@
     ...
   }: let
     user = config.systemConstants.username;
-    stScript = ''
-      def st [] {
+    stuiScript = ''
+      def stui [] {
         let cred_path = $"($env.HOME)/.steam/steam/config/config.vdf"
         if not ($cred_path | path exists) {
           steamcmd +login (input "Steam username: ") +quit
@@ -14,10 +14,10 @@
         steam-tui
       }
     '';
-    st = pkgs.writeScriptBin "st" ''
+    stui = pkgs.writeScriptBin "stui" ''
       #!${pkgs.nushell}/bin/nu
-      ${stScript}
-      st
+      ${stuiScript}
+      stui
     '';
   in {
     programs.steam = {
@@ -35,16 +35,17 @@
     };
     programs.gamemode.enable = true;
     home-manager.users.${user} = {
-      home.packages = [pkgs.steamcmd pkgs.steam-tui st];
+      home.packages = [pkgs.steamcmd pkgs.steam-tui stui];
 
       xdg.desktopEntries.steam = {
         name = "Steam";
         noDisplay = true;
       };
 
-      xdg.desktopEntries.st = {
+      xdg.desktopEntries.stui = {
         name = "Steam TUI";
-        exec = "${st}/bin/st";
+        icon = "steam";
+        exec = "${stui}/bin/stui";
         terminal = true;
         categories = ["Game"];
       };

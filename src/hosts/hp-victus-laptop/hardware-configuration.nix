@@ -18,7 +18,6 @@
   systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [];
   networking.useNetworkd = true;
 
-  services.xserver.videoDrivers = ["nvidia"];
   hardware = {
     firmware = with pkgs; [linux-firmware];
     enableAllFirmware = true;
@@ -27,11 +26,9 @@
     graphics.enable = true;
     graphics.enable32Bit = true;
     nvidia = {
-      modesetting.enable = true;
       powerManagement = {
         enable = true;
       };
-      open = true;
       prime = {
         sync.enable = true;
         nvidiaBusId = "PCI:1:0:0";
