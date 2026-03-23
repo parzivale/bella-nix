@@ -26,8 +26,13 @@
           runAsService = true;
 
           elephant = {
-            provider.desktopapplications.settings = {
-              wm_integration = true;
+            provider = {
+              desktopapplications.settings = {
+                wm_integration = true;
+              };
+              "1password".settings = {
+                vaults = ["Private" "Shared" "Shared with Zeus" "variable.ai"];
+              };
             };
           };
           config = {
