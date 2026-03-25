@@ -20,8 +20,8 @@
   };
 
   hardware = {
-    # asahi.peripheralFirmwareDirectory = ./firmware;
-    asahi.extractPeripheralFirmware = false;
+    asahi.peripheralFirmwareDirectory = ./firmware;
+    # asahi.extractPeripheralFirmware = false;
     apple.touchBar = {
       enable = true;
       package = pkgs.tiny-dfr;

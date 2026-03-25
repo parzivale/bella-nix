@@ -1,13 +1,13 @@
 {inputs}: {
   fileSystems."/persistent" = {
-    device = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBPNTY-512G-1006_210862801954-part4";
+    device = "/dev/nvme0n1p5";
     neededForBoot = true;
     fsType = "btrfs";
     options = ["subvol=persistent"];
   };
 
   fileSystems."/nix" = {
-    device = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBPNTY-512G-1006_210862801954-part4";
+    device = "/dev/nvme0n1p5";
     neededForBoot = true;
     fsType = "btrfs";
     options = ["subvol=nix"];
@@ -20,7 +20,7 @@
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBPNTY-512G-1006_210862801954-part1";
+    device = "/dev/disk/by-partuuid/8a5dc817-ca90-4ec5-9e27-7e8c2f18aaa0";
     fsType = "vfat";
     options = ["fmask=0077" "dmask=0077"];
   };
