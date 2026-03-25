@@ -11,12 +11,18 @@
     '';
   in {
     home-manager.users.${user} = {
-      programs.niri.settings.layer-rules = [
-        {
-          matches = [{namespace = "swww-daemonoverview$";}];
-          place-within-backdrop = true;
-        }
-      ];
+      programs.niri.settings = {
+        layer-rules = [
+          {
+            matches = [{namespace = "swww-daemonoverview$";}];
+            place-within-backdrop = true;
+          }
+        ];
+        spawn-at-startup = [
+          {command = ["${pkgs.swww}/bin/swww" "img" "-t" "none" "${image}"];}
+          {command = ["${pkgs.swww}/bin/swww" "img" "-t" "none" "-n" "overview" "${blurred-image}"];}
+        ];
+      };
       systemd.user.services = {
         swww = {
           Unit = {
@@ -39,36 +45,6 @@
           Service = {
             ExecStart = "${pkgs.swww}/bin/swww-daemon -n overview";
             Restart = "on-failure";
-          };
-          Install.WantedBy = ["graphical-session.target"];
-        };
-
-        swww-set = {
-          Unit = {
-            Description = "Set swww wallpaper";
-            After = ["swww.service" "graphical-session.target"];
-            Requires = ["swww.service"];
-            PartOf = ["graphical-session.target"];
-          };
-          Service = {
-            Type = "oneshot";
-            ExecStart = "${pkgs.swww}/bin/swww img -t none ${image}";
-            RemainAfterExit = true;
-          };
-          Install.WantedBy = ["graphical-session.target"];
-        };
-
-        swww-overview-set = {
-          Unit = {
-            Description = "Set swww overview wallpaper";
-            After = ["swww-overview.service" "graphical-session.target"];
-            Requires = ["swww-overview.service"];
-            PartOf = ["graphical-session.target"];
-          };
-          Service = {
-            Type = "oneshot";
-            ExecStart = "${pkgs.swww}/bin/swww img -t none -n overview ${blurred-image}";
-            RemainAfterExit = true;
           };
           Install.WantedBy = ["graphical-session.target"];
         };
