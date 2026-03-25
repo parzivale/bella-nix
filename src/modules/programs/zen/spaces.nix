@@ -37,13 +37,13 @@
         };
         "Work - CZ" = {
           id = "1aa8cdd7-cf7b-4523-a2aa-20d3f085dfd3";
-          icon = "🧑‍💻🧑‍⚖️";
+          icon = "🧑‍💻";
           position = 2000;
           container = containers."Work Cz".id;
         };
         "Work - Oversoul" = {
           id = "70ce3ac1-b532-45dc-b95b-4c4d9161c142";
-          icon = "🧑‍💻📿";
+          icon = "🧑‍💻";
           position = 3000;
           container = containers."Work Oversoul".id;
         };

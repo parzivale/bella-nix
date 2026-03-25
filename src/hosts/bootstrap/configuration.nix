@@ -31,6 +31,8 @@ in {
     extraGroups = ["wheel"];
   };
 
+  hardware.enableAllFirmware = true;
+
   #this must be set no matter what
   age.rekey.masterIdentities = [../../secrets/yubikey/yubikey_identity.pub];
   age.rekey.storageMode = "derivation";
