@@ -18,6 +18,9 @@ in {
     avahi
     systemd-boot
     deployer
+    cli
+    _1password
+    claude
   ];
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
