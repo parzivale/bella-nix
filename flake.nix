@@ -93,6 +93,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-apple-silicon = {
+      url = "github:nix-community/nixos-apple-silicon";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     preservation.url = "github:nix-community/preservation";
   };
@@ -175,6 +179,7 @@
                   nixpkgs.overlays = [
                     inputs.niri-flake.overlays.niri
                     inputs.gtnh-nix.overlays.default
+                    inputs.nixos-apple-silicon.overlays.default
                   ];
                   networking.hostName = "${name}";
                   home-manager.sharedModules = [];
@@ -187,8 +192,6 @@
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
       ];
 
       flake = mkHosts (builtins.attrNames hosts);
