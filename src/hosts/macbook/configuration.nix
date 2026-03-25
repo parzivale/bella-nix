@@ -25,6 +25,7 @@ in {
     zram
     pipewire
     bluetooth
+    iwd
   ];
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
@@ -33,4 +34,15 @@ in {
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
   services.getty.autologinUser = user;
+
+  home-manager.users.${user} = {pkgs, ...}: {
+    home.packages = [pkgs.brightnessctl];
+
+    programs.niri.settings.binds = {
+      "XF86MonBrightnessUp".action.spawn   = ["brightnessctl" "set" "5%+"];
+      "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];
+      "XF86KbdBrightnessUp".action.spawn   = ["brightnessctl" "-d" "apple::kbd_backlight" "set" "5%+"];
+      "XF86KbdBrightnessDown".action.spawn = ["brightnessctl" "-d" "apple::kbd_backlight" "set" "5%-"];
+    };
+  };
 }
