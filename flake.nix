@@ -99,6 +99,16 @@
     };
 
     preservation.url = "github:nix-community/preservation";
+
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    playit-nixos-module = {
+      url = "github:pedorich-n/playit-nixos-module";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -180,6 +190,7 @@
                     inputs.niri-flake.overlays.niri
                     inputs.gtnh-nix.overlays.default
                     inputs.nixos-apple-silicon.overlays.default
+                    inputs.nix-minecraft.overlay
                   ];
                   networking.hostName = "${name}";
                   home-manager.sharedModules = [];

@@ -15,6 +15,8 @@ in {
     cli
     localization
     server
+    fabric
+    playit
   ];
 
   system.stateVersion = "25.11";
