@@ -49,7 +49,10 @@
               enable = true;
               max-scroll-amount = "0%";
             };
-            warp-cursor-to-focused-window = true;
+            warp-mouse-to-focus = {
+              enable = true;
+              mode = "center-xy";
+            };
           };
 
           outputs = {
