@@ -40,6 +40,8 @@ in {
       packages = [pkgs.brightnessctl];
     };
 
+    programs.niri.settings.input.touchpad.scroll-factor = 0.5;
+
     programs.niri.settings.binds = {
       "XF86MonBrightnessUp".action.spawn = ["brightnessctl" "set" "5%+"];
       "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];

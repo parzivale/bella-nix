@@ -10,6 +10,7 @@
       starship
       nushell
       btop
+      tldr
     ];
   };
 }
