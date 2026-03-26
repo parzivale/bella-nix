@@ -45,7 +45,11 @@
 
           input = {
             mouse.accel-profile = "flat";
-            focus-follows-mouse.enable = true;
+            focus-follows-mouse = {
+              enable = true;
+              max-scroll-amount = "0%";
+            };
+            warp-cursor-to-focused-window = true;
           };
 
           outputs = {
