@@ -7,6 +7,9 @@
       eula = true;
 
       servers.fabric = {
+        whitelist = ["zeus_oliver"];
+        operators = ["zeus_oliver"];
+
         enable = true;
         package = pkgs.fabricServers.fabric-1_21_4;
         jvmOpts = "-Xms4G -Xmx8G";
