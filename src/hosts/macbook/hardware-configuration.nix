@@ -22,7 +22,9 @@
   console.keyMap = "es";
 
   hardware = {
-    asahi.peripheralFirmwareDirectory = ./firmware;
+    asahi = {
+      peripheralFirmwareDirectory = ./firmware;
+    };
     # asahi.extractPeripheralFirmware = false;
     apple.touchBar = {
       enable = true;

@@ -1,9 +1,9 @@
 {
   flake.modules.nixos.nix = {
     nixpkgs.config.allowUnfree = true;
-    documentation.nixos.enable = false;
-    documentation.man.enable = false;
-    documentation.enable = false;
+    # documentation.nixos.enable = false;
+    # documentation.man.enable = false;
+    # documentation.enable = false;
     nix = {
       settings = {
         download-buffer-size = 268435456;
