@@ -34,7 +34,7 @@ export def main [target_hostname: string] {
     lib scp_down $remote_facter $local_facter $user $addr $first_pass_known_hosts
     lib scp_down /tmp/boot_disk $"($TARGET_DIR)/boot_disk" $user $addr $first_pass_known_hosts
     git add --intent-to-add $TARGET_DIR
-    nixos-anywhere --flake $"($lib.PROJECT_ROOT)#($target_hostname)" --target-host nixos-anywhere@($addr)
+    nixos-anywhere --phases disko,install,reboot --flake $"($lib.PROJECT_ROOT)#($target_hostname)" --target-host nixos-anywhere@($addr)
     lib remove_usb
     loop {
         let result = try { ping -c 1 $addr }

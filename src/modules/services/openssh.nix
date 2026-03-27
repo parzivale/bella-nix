@@ -1,11 +1,15 @@
 {
-  flake.modules.nixos.openssh = {config, ...}: {
+  flake.modules.nixos.openssh = {
+    lib,
+    config,
+    ...
+  }: {
     services.openssh = {
       enable = true;
       settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
-        PermitRootLogin = "no";
+        PermitRootLogin = lib.mkDefault "no";
         AllowUsers = [config.systemConstants.username];
       };
 
