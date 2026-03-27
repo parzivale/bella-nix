@@ -9,6 +9,7 @@ in {
     openssh
     stylix
     avahi
+    systemd-boot
   ];
 
   home-manager.users.${user} = {
@@ -37,7 +38,8 @@ in {
   age.rekey.masterIdentities = [../../secrets/yubikey/yubikey_identity.pub];
   age.rekey.storageMode = "derivation";
 
-  services.openssh.settings.AllowUsers = ["nixos-anywhere"];
+  users.users.root.openssh.authorizedKeys.keyFiles = [../../secrets/yubikey/yubikey_sshkey.pub];
+  services.openssh.settings.AllowUsers = ["nixos-anywhere" "root"];
 
   networking.nameservers = ["1.1.1.1" "8.8.8.8"];
 
