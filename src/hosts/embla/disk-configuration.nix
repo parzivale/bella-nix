@@ -17,6 +17,13 @@
                 type = "btrfs";
                 extraArgs = ["-f"]; # Override existing partition
                 subvolumes = {
+                  boot = {
+                    mountpoint = "/boot";
+                    mountOptions = [
+                      "compress=zstd"
+                      "discard=async"
+                    ];
+                  };
                   nix = {
                     mountOptions = [
                       "compress=zstd"
