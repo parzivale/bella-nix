@@ -7,8 +7,8 @@
       eula = true;
 
       servers.fabric = {
-        whitelist = ["zeus_oliver"];
-        operators = ["zeus_oliver"];
+        whitelist = {zeus_oliver = "b56d8d37-8dd1-46bc-97c8-8afcb6fe9877";};
+        operators = {zeus_oliver = "b56d8d37-8dd1-46bc-97c8-8afcb6fe9877";};
 
         enable = true;
         package = pkgs.fabricServers.fabric-1_21_4;

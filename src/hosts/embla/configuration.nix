@@ -11,18 +11,19 @@
   user = config.systemConstants.username;
 in {
   imports = with inputs.self.modules.nixos; [
-    deployable
-    cli
+    helix
+    git
+    ssh
     localization
-    server
-    fabric
-    playit
-    systemd-boot
+    avahi
+    deployable
   ];
-
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
 
+  boot.loader.grub.enable = true;
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
+
+  services.getty.autologinUser = user;
 }

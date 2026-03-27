@@ -27,6 +27,8 @@ in {
     steam
     zram
     karere
+    avahi
+    systemd-boot
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;

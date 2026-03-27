@@ -4,7 +4,6 @@
       user
       home-manager
       nix
-      systemd-boot
       systemd-resolved
       systemConstants
     ];

@@ -26,6 +26,7 @@ in {
     pipewire
     bluetooth
     iwd
+    systemd-boot
   ];
   system.stateVersion = "25.11";
 

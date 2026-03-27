@@ -19,8 +19,8 @@
           }
         ];
         spawn-at-startup = [
-          {command = ["${pkgs.swww}/bin/swww" "img" "-t" "none" "${image}"];}
-          {command = ["${pkgs.swww}/bin/swww" "img" "-t" "none" "-n" "overview" "${blurred-image}"];}
+          {command = ["sh" "-c" "while ! ${pkgs.swww}/bin/swww query 2>/dev/null; do sleep 0.1; done; ${pkgs.swww}/bin/swww img -t none ${image}"];}
+          {command = ["sh" "-c" "while ! ${pkgs.swww}/bin/swww query -n overview 2>/dev/null; do sleep 0.1; done; ${pkgs.swww}/bin/swww img -t none -n overview ${blurred-image}"];}
         ];
       };
       systemd.user.services = {
