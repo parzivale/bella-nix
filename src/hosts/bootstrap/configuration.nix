@@ -39,6 +39,7 @@ in {
   age.rekey.storageMode = "derivation";
 
   users.users.root.openssh.authorizedKeys.keyFiles = [../../secrets/yubikey/yubikey_sshkey.pub];
+  services.openssh.settings.PermitRootLogin = "prohibit-password";
   services.openssh.settings.AllowUsers = ["nixos-anywhere" "root"];
 
   networking.nameservers = ["1.1.1.1" "8.8.8.8"];
