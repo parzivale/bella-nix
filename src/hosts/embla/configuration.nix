@@ -9,6 +9,7 @@
     then builtins.readFile path
     else "";
   user = config.systemConstants.username;
+  bootDisk = "/dev/disk/by-id/" + builtins.readFile ./boot_disk;
 in {
   imports = with inputs.self.modules.nixos; [
     helix
@@ -21,7 +22,10 @@ in {
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
 
-  boot.loader.grub.enable = true;
+  boot.loader.grub = {
+    enable = true;
+    device = bootDisk;
+  };
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
