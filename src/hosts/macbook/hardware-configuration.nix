@@ -15,11 +15,10 @@
   };
 
   networking.useNetworkd = true;
-  networking.dhcpcd.enable = false;
   systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [];
 
-  services.xserver.xkb.layout = "us";
-  console.keyMap = "us";
+  services.xserver.xkb.layout = "es";
+  console.keyMap = "es";
 
   hardware = {
     asahi = {
@@ -38,7 +37,7 @@
     MatchBus=usb
     MatchVendor=0x05AC
     MatchProduct=0x0354
-    AttrPalmSizeThreshold=1600
+    ModelTouchpadPalmDetect=1
   '';
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";

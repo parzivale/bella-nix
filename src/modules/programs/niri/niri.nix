@@ -45,6 +45,7 @@
 
           input = {
             mouse.accel-profile = "flat";
+
             focus-follows-mouse = {
               enable = true;
               max-scroll-amount = "0%";
