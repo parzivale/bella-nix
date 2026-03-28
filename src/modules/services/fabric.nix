@@ -15,6 +15,7 @@
         jvmOpts = "-Xms4G -Xmx8G";
 
         serverProperties = {
+          white-list = true;
           server-port = 25565;
           difficulty = "normal";
           gamemode = "survival";

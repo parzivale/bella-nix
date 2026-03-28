@@ -54,6 +54,7 @@
           jdks = [
             (wrapJava pkgs.jdk17)
             (wrapJava pkgs.jdk21)
+            (wrapJava pkgs.jdk25)
           ];
         })
       ];
