@@ -18,8 +18,8 @@
   networking.dhcpcd.enable = false;
   systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [];
 
-  services.xserver.xkb.layout = "es";
-  console.keyMap = "es";
+  services.xserver.xkb.layout = "us";
+  console.keyMap = "us";
 
   hardware = {
     asahi = {

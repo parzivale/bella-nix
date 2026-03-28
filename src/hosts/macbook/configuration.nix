@@ -27,6 +27,7 @@ in {
     bluetooth
     iwd
     systemd-boot
+    bottles
   ];
   system.stateVersion = "25.11";
 

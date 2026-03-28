@@ -16,8 +16,8 @@
               vulkan-loader
             ];
         };
-        winePackages = [pkgs.wineWowPackages.stagingFull];
-        defaultWinePackage = pkgs.wineWowPackages.stagingFull;
+        winePackages = [pkgs.wineWow64Packages.stagingFull];
+        defaultWinePackage = pkgs.wineWow64Packages.stagingFull;
       };
     };
     preservation.preserveAt."/persistent".users.${user} = {
