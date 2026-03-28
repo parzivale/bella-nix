@@ -32,13 +32,5 @@
     };
   };
 
-  environment.etc."libinput/local-overrides.quirks".text = ''
-    [Apple MTP Touchpad]
-    MatchBus=usb
-    MatchVendor=0x05AC
-    MatchProduct=0x0354
-    ModelTouchpadPalmDetect=1
-  '';
-
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
 }

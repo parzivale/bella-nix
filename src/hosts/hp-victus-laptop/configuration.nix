@@ -29,6 +29,8 @@ in {
     karere
     avahi
     systemd-boot
+    remote-builder
+    use-arm-builders
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;

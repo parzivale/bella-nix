@@ -1,6 +1,7 @@
 {inputs}: {
   config,
   lib,
+  pkgs,
   ...
 }: let
   path = ./ssh_host_ed25519_key.pub;
@@ -27,8 +28,10 @@ in {
     bluetooth
     iwd
     systemd-boot
+    remote-builder
     # winetricks
     prismlauncher
+    use-x86-builders
   ];
   # Allow x86_64 Wine runners to execute on ARM via FEX
   boot.binfmt.registrations.fex-x86_64 = {

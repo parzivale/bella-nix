@@ -162,7 +162,6 @@
         confirmTimeout = 120;
         activationTimeout = 600;
       };
-
     };
 
     hosts = load ./src/hosts;
@@ -214,13 +213,7 @@
         ...
       }: {
         agenix-rekey.nixosConfigurations = inputs.self.nixosConfigurations; # (not technically needed, as it is already the default)
-
-        checks = let
-          hostsForSystem = lib.filterAttrs
-            (_: cfg: cfg.config.nixpkgs.hostPlatform.system == system)
-            inputs.self.nixosConfigurations;
-          filteredNodes = lib.intersectAttrs hostsForSystem inputs.self.deploy.nodes;
-        in inputs.deploy-rs.lib.${system}.deployChecks (inputs.self.deploy // {nodes = filteredNodes;});
+        checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
 
         devShells = {
           default = pkgs.mkShell {
