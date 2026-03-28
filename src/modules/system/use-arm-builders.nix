@@ -1,7 +1,6 @@
-{self, ...}: {
+{...}: {
   flake.modules.nixos.use-arm-builders = {config, ...}: {
-    imports = [self.modules.nixos.nix-builder-client];
-
+    nix.distributedBuilds = true;
     nix.buildMachines = [
       {
         hostName = "macbook";
