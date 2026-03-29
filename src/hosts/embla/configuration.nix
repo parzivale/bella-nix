@@ -21,7 +21,6 @@ in {
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
 
-  boot.loader.grub.enable = true;
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
