@@ -1,5 +1,10 @@
 {inputs, ...}: {
-  flake.modules.nixos.wezterm = {config, lib, pkgs, ...}: let
+  flake.modules.nixos.wezterm = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     user = config.systemConstants.username;
     currentHost = config.networking.hostName;
     allHosts = builtins.attrNames (lib.filterAttrs (_: type: type == "directory") (builtins.readDir ../../hosts));
@@ -16,6 +21,7 @@
           enable = true;
           package = inputs.wezterm.packages.${pkgs.system}.default;
           extraConfig = ''
+            config.check_for_updates = false
             config.enable_tab_bar = false
             config.ssh_domains = {
               ${lib.concatMapStrings mkSshDomain remoteHosts}
@@ -58,15 +64,16 @@
       };
 
       xdg.desktopEntries = lib.listToAttrs (map (host: {
-        name = "ssh-${host}";
-        value = {
-          name = "SSH: ${host}";
-          exec = "wezterm connect ${host}";
-          icon = "utilities-terminal";
-          comment = "SSH into ${host} via WezTerm";
-          categories = ["System" "TerminalEmulator"];
-        };
-      }) remoteHosts);
+          name = "ssh-${host}";
+          value = {
+            name = "SSH: ${host}";
+            exec = "wezterm connect ${host}";
+            icon = "utilities-terminal";
+            comment = "SSH into ${host} via WezTerm";
+            categories = ["System" "TerminalEmulator"];
+          };
+        })
+        remoteHosts);
     };
   };
 }
