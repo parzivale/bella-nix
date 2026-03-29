@@ -7,7 +7,7 @@
   boot = {
     loader.grub = {
       enable = true;
-      devices = "/dev/disk/by-id/" + builtins.readFile ./boot_disk;
+      device = "/dev/disk/by-id/" + builtins.readFile ./boot_disk;
     };
   };
 
