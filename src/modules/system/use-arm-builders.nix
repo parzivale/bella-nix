@@ -9,6 +9,7 @@
         sshUser = "nix-builder";
         sshKey = config.age.secrets.nix-builder-key.path;
         systems = ["aarch64-linux"];
+        maxJobs = 8;
         supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
       }
     ];
