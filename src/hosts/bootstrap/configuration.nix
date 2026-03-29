@@ -19,6 +19,7 @@ in {
         nixos-facter
         age
         age-plugin-fido2-hmac
+        inputs.disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
       ];
     };
   };
