@@ -167,6 +167,8 @@
         confirmTimeout = 120;
         activationTimeout = 600;
       };
+
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
     };
 
     hosts = load ./src/hosts;
@@ -218,7 +220,6 @@
         ...
       }: {
         agenix-rekey.nixosConfigurations = inputs.self.nixosConfigurations; # (not technically needed, as it is already the default)
-        checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
 
         devShells = {
           default = pkgs.mkShell {
