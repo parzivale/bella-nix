@@ -13,7 +13,7 @@ in {
   imports = with inputs.self.modules.nixos; [
     helix
     # git
-    ssh
+    # ssh
     localization
     avahi
     # deployable
