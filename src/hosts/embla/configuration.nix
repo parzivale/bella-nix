@@ -12,11 +12,12 @@
 in {
   imports = with inputs.self.modules.nixos; [
     helix
-    git
+    # git
     ssh
     localization
     avahi
-    deployable
+    # deployable
+    openssh
   ];
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
