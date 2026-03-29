@@ -18,6 +18,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    wezterm = {
+      url = "github:parzivale/wezterm?dir=nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     agenix-rekey = {
       url = "github:oddlama/agenix-rekey";
       inputs.nixpkgs.follows = "nixpkgs";

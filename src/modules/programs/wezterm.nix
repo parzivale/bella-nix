@@ -1,5 +1,5 @@
-{
-  flake.modules.nixos.wezterm = {config, lib, ...}: let
+{inputs, ...}: {
+  flake.modules.nixos.wezterm = {config, lib, pkgs, ...}: let
     user = config.systemConstants.username;
     currentHost = config.networking.hostName;
     allHosts = builtins.attrNames (lib.filterAttrs (_: type: type == "directory") (builtins.readDir ../../hosts));
@@ -14,6 +14,7 @@
       programs = {
         wezterm = {
           enable = true;
+          package = inputs.wezterm.packages.${pkgs.system}.default;
           extraConfig = ''
             config.enable_tab_bar = false
             config.ssh_domains = {
