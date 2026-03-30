@@ -19,7 +19,7 @@
       programs = {
         wezterm = {
           enable = true;
-          package = inputs.wezterm.packages.${pkgs.system}.default;
+          package = inputs.wezterm.packages.${pkgs.stdenv.hostPlatform.system}.default;
           extraConfig = ''
             config.check_for_updates = false
             config.enable_tab_bar = false

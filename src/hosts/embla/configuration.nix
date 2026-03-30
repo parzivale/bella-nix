@@ -12,6 +12,7 @@
 in {
   imports = with inputs.self.modules.nixos; [
     helix
+    cli
     git
     ssh
     localization
