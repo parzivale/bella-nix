@@ -10,9 +10,11 @@
       enable = true;
       package = pkgs.steam.override {
         extraEnv = {
-          STEAM_FRAME_FORCE_CLOSE = "1";
-          STEAM_DISABLE_BROWSER_COMPOSITOR = "1";
-          STEAM_DISABLE_OVERLAY = "1";
+          PROTON_ENABLE_WAYLAND = 1;
+          DRI_PRIME = 1;
+          STEAM_FRAME_FORCE_CLOSE = 1;
+          STEAM_DISABLE_BROWSER_COMPOSITOR = 1;
+          STEAM_DISABLE_OVERLAY = 1;
         };
         extraArgs = builtins.concatStringsSep " " [
           "-cef-single-process"

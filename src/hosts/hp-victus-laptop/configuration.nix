@@ -18,13 +18,14 @@ in {
     deployer
     desktop
     discord
-    earlyoom
+    # earlyoom
     nvidia
     osu
     pipewire
     spotify-player
     prismlauncher
     steam
+    swapfile
     zram
     karere
     avahi

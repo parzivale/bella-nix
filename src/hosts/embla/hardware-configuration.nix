@@ -1,30 +1,27 @@
 {inputs}: {lib, ...}: {
   networking = {
     useDHCP = false;
-    interfaces.enp3s0 = {
-      ipv4.addresses = [
-        {
-          address = "130.240.204.12";
-          prefixLength = 24;
-        }
-      ];
-      ipv6.addresses = [
-        {
-          address = "2001:6b0:10:9829:204:12";
-          prefixLength = 64;
-        }
-      ];
-    };
-    defaultGateway = {
-      address = "130.240.204.1";
-      interface = "enp3s0";
-    };
-    defaultGateway6 = {
-      address = "2001:6b0:10:9829::1";
-      interface = "enp3s0";
-    };
+    dhcpcd.enable = false;
   };
 
+  systemd.network = {
+    enable = true;
+    networks."10-enp3s0" = {
+      matchConfig.Name = "enp3s0";
+
+      address = [
+        "130.240.204.12/24"
+      ];
+
+      routes = [
+        {Gateway = "130.240.204.1";}
+      ];
+
+      networkConfig = {
+        DHCP = "no";
+      };
+    };
+  };
   hardware.enableAllFirmware = true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }
