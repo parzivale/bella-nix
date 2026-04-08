@@ -23,6 +23,11 @@ in {
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
 
+  services.tailscale = {
+    extraUpFlags = ["--advertise-exit-node"];
+    useRoutingFeatures = "server";
+  };
+
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
