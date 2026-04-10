@@ -25,8 +25,6 @@ in {
     spotify-player
     prismlauncher
     steam
-    swapfile
-    zram
     karere
     avahi
     systemd-boot
@@ -35,6 +33,8 @@ in {
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
+
+  swapDevices = [{device = "/persistent/swapfile"; size = 24576;}]; # 24GB
 
   services.xserver.xkb.layout = "us";
 

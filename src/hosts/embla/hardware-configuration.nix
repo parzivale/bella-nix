@@ -10,11 +10,11 @@
       matchConfig.Name = "enp3s0";
 
       address = [
-        "130.240.204.12/24"
+        "130.240.202.212/24"
       ];
 
       routes = [
-        {Gateway = "130.240.204.1";}
+        {Gateway = "130.240.202.1";}
       ];
 
       networkConfig = {

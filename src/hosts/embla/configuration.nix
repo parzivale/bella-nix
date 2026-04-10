@@ -18,6 +18,7 @@ in {
     localization
     avahi
     deployable
+    grocy
   ];
 
   system.stateVersion = "25.11";
