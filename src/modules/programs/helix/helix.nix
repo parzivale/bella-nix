@@ -158,7 +158,7 @@
           rust-analyzer = {
             # command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
             config = {
-              # check.command = "${pkgs.clippy}/bin/cargo-clippy";
+              check.command = "clippy";
               cargo.features = "all";
             };
           };

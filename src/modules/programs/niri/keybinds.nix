@@ -35,6 +35,7 @@
         "Mod+G".action = switch-preset-window-height;
         "Mod+Shift+G".action = reset-window-height;
         "Mod+Tab".action = toggle-overview;
+        "Mod+T".action = toggle-window-floating;
 
         "Mod+C".action = center-column;
         "Mod+Ctrl+C".action = center-visible-columns;

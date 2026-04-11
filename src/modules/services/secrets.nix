@@ -42,6 +42,14 @@
           rekeyFile = ../../secrets/github/github-key.age;
           owner = user;
         };
+        cloudflare-tunnel-creds = {
+          rekeyFile = ../../secrets/cloudflare-tunnel/credentials.age;
+          owner = "cloudflared";
+        };
+        synapse-secret = {
+          rekeyFile = ../../secrets/synapse/synapse-secret.age;
+          owner = "matrix-synapse";
+        };
       };
     };
   };

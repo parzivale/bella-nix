@@ -18,6 +18,7 @@ in {
     fabric
     playit
     systemd-boot
+    networkd
   ];
 
   system.stateVersion = "25.11";

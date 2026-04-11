@@ -33,6 +33,9 @@ in {
     prismlauncher
     use-x86-builders
     spotify-player
+    networkd
+    wired
+    batsignal
   ];
   # Allow x86_64 Wine runners to execute on ARM via FEX
   boot.binfmt.registrations.fex-x86_64 = {

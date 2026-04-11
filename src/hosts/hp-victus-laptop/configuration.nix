@@ -30,11 +30,18 @@ in {
     systemd-boot
     remote-builder
     use-arm-builders
+    networkd
+    wired
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
-  swapDevices = [{device = "/persistent/swapfile"; size = 24576;}]; # 24GB
+  swapDevices = [
+    {
+      device = "/persistent/swapfile";
+      size = 24576;
+    }
+  ]; # 24GB
 
   services.xserver.xkb.layout = "us";
 

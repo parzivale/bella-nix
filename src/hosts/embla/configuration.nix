@@ -19,6 +19,7 @@ in {
     avahi
     deployable
     grocy
+    synapse
   ];
 
   system.stateVersion = "25.11";
