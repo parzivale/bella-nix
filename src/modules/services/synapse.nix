@@ -1,5 +1,9 @@
 {
-  flake.modules.nixos.synapse = {config, ...}: let
+  flake.modules.nixos.synapse = {
+    config,
+    pkgs,
+    ...
+  }: let
     domain = config.systemConstants.domain;
   in {
     services.matrix-synapse = {
@@ -36,7 +40,14 @@
       };
     };
     services.postgresql = {
-      ensureDatabases = ["matrix-synapse"];
+      initialScript = pkgs.writeText "synapse-init.sql" ''
+        CREATE DATABASE "matrix-synapse"
+          WITH OWNER "matrix-synapse"
+          ENCODING 'UTF8'
+          LC_COLLATE 'C'
+          LC_CTYPE 'C'
+          TEMPLATE template0;
+      '';
       ensureUsers = [
         {
           name = "matrix-synapse";
