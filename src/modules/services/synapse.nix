@@ -51,7 +51,6 @@
       ensureUsers = [
         {
           name = "matrix-synapse";
-          ensureDBOwnership = true;
         }
       ];
     };
