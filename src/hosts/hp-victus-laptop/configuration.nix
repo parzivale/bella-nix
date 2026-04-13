@@ -31,7 +31,8 @@ in {
     remote-builder
     use-arm-builders
     networkd
-    wired
+    mako
+    hibernation
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;

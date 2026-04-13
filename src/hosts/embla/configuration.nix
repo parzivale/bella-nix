@@ -20,6 +20,9 @@ in {
     deployable
     grocy
     synapse
+    acme
+    postgres
+    nginx
   ];
 
   system.stateVersion = "25.11";

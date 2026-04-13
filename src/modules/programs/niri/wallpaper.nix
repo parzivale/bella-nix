@@ -14,36 +14,36 @@
       programs.niri.settings = {
         layer-rules = [
           {
-            matches = [{namespace = "swww-daemonoverview$";}];
+            matches = [{namespace = "awww-daemonoverview$";}];
             place-within-backdrop = true;
           }
         ];
         spawn-at-startup = [
-          {command = ["sh" "-c" "while ! ${pkgs.swww}/bin/swww query 2>/dev/null; do sleep 0.1; done; ${pkgs.swww}/bin/swww img -t none ${image}"];}
-          {command = ["sh" "-c" "while ! ${pkgs.swww}/bin/swww query -n overview 2>/dev/null; do sleep 0.1; done; ${pkgs.swww}/bin/swww img -t none -n overview ${blurred-image}"];}
+          {command = ["sh" "-c" "while ! ${pkgs.awww}/bin/awww query 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none ${image}"];}
+          {command = ["sh" "-c" "while ! ${pkgs.awww}/bin/awww query -n overview 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none -n overview ${blurred-image}"];}
         ];
       };
       systemd.user.services = {
-        swww = {
+        awww = {
           Unit = {
             After = ["graphical-session.target" "niri.service"];
             PartOf = ["graphical-session.target"];
           };
           Service = {
-            ExecStart = "${pkgs.swww}/bin/swww-daemon";
+            ExecStart = "${pkgs.awww}/bin/awww-daemon";
             Restart = "on-failure";
           };
           Install.WantedBy = ["graphical-session.target"];
         };
 
-        swww-overview = {
+        awww-overview = {
           Unit = {
-            Description = "swww overview daemon";
+            Description = "awww overview daemon";
             After = ["graphical-session.target" "niri.service"];
             PartOf = ["graphical-session.target"];
           };
           Service = {
-            ExecStart = "${pkgs.swww}/bin/swww-daemon -n overview";
+            ExecStart = "${pkgs.awww}/bin/awww-daemon -n overview";
             Restart = "on-failure";
           };
           Install.WantedBy = ["graphical-session.target"];

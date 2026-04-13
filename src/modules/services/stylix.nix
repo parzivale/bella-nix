@@ -7,11 +7,24 @@
     user = config.systemConstants.username;
   in {
     imports = [inputs.stylix.nixosModules.default];
-    home-manager.users.${user}.xdg.desktopEntries = {
-      qt5ct = {name = "Qt5 Settings"; noDisplay = true;};
-      qt6ct = {name = "Qt6 Settings"; noDisplay = true;};
-      kvantummanager = {name = "Kvantum Manager"; noDisplay = true;};
+    home-manager.users.${user} = {
+      gtk.gtk4.theme = null;
+      xdg.desktopEntries = {
+        qt5ct = {
+          name = "Qt5 Settings";
+          noDisplay = true;
+        };
+        qt6ct = {
+          name = "Qt6 Settings";
+          noDisplay = true;
+        };
+        kvantummanager = {
+          name = "Kvantum Manager";
+          noDisplay = true;
+        };
+      };
     };
+
     stylix = {
       enable = true;
       image = config.systemConstants.bg_img;

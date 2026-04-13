@@ -22,6 +22,7 @@
           userDirs = let
             dump = "${config.home-manager.users.${user}.home.homeDirectory}/dmp";
           in {
+            setSessionVariables = false;
             enable = true;
             createDirectories = true;
             desktop = dump;

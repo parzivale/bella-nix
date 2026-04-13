@@ -4,6 +4,7 @@
   in {
     home-manager.users.${user} = {
       programs.yazi = {
+        shellWrapperName = "yy";
         enable = true;
         settings = {
           mgr = {

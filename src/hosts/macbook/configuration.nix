@@ -34,8 +34,9 @@ in {
     use-x86-builders
     spotify-player
     networkd
-    wired
     batsignal
+    mako
+    hibernation
   ];
   # Allow x86_64 Wine runners to execute on ARM via FEX
   boot.binfmt.registrations.fex-x86_64 = {
@@ -43,6 +44,14 @@ in {
     magicOrExtension = ''\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00'';
     mask = ''\xff\xff\xff\xff\xff\xfe\xfe\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff'';
   };
+
+  swapDevices = [
+    {
+      device = "/persistent/swapfile";
+      size = 24576;
+      priority = 1;
+    }
+  ]; # 24GB
 
   system.stateVersion = "25.11";
 

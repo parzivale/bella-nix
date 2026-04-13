@@ -14,7 +14,7 @@
     loader.efi.canTouchEfiVariables = false;
   };
 
-  networking.useNetworkd = true;
+  # networking.useNetworkd = true;
   systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [];
 
   services.xserver.xkb.layout = "es";
