@@ -24,7 +24,7 @@
     };
 
     agenix-rekey = {
-      url = "github:oddlama/agenix-rekey";
+      url = "github:parzivale/agenix-rekey";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

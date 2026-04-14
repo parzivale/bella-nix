@@ -12,6 +12,7 @@
       options hid_apple iso_layout=0
     '';
     loader.efi.canTouchEfiVariables = false;
+    binfmt.emulatedSystems = ["x86_64-linux"];
   };
 
   # networking.useNetworkd = true;

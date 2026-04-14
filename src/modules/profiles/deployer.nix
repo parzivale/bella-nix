@@ -15,6 +15,10 @@
       signed-nix
     ];
 
+    nix.settings.system-features = [
+      "yubikey"
+    ];
+
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [
         {

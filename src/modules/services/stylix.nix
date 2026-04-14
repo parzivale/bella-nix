@@ -39,6 +39,24 @@
         name = "Nordzy-cursors";
         size = 32;
       };
+      fonts = {
+        sansSerif = {
+          package = pkgs.atkinson-hyperlegible-next;
+          name = "Atkinson Hyperlegible Next";
+        };
+        serif = {
+          package = pkgs.atkinson-hyperlegible-next;
+          name = "Atkinson Hyperlegible Next";
+        };
+        monospace = {
+          package = pkgs.maple-mono.NF-CN;
+          name = "Maple Mono NF CN";
+        };
+        emoji = {
+          package = pkgs.twitter-color-emoji;
+          name = "Twitter Color Emoji";
+        };
+      };
     };
   };
 }

@@ -6,10 +6,10 @@
       enable = true;
       settings = {
         default-timeout = 5000;
-        borderRadius = 8;
+        border-radius = 8;
         margin = "10";
         padding = "12";
-        iconPath = "/run/current-system/sw/share/icons/Papirus-Dark";
+        icon-path = "/run/current-system/sw/share/icons/Papirus-Dark";
       };
     };
   };
