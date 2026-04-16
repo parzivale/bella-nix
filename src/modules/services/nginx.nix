@@ -4,7 +4,6 @@
       enable = true;
       recommendedTlsSettings = true;
       recommendedOptimisation = true;
-      recommendedGzipSettings = true;
       recommendedProxySettings = true;
       commonHttpConfig = ''
         http2 on;

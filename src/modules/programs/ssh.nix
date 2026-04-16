@@ -3,6 +3,11 @@
     user = config.systemConstants.username;
   in {
     imports = with inputs.self.modules.nixos; [secrets openssh preservation];
+
+    age.secrets.github-key = {
+      rekeyFile = ../../secrets/github/github-key.age;
+      owner = user;
+    };
     home-manager.users.${user}.programs.ssh = {
       enable = true;
       enableDefaultConfig = false;

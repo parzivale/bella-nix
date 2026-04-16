@@ -20,6 +20,8 @@ in {
     deployable
     grocy
     synapse
+    mas
+    pocket-id
     acme
     postgres
     nginx

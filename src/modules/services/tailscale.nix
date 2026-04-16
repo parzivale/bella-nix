@@ -17,6 +17,8 @@
         }
       ];
     };
+    age.secrets.tailscale_token.rekeyFile = ../../secrets/tailscale/tailscale_key.age;
+
     services.tailscale = {
       enable = true;
       authKeyFile = config.age.secrets.tailscale_token.path;

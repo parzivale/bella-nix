@@ -7,10 +7,14 @@
       defaults.email = email;
     };
 
+    users.users.nginx.extraGroups = ["acme"];
+
     networking.firewall.allowedTCPPorts = [80];
 
     preservation.preserveAt."/persistent".directories = [
-      "/var/lib/acme"
+      {
+        directory = "/var/lib/acme";
+      }
     ];
   };
 }

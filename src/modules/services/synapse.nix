@@ -6,10 +6,20 @@
   }: let
     domain = config.systemConstants.domain;
   in {
+    age.secrets.synapse-secret = {
+      rekeyFile = ../../secrets/synapse-secrets/synapse-secrets.age;
+      owner = "matrix-synapse";
+    };
+    age.secrets.synapse-mas-secret = {
+      rekeyFile = ../../secrets/synapse-secrets/synapse-mas.age;
+      owner = "matrix-synapse";
+    };
+
     services.matrix-synapse = {
       enable = true;
       extraConfigFiles = [
         config.age.secrets.synapse-secret.path
+        config.age.secrets.synapse-mas-secret.path
       ];
       settings = {
         server_name = domain;
@@ -80,7 +90,7 @@
           extraConfig = ''
             default_type application/json;
             add_header Access-Control-Allow-Origin *;
-            return 200 '{"m.homeserver":{"base_url":"https://matrix.${domain}"}}';
+            return 200 '{"m.homeserver":{"base_url":"https://matrix.${domain}"},"org.matrix.msc2965.authentication":{"issuer":"https://auth.matrix.${domain}/","account":"https://auth.matrix.${domain}/account"}}';
           '';
         };
       };

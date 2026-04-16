@@ -33,21 +33,6 @@
 
         storageMode = "derivation";
       };
-      secrets = {
-        nix-builder-key.rekeyFile = ../../secrets/nix-builder/nix-builder-key.age;
-        tailscale_token.rekeyFile = ../../secrets/tailscale/tailscale_key.age;
-        deploy-key.rekeyFile = ../../secrets/nix-deploy/deploy-key.age;
-        cloudflare-buckets.rekeyFile = ../../secrets/cloudflare-buckets/access_env.age;
-        playit-secret.rekeyFile = ../../secrets/playit/playit-secret.age;
-        github-key = {
-          rekeyFile = ../../secrets/github/github-key.age;
-          owner = user;
-        };
-        synapse-secret = {
-          rekeyFile = ../../secrets/synapse-secrets/synapse-secrets.age;
-          owner = "matrix-synapse";
-        };
-      };
     };
   };
 }
