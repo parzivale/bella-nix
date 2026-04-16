@@ -12,33 +12,22 @@
   user = config.systemConstants.username;
 in {
   imports = with inputs.self.modules.nixos; [
-    helix
-    git
-    ssh
-    localization
-    avahi
-    systemd-boot
-    deployer
     cli
-    _1password
-    claude
+    deployer
     desktop
-    zram
-    pipewire
-    bluetooth
+    workstation
+    # hardware
     iwd
-    systemd-boot
-    remote-builder
-    # winetricks
-    prismlauncher
-    use-x86-builders
-    spotify-player
-    networkd
+    zram
+    # power
     batsignal
-    mako
-    hibernation
+    # chat
     fractal
     cinny
+    # system
+    avahi
+    systemd-boot
+    use-x86-builders
   ];
   # Allow x86_64 Wine runners to execute on ARM via FEX
   boot.binfmt.registrations.fex-x86_64 = {

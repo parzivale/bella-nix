@@ -10,29 +10,23 @@
     else "";
 in {
   imports = with inputs.self.modules.nixos; [
-    _1password
-    bluetooth
-    claude
     cli
-    ddcutil
     deployer
     desktop
-    discord
-    # earlyoom
+    workstation
+    # GPU + monitor control
     nvidia
+    ddcutil
+    # gaming
     osu
-    pipewire
-    spotify-player
-    prismlauncher
     steam
+    # social
+    discord
     karere
+    # system
     avahi
     systemd-boot
-    remote-builder
     use-arm-builders
-    networkd
-    mako
-    hibernation
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;

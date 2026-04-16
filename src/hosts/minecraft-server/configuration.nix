@@ -11,9 +11,7 @@
   user = config.systemConstants.username;
 in {
   imports = with inputs.self.modules.nixos; [
-    deployable
     cli
-    localization
     server
     fabric
     playit

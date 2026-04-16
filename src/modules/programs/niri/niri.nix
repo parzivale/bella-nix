@@ -45,6 +45,7 @@
 
           input = {
             mouse.accel-profile = "flat";
+            touchpad.tap = false;
 
             focus-follows-mouse = {
               enable = true;

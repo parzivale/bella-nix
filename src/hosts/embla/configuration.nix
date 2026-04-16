@@ -11,13 +11,11 @@
   user = config.systemConstants.username;
 in {
   imports = with inputs.self.modules.nixos; [
-    helix
     cli
-    git
-    ssh
-    localization
+    server
+    # networking
     avahi
-    deployable
+    # services
     grocy
     synapse
     mas
