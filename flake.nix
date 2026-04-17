@@ -199,7 +199,17 @@
                     (final: prev: {
                       mautrix-whatsapp = prev.mautrix-whatsapp.override {withGoolm = true;};
                       mautrix-signal = prev.mautrix-signal.override {withGoolm = true;};
-                      mautrix-meta = prev.mautrix-meta.override {withGoolm = true;};
+                      mautrix-meta = (prev.mautrix-meta.override {withGoolm = true;}).overrideAttrs (_old: {
+                        version = "26.04";
+                        src = prev.fetchFromGitHub {
+                          owner = "mautrix";
+                          repo = "meta";
+                          tag = "v0.2604.0";
+                          hash = "sha256-85dzr97TTU0OCTzFe1gJ7lohVilivRErrW+alnRc3sI=";
+                        };
+                        vendorHash = "sha256-SK7BGUOe85hDijNKoxhhDoHAd+KEcipEB1kJmUQ5zlc=";
+                        ldflags = ["-s" "-w" "-X" "main.Tag=v0.2604.0"];
+                      });
                     })
                   ];
                   networking.hostName = "${name}";
