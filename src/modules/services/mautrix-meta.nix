@@ -7,6 +7,10 @@
     homeserver = {
       address = "http://127.0.0.1:8008";
       inherit domain;
+      software = "standard";
+    };
+    encryption = {
+      msc4190 = true;
     };
   in {
     services.mautrix-meta.instances = {
@@ -14,6 +18,7 @@
         enable = true;
         settings = {
           homeserver = homeserver;
+          encryption = encryption;
           database = {
             type = "postgres";
             uri = "postgresql:///mautrix-meta-instagram?host=/run/postgresql";
@@ -25,6 +30,7 @@
         enable = true;
         settings = {
           homeserver = homeserver;
+          encryption = encryption;
           database = {
             type = "postgres";
             uri = "postgresql:///mautrix-meta-facebook?host=/run/postgresql";

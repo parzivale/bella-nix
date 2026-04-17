@@ -39,6 +39,7 @@
             ];
           }
         ];
+        experimental_features.msc4190_enabled = true;
         database = {
           name = "psycopg2";
           args = {
