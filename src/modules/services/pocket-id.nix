@@ -7,14 +7,6 @@
       owner = "pocket-id";
     };
 
-    users.users.pocket-id = {
-      isSystemUser = true;
-      group = "pocket-id";
-      uid = 994;
-    };
-
-    users.groups.pocket-id.gid = 995;
-
     services.pocket-id = {
       enable = true;
       settings = {

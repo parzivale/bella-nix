@@ -11,6 +11,21 @@
 
     security.pam.services.sudo.startSession = true;
 
+    # Grant wheel unconditional yes for power actions (same as Fedora's 49-wheel.rules).
+    security.polkit.extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if ((action.id == "org.freedesktop.login1.reboot" ||
+             action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+             action.id == "org.freedesktop.login1.reboot-ignore-inhibit" ||
+             action.id == "org.freedesktop.login1.power-off" ||
+             action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+             action.id == "org.freedesktop.login1.power-off-ignore-inhibit") &&
+            subject.isInGroup("wheel")) {
+          return polkit.Result.YES;
+        }
+      });
+    '';
+
     users = {
       mutableUsers = false;
       users = {
