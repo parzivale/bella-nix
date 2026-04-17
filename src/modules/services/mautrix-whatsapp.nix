@@ -17,6 +17,7 @@
           uri = "postgresql:///mautrix-whatsapp?host=/run/postgresql";
         };
         bridge.permissions."${domain}" = "user";
+        encryption.msc4190 = true;
       };
     };
 
