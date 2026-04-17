@@ -14,7 +14,10 @@
         enable = true;
         settings = {
           homeserver = homeserver;
-          database.uri = "postgresql:///mautrix-meta-instagram?host=/run/postgresql";
+          database = {
+            type = "postgres";
+            uri = "postgresql:///mautrix-meta-instagram?host=/run/postgresql";
+          };
           bridge.permissions."${domain}" = "user";
         };
       };
@@ -22,7 +25,10 @@
         enable = true;
         settings = {
           homeserver = homeserver;
-          database.uri = "postgresql:///mautrix-meta-facebook?host=/run/postgresql";
+          database = {
+            type = "postgres";
+            uri = "postgresql:///mautrix-meta-facebook?host=/run/postgresql";
+          };
           bridge.permissions."${domain}" = "user";
         };
       };

@@ -18,7 +18,7 @@
     services.pocket-id = {
       enable = true;
       settings = {
-        APP_URL = "https://id.matrix.${domain}";
+        APP_URL = "https://id.${domain}";
         TRUST_PROXY = true;
         DB_CONNECTION_STRING = "postgresql:///pocket-id?host=/run/postgresql";
       };
@@ -35,7 +35,7 @@
       ];
     };
 
-    services.nginx.virtualHosts."id.matrix.${domain}" = {
+    services.nginx.virtualHosts."id.${domain}" = {
       forceSSL = true;
       enableACME = true;
       quic = true;

@@ -66,7 +66,7 @@
       upstream_oauth2.providers = [
         {
           id = "01KP9M2FDVT46D0CXQJAR9ZGG2";
-          issuer = "https://id.matrix.${domain}";
+          issuer = config.services.pocket-id.settings.APP_URL;
           human_name = "Pocket ID";
           client_id = "mas";
           client_secret_file = config.age.secrets.mas-oauth-client-secret.path;
