@@ -10,6 +10,7 @@
       software = "standard";
     };
     encryption = {
+      allow = true;
       msc4190 = true;
     };
   in {
