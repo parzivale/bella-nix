@@ -62,6 +62,32 @@
         endpoint = "http://127.0.0.1:8008";
       };
       passwords.enabled = false;
+      account.management_url = "https://auth.matrix.${domain}/account";
+      upstream_oauth2.providers = [
+        {
+          id = "01KP9M2FDVT46D0CXQJAR9ZGG2";
+          issuer = "https://id.matrix.${domain}";
+          human_name = "Pocket ID";
+          client_id = "mas";
+          client_secret_file = config.age.secrets.mas-oauth-client-secret.path;
+          token_endpoint_auth_method = "client_secret_basic";
+          scope = "openid profile email";
+          claims_imports = {
+            localpart = {
+              action = "require";
+              template = "{{ user.preferred_username }}";
+            };
+            displayname = {
+              action = "suggest";
+              template = "{{ user.name }}";
+            };
+            email = {
+              action = "suggest";
+              template = "{{ user.email }}";
+            };
+          };
+        }
+      ];
     };
 
     configFile = format.generate "mas-config.yaml" (filterRecursiveNull settings);
@@ -78,6 +104,11 @@
 
     age.secrets.mas-config = {
       rekeyFile = ../../secrets/mas/mas-config.age;
+      owner = "matrix-authentication-service";
+    };
+
+    age.secrets.mas-oauth-client-secret = {
+      rekeyFile = ../../secrets/mas/mas-oauth-client-secret.age;
       owner = "matrix-authentication-service";
     };
 

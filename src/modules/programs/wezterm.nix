@@ -22,8 +22,6 @@
           package = inputs.wezterm.packages.${pkgs.stdenv.hostPlatform.system}.default;
           extraConfig = ''
             config.check_for_updates = false
-            config.selection_word_boundary = ' \t\n{[}]()"\'`'
-            config.copy_on_select = false
             config.enable_tab_bar = false
             config.ssh_domains = {
               ${lib.concatMapStrings mkSshDomain remoteHosts}

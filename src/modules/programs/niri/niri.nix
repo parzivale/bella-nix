@@ -43,6 +43,12 @@
             path = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
           };
 
+          prefer-no-csd = true;
+
+          layout = {
+            empty-workspace-above-first = true;
+          };
+
           input = {
             mouse.accel-profile = "flat";
             touchpad.tap = false;

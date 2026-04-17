@@ -7,6 +7,7 @@
     user = config.systemConstants.username;
   in {
     imports = [inputs.stylix.nixosModules.default];
+    programs.dconf.enable = true;
     home-manager.users.${user} = {
       gtk.gtk4.theme = null;
       xdg.desktopEntries = {

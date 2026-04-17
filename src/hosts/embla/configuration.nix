@@ -20,6 +20,9 @@ in {
     synapse
     mas
     pocket-id
+    mautrix-whatsapp
+    mautrix-signal
+    mautrix-meta
     acme
     postgres
     nginx

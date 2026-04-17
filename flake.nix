@@ -196,6 +196,11 @@
                     inputs.gtnh-nix.overlays.default
                     inputs.nixos-apple-silicon.overlays.default
                     inputs.nix-minecraft.overlay
+                    (final: prev: {
+                      mautrix-whatsapp = prev.mautrix-whatsapp.override {withGoolm = true;};
+                      mautrix-signal = prev.mautrix-signal.override {withGoolm = true;};
+                      mautrix-meta = prev.mautrix-meta.override {withGoolm = true;};
+                    })
                   ];
                   networking.hostName = "${name}";
                   home-manager.sharedModules = [];
