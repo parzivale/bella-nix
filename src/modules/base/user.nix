@@ -9,6 +9,8 @@
     # Declaritivly manage users
     services.userborn.enable = true;
 
+    security.pam.services.sudo.startSession = true;
+
     users = {
       mutableUsers = false;
       users = {
