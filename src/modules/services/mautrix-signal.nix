@@ -16,6 +16,7 @@
           type = "postgres";
           uri = "postgresql:///mautrix-signal?host=/run/postgresql";
         };
+        bridge.permissions."${domain}" = "user";
       };
     };
 
