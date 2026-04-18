@@ -5,8 +5,19 @@
   }: let
     domain = config.systemConstants.domain;
   in {
+    age.secrets.mautrix-signal-env = {
+      rekeyFile = ../../secrets/mautrix/mautrix-signal.age;
+      owner = "mautrix-signal";
+    };
+
+    systemd.services.mautrix-signal-registration = {
+      after = ["agenix-install-secrets.service"];
+      wants = ["agenix-install-secrets.service"];
+    };
+
     services.mautrix-signal = {
       enable = true;
+      environmentFile = config.age.secrets.mautrix-signal-env.path;
       settings = {
         homeserver = {
           address = "http://127.0.0.1:8008";
@@ -20,6 +31,7 @@
         encryption = {
           allow = true;
           msc4190 = true;
+          pickle_key = "$ENCRYPTION_PICKLE_KEY";
         };
       };
     };

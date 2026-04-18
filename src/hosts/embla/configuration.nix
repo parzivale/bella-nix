@@ -23,6 +23,7 @@ in {
     mautrix-whatsapp
     mautrix-signal
     mautrix-meta
+    mautrix-discord
     acme
     postgres
     nginx

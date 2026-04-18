@@ -12,7 +12,7 @@
       settings = {
         APP_URL = "https://id.${domain}";
         TRUST_PROXY = true;
-        DB_CONNECTION_STRING = "postgresql:///pocket-id?host=/run/postgresql";
+        DB_CONNECTION_STRING = "\"postgresql:///pocket-id?host=/run/postgresql\"";
       };
       environmentFile = config.age.secrets.pocket-id-env.path;
     };

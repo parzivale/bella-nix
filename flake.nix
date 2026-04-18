@@ -199,6 +199,9 @@
                     (final: prev: {
                       mautrix-whatsapp = prev.mautrix-whatsapp.override {withGoolm = true;};
                       mautrix-signal = prev.mautrix-signal.override {withGoolm = true;};
+                      mautrix-discord = prev.mautrix-discord.override {
+                        olm = prev.olm.overrideAttrs (_: {meta.knownVulnerabilities = [];});
+                      };
                       mautrix-meta = (prev.mautrix-meta.override {withGoolm = true;}).overrideAttrs (_old: {
                         version = "26.04";
                         src = prev.fetchFromGitHub {
