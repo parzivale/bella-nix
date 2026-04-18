@@ -5,6 +5,12 @@
   }: let
     domain = config.systemConstants.domain;
   in {
+    nixpkgs.overlays = [
+      (_final: prev: {
+        mautrix-signal = prev.mautrix-signal.override {withGoolm = true;};
+      })
+    ];
+
     age.secrets.mautrix-signal-env = {
       rekeyFile = ../../secrets/mautrix/mautrix-signal.age;
       owner = "mautrix-signal";

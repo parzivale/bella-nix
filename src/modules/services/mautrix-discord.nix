@@ -1,10 +1,15 @@
 {
-  flake.modules.nixos.mautrix-discord = {
-    config,
-    ...
-  }: let
+  flake.modules.nixos.mautrix-discord = {config, ...}: let
     domain = config.systemConstants.domain;
   in {
+    nixpkgs.overlays = [
+      (final: prev: {
+        mautrix-discord = prev.mautrix-discord.override {
+          olm = prev.olm.overrideAttrs (_: {meta.knownVulnerabilities = [];});
+        };
+      })
+    ];
+
     age.secrets.mautrix-discord-env = {
       rekeyFile = ../../secrets/mautrix/mautrix-discord.age;
       owner = "mautrix-discord";
@@ -40,7 +45,12 @@
 
     services.postgresql = {
       ensureDatabases = ["mautrix-discord"];
-      ensureUsers = [{name = "mautrix-discord"; ensureDBOwnership = true;}];
+      ensureUsers = [
+        {
+          name = "mautrix-discord";
+          ensureDBOwnership = true;
+        }
+      ];
     };
 
     preservation.preserveAt."/persistent".directories = [
