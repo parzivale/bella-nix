@@ -40,5 +40,13 @@ in {
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      matrix-authentication-service = prev.matrix-authentication-service.overrideAttrs (_old: {
+        RUSTFLAGS = "-C target-cpu=x86-64";
+      });
+    })
+  ];
+
   services.getty.autologinUser = user;
 }

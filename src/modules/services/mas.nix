@@ -94,14 +94,6 @@
     extraConfigFiles = [config.age.secrets.mas-config.path];
     configArgs = concatMapStringsSep " " (x: "--config ${x}") ([configFile] ++ extraConfigFiles);
   in {
-    nixpkgs.overlays = [
-      (final: prev: {
-        matrix-authentication-service = prev.matrix-authentication-service.overrideAttrs (old: {
-          RUSTFLAGS = "-C target-cpu=x86-64";
-        });
-      })
-    ];
-
     age.secrets.mas-config = {
       rekeyFile = ../../secrets/mas/mas-config.age;
       owner = "matrix-authentication-service";
@@ -164,6 +156,13 @@
       forceSSL = true;
       enableACME = true;
       quic = true;
+      locations."= /.well-known/matrix/client" = {
+        extraConfig = lib.mkForce ''
+          default_type application/json;
+          add_header Access-Control-Allow-Origin *;
+          return 200 '{"m.homeserver":{"base_url":"https://matrix.${domain}"},"org.matrix.msc2965.authentication":{"issuer":"https://auth.matrix.${domain}/","account":"https://auth.matrix.${domain}/account"}}';
+        '';
+      };
       locations."~ ^/_matrix/client/(.*)/(login|logout|refresh)" = {
         proxyPass = "http://127.0.0.1:8009";
         proxyWebsockets = true;

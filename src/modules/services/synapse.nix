@@ -19,7 +19,6 @@
       enable = true;
       extraConfigFiles = [
         config.age.secrets.synapse-secret.path
-        config.age.secrets.synapse-mas-secret.path
       ];
       settings = {
         server_name = domain;
@@ -40,6 +39,12 @@
           }
         ];
         experimental_features.msc4190_enabled = true;
+        matrix_authentication_service = {
+          enabled = true;
+          endpoint = "http://127.0.0.1:8009";
+          account_management_url = "https://auth.matrix.${domain}/account";
+          secret_path = config.age.secrets.synapse-mas-secret.path;
+        };
         database = {
           name = "psycopg2";
           args = {
@@ -91,7 +96,7 @@
           extraConfig = ''
             default_type application/json;
             add_header Access-Control-Allow-Origin *;
-            return 200 '{"m.homeserver":{"base_url":"https://matrix.${domain}"},"org.matrix.msc2965.authentication":{"issuer":"https://auth.matrix.${domain}/","account":"https://auth.matrix.${domain}/account"}}';
+            return 200 '{"m.homeserver":{"base_url":"https://matrix.${domain}"}}';
           '';
         };
       };

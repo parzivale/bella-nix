@@ -114,6 +114,8 @@
       url = "github:pedorich-n/playit-nixos-module";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
   };
 
   outputs = inputs @ {
@@ -190,6 +192,7 @@
                 inputs.disko.nixosModules.disko
                 inputs.agenix.nixosModules.default
                 inputs.agenix-rekey.nixosModules.default
+                inputs.nix-flatpak.nixosModules.nix-flatpak
                 {
                   nixpkgs.overlays = [
                     inputs.niri-flake.overlays.niri
