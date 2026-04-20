@@ -21,9 +21,9 @@ in {
     zram
     # power
     batsignal
+    hibernation
     # chat
-    fractal
-    cinny
+    iamb
     # system
     avahi
     systemd-boot
@@ -43,6 +43,9 @@ in {
       priority = 1;
     }
   ]; # 24GB
+
+  boot.resumeDevice = "/dev/nvme0n1p5";
+  boot.kernelParams = ["resume_offset=5847340"];
 
   system.stateVersion = "25.11";
 

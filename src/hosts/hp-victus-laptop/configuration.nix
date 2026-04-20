@@ -20,6 +20,7 @@ in {
     # gaming
     osu
     steam
+    sober
     # social
     discord
     karere
