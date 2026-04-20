@@ -22,8 +22,7 @@ in {
     steam
     sober
     # social
-    discord
-    karere
+    iamb
     # system
     avahi
     systemd-boot

@@ -9,7 +9,7 @@
       enable = true;
       settings = {
         homeserver = {
-          address = "http://127.0.0.1:8008";
+          address = "https://matrix.${domain}";
           inherit domain;
           software = "standard";
         };

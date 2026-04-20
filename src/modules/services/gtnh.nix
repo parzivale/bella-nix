@@ -4,8 +4,8 @@
     age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/cloudflare-buckets/access_env.age;
 
     services.restic.backups.gtnh-backup = {
-      initalize = true;
-      repositry = "https://36a395a8d1dada79c1fc9d8552de08d0.r2.cloudflarestorage.com/gtnh-backups";
+      initialize = true;
+      repository = "https://36a395a8d1dada79c1fc9d8552de08d0.r2.cloudflarestorage.com/gtnh-backups";
       environmentFile = config.age.secrets.cloudflare-buckets.path;
       paths = ["/var/lib/gtnh"];
       pruneOpts = [

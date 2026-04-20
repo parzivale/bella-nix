@@ -12,7 +12,16 @@
         package = inputs.iamb.packages.${pkgs.stdenv.hostPlatform.system}.default;
         settings = {
           settings = {
-            image_preview.protocol.type = "kitty";
+            image_preview = {
+              protocol = {
+                type = "iterm2";
+                font_size = [19 43];
+              };
+              size = {
+                width = 66;
+                height = 14;
+              };
+            };
             username_display = "displayname";
             notifications.enabled = true;
             sort.rooms = ["favorite" "lowpriority" "unread" "recent"];

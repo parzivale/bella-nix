@@ -1,29 +1,23 @@
 {
-  flake.modules.nixos.mautrix-signal = {
+  flake.modules.nixos.mautrix-gmessages = {
     config,
     ...
   }: let
     domain = config.systemConstants.domain;
   in {
-    nixpkgs.overlays = [
-      (_final: prev: {
-        mautrix-signal = prev.mautrix-signal.override {withGoolm = true;};
-      })
-    ];
-
-    age.secrets.mautrix-signal-env = {
-      rekeyFile = ../../secrets/mautrix/mautrix-signal.age;
-      owner = "mautrix-signal";
+    age.secrets.mautrix-gmessages-env = {
+      rekeyFile = ../../secrets/mautrix/mautrix-gmessages.age;
+      owner = "mautrix-gmessages";
     };
 
-    systemd.services.mautrix-signal-registration = {
+    systemd.services.mautrix-gmessages-registration = {
       after = ["agenix-install-secrets.service"];
       wants = ["agenix-install-secrets.service"];
     };
 
-    services.mautrix-signal = {
+    services.mautrix-gmessages = {
       enable = true;
-      environmentFile = config.age.secrets.mautrix-signal-env.path;
+      environmentFile = config.age.secrets.mautrix-gmessages-env.path;
       settings = {
         homeserver = {
           address = "https://matrix.${domain}";
@@ -31,7 +25,7 @@
         };
         database = {
           type = "postgres";
-          uri = "postgresql:///mautrix-signal?host=/run/postgresql";
+          uri = "postgresql:///mautrix-gmessages?host=/run/postgresql";
         };
         bridge.permissions."${domain}" = "user";
         encryption = {
@@ -43,12 +37,12 @@
     };
 
     services.postgresql = {
-      ensureDatabases = ["mautrix-signal"];
-      ensureUsers = [{name = "mautrix-signal"; ensureDBOwnership = true;}];
+      ensureDatabases = ["mautrix-gmessages"];
+      ensureUsers = [{name = "mautrix-gmessages"; ensureDBOwnership = true;}];
     };
 
     preservation.preserveAt."/persistent".directories = [
-      {directory = "/var/lib/mautrix-signal";}
+      {directory = "/var/lib/mautrix-gmessages";}
     ];
   };
 }

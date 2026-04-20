@@ -26,7 +26,7 @@
       environmentFile = config.age.secrets.mautrix-whatsapp-env.path;
       settings = {
         homeserver = {
-          address = "http://127.0.0.1:8008";
+          address = "https://matrix.${domain}";
           inherit domain;
         };
         database = {

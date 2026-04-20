@@ -38,11 +38,6 @@
       };
     };
 
-    networking.firewall = {
-      allowedTCPPorts = [25565];
-      allowedUDPPorts = [19132];
-    };
-
     preservation = {
       preserveAt."/persistent".directories = ["/srv/minecraft"];
     };
