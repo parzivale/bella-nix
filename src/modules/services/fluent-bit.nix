@@ -17,19 +17,17 @@
           inputs = [
             {
               name = "systemd";
-              tag = "journal.*";
-              read_from_tail = "on";
+              tag = "host.${hostname}";
+              systemd_filter = "_SYSTEMD_UNIT=*";
             }
           ];
 
           outputs = [
             {
               name = "loki";
-              match = "journal.*";
+              match = "*";
               host = "${monitoringHost}.${tailscaleDomain}";
               port = loki_port;
-              labels = "job=systemd-journal,host=${hostname}";
-              label_keys = "UNIT";
             }
           ];
         };

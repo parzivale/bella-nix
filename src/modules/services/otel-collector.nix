@@ -19,7 +19,6 @@
 
         exporters.otlp = {
           endpoint = "${monitoringHost}.${tailscaleDomain}:${toString tempo_grpc_port}";
-          protocol = "grpc";
           tls.insecure = true;
         };
 

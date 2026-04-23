@@ -6,6 +6,7 @@
     imports = with self.modules.nixos; [
       localization
       metrics
+      stylix
       # CLI aps
       iamb
       # compositor + GUI apps

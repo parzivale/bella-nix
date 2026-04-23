@@ -9,6 +9,7 @@
     imports = [inputs.stylix.nixosModules.default];
     programs.dconf.enable = true;
     home-manager.users.${user} = {
+      stylix.targets.zen-browser.profileNames = [user];
       gtk.gtk4.theme = null;
       xdg.desktopEntries = {
         qt5ct = {
@@ -28,7 +29,6 @@
 
     stylix = {
       enable = true;
-      # targets.zen-browser.profileNames = [user];
       image = config.systemConstants.bg_img;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-macchiato.yaml";
       icons = {
