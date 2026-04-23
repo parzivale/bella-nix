@@ -1,31 +1,33 @@
 {
-  flake.modules.nixos.synapse = {
+  flake.modules.nixos.matrix = {
     config,
     pkgs,
     ...
   }: let
     domain = config.systemConstants.domain;
+    matrix_domain = config.systemConstants.subDomains.matrix;
+    mas_domain = config.systemConstants.subDomains.mas;
+    matrix_main_port = config.systemConstants.ports.matrix.main;
+    mas_web_port = config.systemConstants.ports.matrix.mas.web;
   in {
     age.secrets.synapse-secret = {
-      rekeyFile = ../../secrets/synapse-secrets/synapse-secrets.age;
+      rekeyFile = ../../../secrets/synapse-secrets/synapse-secrets.age;
       owner = "matrix-synapse";
     };
     age.secrets.synapse-mas-secret = {
-      rekeyFile = ../../secrets/synapse-secrets/synapse-mas.age;
+      rekeyFile = ../../../secrets/synapse-secrets/synapse-mas.age;
       owner = "matrix-synapse";
     };
 
     services.matrix-synapse = {
       enable = true;
-      extraConfigFiles = [
-        config.age.secrets.synapse-secret.path
-      ];
+      extraConfigFiles = [config.age.secrets.synapse-secret.path];
       settings = {
         server_name = domain;
-        public_baseurl = "https://matrix.${domain}";
+        public_baseurl = "https://${matrix_domain}";
         listeners = [
           {
-            port = 8008;
+            port = matrix_main_port;
             bind_addresses = ["127.0.0.1"];
             type = "http";
             tls = false;
@@ -41,8 +43,8 @@
         experimental_features.msc4190_enabled = true;
         matrix_authentication_service = {
           enabled = true;
-          endpoint = "http://127.0.0.1:8009";
-          account_management_url = "https://auth.matrix.${domain}/account";
+          endpoint = "http://127.0.0.1:${toString mas_web_port}";
+          account_management_url = "https://${mas_domain}/account";
           secret_path = config.age.secrets.synapse-mas-secret.path;
         };
         database = {
@@ -55,6 +57,7 @@
         };
       };
     };
+
     services.postgresql = {
       initialScript = pkgs.writeText "synapse-init.sql" ''
         CREATE DATABASE "matrix-synapse"
@@ -64,20 +67,16 @@
           LC_CTYPE 'C'
           TEMPLATE template0;
       '';
-      ensureUsers = [
-        {
-          name = "matrix-synapse";
-        }
-      ];
+      ensureUsers = [{name = "matrix-synapse";}];
     };
 
     services.nginx.virtualHosts = {
-      "matrix.${domain}" = {
+      "${matrix_domain}" = {
         forceSSL = true;
         enableACME = true;
         quic = true;
         locations."/" = {
-          proxyPass = "http://127.0.0.1:8008";
+          proxyPass = "http://127.0.0.1:${toString matrix_main_port}";
           proxyWebsockets = true;
         };
       };
@@ -89,18 +88,19 @@
           extraConfig = ''
             default_type application/json;
             add_header Access-Control-Allow-Origin *;
-            return 200 '{"m.server":"matrix.${domain}:443"}';
+            return 200 '{"m.server":"${matrix_domain}:443"}';
           '';
         };
         locations."= /.well-known/matrix/client" = {
           extraConfig = ''
             default_type application/json;
             add_header Access-Control-Allow-Origin *;
-            return 200 '{"m.homeserver":{"base_url":"https://matrix.${domain}"}}';
+            return 200 '{"m.homeserver":{"base_url":"https://${matrix_domain}"}}';
           '';
         };
       };
     };
+
     preservation.preserveAt."/persistent".directories = [
       {
         directory = "/var/lib/matrix-synapse";

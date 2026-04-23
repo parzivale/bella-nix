@@ -3,6 +3,7 @@
 {self, ...}: {
   flake.modules.nixos.server = {
     imports = with self.modules.nixos; [
+      metrics
       deployable
       localization
       zram

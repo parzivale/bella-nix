@@ -12,8 +12,9 @@ in {
   imports = with inputs.self.modules.nixos; [
     cli
     deployer
+    deployable
     desktop
-    workstation
+    remote-builder
     # GPU + monitor control
     nvidia
     ddcutil
@@ -21,11 +22,7 @@ in {
     osu
     steam
     sober
-    # social
-    iamb
     # system
-    avahi
-    systemd-boot
     use-arm-builders
   ];
 

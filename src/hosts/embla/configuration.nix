@@ -13,20 +13,13 @@ in {
   imports = with inputs.self.modules.nixos; [
     cli
     server
-    # networking
-    avahi
     # services
     grocy
-    synapse
-    mas
+    matrix
     pocket-id
-    mautrix-whatsapp
-    mautrix-signal
-    mautrix-meta
-    mautrix-discord
-    acme
+    router
     postgres
-    nginx
+    monitoring
   ];
 
   system.stateVersion = "25.11";

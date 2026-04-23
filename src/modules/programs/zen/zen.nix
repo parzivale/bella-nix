@@ -23,7 +23,6 @@
     };
 
     home-manager.users.${user} = {
-      stylix.targets.zen-browser.profileNames = [user];
       programs.zen-browser = {
         enable = true;
         configPath = ".config/zen";

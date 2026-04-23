@@ -1,8 +1,5 @@
 {
-  flake.modules.nixos.sober = {
-    config,
-    ...
-  }: let
+  flake.modules.nixos.sober = {config, ...}: let
     user = config.systemConstants.username;
   in {
     services.flatpak = {

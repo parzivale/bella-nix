@@ -14,19 +14,16 @@ in {
   imports = with inputs.self.modules.nixos; [
     cli
     deployer
+    deployable
     desktop
-    workstation
+    remote-builder
     # hardware
     iwd
     zram
     # power
     batsignal
     hibernation
-    # chat
-    iamb
     # system
-    avahi
-    systemd-boot
     use-x86-builders
   ];
   # Allow x86_64 Wine runners to execute on ARM via FEX

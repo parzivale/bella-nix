@@ -1,11 +1,9 @@
 {
-  flake.modules.nixos.mautrix-meta = {
-    config,
-    ...
-  }: let
+  flake.modules.nixos.matrix = {config, ...}: let
     domain = config.systemConstants.domain;
+    matrix_domain = config.systemConstants.subDomains.matrix;
     homeserver = {
-      address = "https://matrix.${domain}";
+      address = "https://${matrix_domain}";
       inherit domain;
       software = "standard";
     };
@@ -32,11 +30,11 @@
     ];
 
     age.secrets.mautrix-instagram-env = {
-      rekeyFile = ../../secrets/mautrix/mautrix-instagram.age;
+      rekeyFile = ../../../../secrets/mautrix/mautrix-instagram.age;
       owner = "mautrix-meta-instagram";
     };
     age.secrets.mautrix-facebook-env = {
-      rekeyFile = ../../secrets/mautrix/mautrix-facebook.age;
+      rekeyFile = ../../../../secrets/mautrix/mautrix-facebook.age;
       owner = "mautrix-meta-facebook";
     };
 
@@ -81,8 +79,14 @@
     services.postgresql = {
       ensureDatabases = ["mautrix-meta-instagram" "mautrix-meta-facebook"];
       ensureUsers = [
-        {name = "mautrix-meta-instagram"; ensureDBOwnership = true;}
-        {name = "mautrix-meta-facebook"; ensureDBOwnership = true;}
+        {
+          name = "mautrix-meta-instagram";
+          ensureDBOwnership = true;
+        }
+        {
+          name = "mautrix-meta-facebook";
+          ensureDBOwnership = true;
+        }
       ];
     };
 

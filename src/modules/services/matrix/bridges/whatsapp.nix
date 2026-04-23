@@ -1,9 +1,7 @@
 {
-  flake.modules.nixos.mautrix-whatsapp = {
-    config,
-    ...
-  }: let
+  flake.modules.nixos.matrix = {config, ...}: let
     domain = config.systemConstants.domain;
+    matrix_domain = config.systemConstants.subDomains.matrix;
   in {
     nixpkgs.overlays = [
       (_final: prev: {
@@ -12,7 +10,7 @@
     ];
 
     age.secrets.mautrix-whatsapp-env = {
-      rekeyFile = ../../secrets/mautrix/mautrix-whatsapp.age;
+      rekeyFile = ../../../../secrets/mautrix/mautrix-whatsapp.age;
       owner = "mautrix-whatsapp";
     };
 
@@ -26,7 +24,7 @@
       environmentFile = config.age.secrets.mautrix-whatsapp-env.path;
       settings = {
         homeserver = {
-          address = "https://matrix.${domain}";
+          address = "https://${matrix_domain}";
           inherit domain;
         };
         database = {
@@ -44,7 +42,12 @@
 
     services.postgresql = {
       ensureDatabases = ["mautrix-whatsapp"];
-      ensureUsers = [{name = "mautrix-whatsapp"; ensureDBOwnership = true;}];
+      ensureUsers = [
+        {
+          name = "mautrix-whatsapp";
+          ensureDBOwnership = true;
+        }
+      ];
     };
 
     preservation.preserveAt."/persistent".directories = [

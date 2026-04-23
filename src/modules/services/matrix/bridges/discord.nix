@@ -1,9 +1,12 @@
 {
-  flake.modules.nixos.mautrix-discord = {config, ...}: let
+  flake.modules.nixos.matrix = {config, ...}: let
     domain = config.systemConstants.domain;
+    matrix_domain = config.systemConstants.subDomains.matrix;
   in {
+    nixpkgs.config.permittedInsecurePackages = ["olm-3.2.16"];
+
     nixpkgs.overlays = [
-      (final: prev: {
+      (_final: prev: {
         mautrix-discord = prev.mautrix-discord.override {
           olm = prev.olm.overrideAttrs (_: {meta.knownVulnerabilities = [];});
         };
@@ -11,7 +14,7 @@
     ];
 
     age.secrets.mautrix-discord-env = {
-      rekeyFile = ../../secrets/mautrix/mautrix-discord.age;
+      rekeyFile = ../../../../secrets/mautrix/mautrix-discord.age;
       owner = "mautrix-discord";
     };
 
@@ -25,7 +28,7 @@
       environmentFile = config.age.secrets.mautrix-discord-env.path;
       settings = {
         homeserver = {
-          address = "https://matrix.${domain}";
+          address = "https://${matrix_domain}";
           inherit domain;
         };
         database = {

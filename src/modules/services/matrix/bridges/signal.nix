@@ -1,9 +1,7 @@
 {
-  flake.modules.nixos.mautrix-signal = {
-    config,
-    ...
-  }: let
+  flake.modules.nixos.matrix = {config, ...}: let
     domain = config.systemConstants.domain;
+    matrix_domain = config.systemConstants.subDomains.matrix;
   in {
     nixpkgs.overlays = [
       (_final: prev: {
@@ -12,7 +10,7 @@
     ];
 
     age.secrets.mautrix-signal-env = {
-      rekeyFile = ../../secrets/mautrix/mautrix-signal.age;
+      rekeyFile = ../../../../secrets/mautrix/mautrix-signal.age;
       owner = "mautrix-signal";
     };
 
@@ -26,7 +24,7 @@
       environmentFile = config.age.secrets.mautrix-signal-env.path;
       settings = {
         homeserver = {
-          address = "https://matrix.${domain}";
+          address = "https://${matrix_domain}";
           inherit domain;
         };
         database = {
@@ -44,7 +42,12 @@
 
     services.postgresql = {
       ensureDatabases = ["mautrix-signal"];
-      ensureUsers = [{name = "mautrix-signal"; ensureDBOwnership = true;}];
+      ensureUsers = [
+        {
+          name = "mautrix-signal";
+          ensureDBOwnership = true;
+        }
+      ];
     };
 
     preservation.preserveAt."/persistent".directories = [

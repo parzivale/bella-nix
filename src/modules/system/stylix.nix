@@ -28,6 +28,7 @@
 
     stylix = {
       enable = true;
+      # targets.zen-browser.profileNames = [user];
       image = config.systemConstants.bg_img;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-macchiato.yaml";
       icons = {
