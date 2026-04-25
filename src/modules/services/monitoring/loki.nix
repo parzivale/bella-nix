@@ -8,7 +8,7 @@
         auth_enabled = false;
         server = {
           http_listen_port = loki_port;
-          http_listen_address = "127.0.0.1";
+          http_listen_address = "0.0.0.0";
         };
         common = {
           instance_addr = "127.0.0.1";
@@ -34,20 +34,6 @@
         ];
       };
     };
-
-    services.tailscale.serve.services.loki = {
-      endpoints = {
-        "tcp:${loki_port}" = "http://127.0.0.1:${loki_port}";
-      };
-    };
-
-    services.grafana.provision.datasources.settings.datasources = [
-      {
-        name = "Loki";
-        type = "loki";
-        url = "http://127.0.0.1:${toString loki_port}";
-      }
-    ];
 
     preservation.preserveAt."/persistent".directories = [
       {

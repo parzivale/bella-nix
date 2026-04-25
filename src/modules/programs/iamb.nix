@@ -1,5 +1,9 @@
 {inputs, ...}: {
-  flake.modules.nixos.iamb = {config, pkgs, ...}: let
+  flake.modules.nixos.iamb = {
+    config,
+    pkgs,
+    ...
+  }: let
     user = config.systemConstants.username;
     domain = config.systemConstants.domain;
   in {
@@ -18,8 +22,8 @@
                 font_size = [19 43];
               };
               size = {
-                width = 66;
-                height = 14;
+                width = 60;
+                height = 20;
               };
             };
             username_display = "displayname";

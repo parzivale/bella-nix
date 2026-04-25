@@ -22,7 +22,6 @@ in {
     zram
     # power
     batsignal
-    hibernation
     # system
     use-x86-builders
   ];
@@ -50,6 +49,8 @@ in {
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
   services.getty.autologinUser = user;
+
+  services.logind.settings.Login.HandleLidSwitch = "suspend";
 
   home-manager.users.${user} = {pkgs, ...}: {
     home = {

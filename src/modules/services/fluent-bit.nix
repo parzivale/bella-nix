@@ -18,7 +18,7 @@
             {
               name = "systemd";
               tag = "host.${hostname}";
-              systemd_filter = "_SYSTEMD_UNIT=*";
+              read_from_tail = "On";
             }
           ];
 
@@ -28,6 +28,7 @@
               match = "*";
               host = "${monitoringHost}.${tailscaleDomain}";
               port = loki_port;
+              labels = "job=fluent-bit,host=${hostname}";
             }
           ];
         };

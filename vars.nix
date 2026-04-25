@@ -32,11 +32,6 @@ rec {
       main = 9090;
       exporter = 9100;
     };
-    tempo = {
-      main = 3200;
-      grpc = 4317;
-      http = 4318;
-    };
     pocket-id = 1411;
   };
 }
