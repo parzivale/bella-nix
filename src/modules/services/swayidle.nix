@@ -6,29 +6,32 @@
   }: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user} = {
+    home-manager.users.${user} = let
+      lock_command = "${pkgs.swaylock-effects}/bin/swaylock -f --clock --fade-in 1";
+    in {
       services.swayidle = {
         enable = true;
         timeouts = [
           {
-            timeout = 300;
-            command = "${pkgs.swaylock}/bin/swaylock -f";
+            timeout = 180;
+            command = lock_command;
           }
           {
-            timeout = 600;
-            command = "niri msg action power-off-monitors";
-            resumeCommand = "niri msg action power-on-monitors";
+            timeout = 300;
+            command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
+            resumeCommand = "${pkgs.niri}/bin/niri msg action power-on-monitors";
           }
         ];
         events = {
-          before-sleep = "${pkgs.swaylock}/bin/swaylock -f";
+          before-sleep = lock_command;
 
-          lock = "${pkgs.swaylock}/bin/swaylock -f";
+          lock = lock_command;
         };
       };
 
       programs.swaylock = {
         enable = true;
+        package = pkgs.swaylock-effects;
         settings = {
           show-failed-attempts = true;
           indicator-idle-visible = true;

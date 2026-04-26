@@ -40,9 +40,6 @@ in {
     }
   ]; # 24GB
 
-  boot.resumeDevice = "/dev/nvme0n1p5";
-  boot.kernelParams = ["resume_offset=5847340"];
-
   system.stateVersion = "25.11";
 
   hardware.facter.reportPath = ./facter.json;
