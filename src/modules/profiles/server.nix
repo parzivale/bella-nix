@@ -4,7 +4,7 @@
   flake.modules.nixos.server = {
     imports = with self.modules.nixos; [
       stylix
-      metrics
+      alloy
       deployable
       localization
       zram

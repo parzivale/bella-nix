@@ -2,7 +2,7 @@
   flake.modules.nixos.desktop = {
     imports = with self.modules.nixos; [
       localization
-      metrics
+      alloy
       stylix
       # CLI aps
       iamb
