@@ -51,6 +51,7 @@
         "Mod+Shift+E".action.quit.skip-confirmation = true;
 
         "Print".action.screenshot = [];
+        "Sys_Req".action.screenshot = [];
 
         # Notification center
 
