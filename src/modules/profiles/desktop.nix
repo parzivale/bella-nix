@@ -18,6 +18,7 @@
       spotify-player
       prismlauncher
       # desktop hardware/services
+      keyring
       pipewire
       bluetooth
       networkd

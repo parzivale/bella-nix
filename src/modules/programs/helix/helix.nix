@@ -146,17 +146,13 @@
           {
             name = "nu";
             auto-format = true;
-            formatter = {
-              command = "${pkgs.nufmt}/bin/nufmt";
-              args = ["--stdin"];
-            };
             language-servers = ["nu-lsp" "harper-ls"];
           }
         ];
 
         language-server = {
           rust-analyzer = {
-            # command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
+            command = "rust-analyzer";
             config = {
               check.command = "clippy";
               cargo.features = "all";
