@@ -16,6 +16,7 @@
         url = "http://127.0.0.1:${toString prometheus_main_port}";
         access = "proxy";
         isDefault = true;
+        jsonData.timeInterval = "60s";
       }
     ];
 

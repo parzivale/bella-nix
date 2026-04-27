@@ -13,6 +13,7 @@
     '';
     loader.efi.canTouchEfiVariables = false;
     binfmt.emulatedSystems = ["x86_64-linux"];
+    kernel.sysctl."vm.mmap_rnd_bits" = lib.mkForce 31;
   };
 
   # networking.useNetworkd = true;
