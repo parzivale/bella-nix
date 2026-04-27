@@ -15,7 +15,7 @@
       dashboards.settings.providers = [
         {
           name = "community";
-          options.path = ./dashboards;
+          options.path = ./json_dashboards;
         }
       ];
     };
