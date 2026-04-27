@@ -5,7 +5,7 @@
     services.prometheus = {
       enable = true;
       port = prometheus_main_port;
-      listenAddress = "127.0.0.1";
+      listenAddress = "0.0.0.0";
       retentionTime = "30d";
       extraFlags = ["--web.enable-remote-write-receiver"];
     };
