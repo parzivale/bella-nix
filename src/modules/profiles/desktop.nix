@@ -18,6 +18,7 @@
       spotify-player
       prismlauncher
       # desktop hardware/services
+      xdg-desktop-portal-termfilepickers
       keyring
       pipewire
       bluetooth
