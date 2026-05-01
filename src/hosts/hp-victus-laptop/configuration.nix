@@ -22,6 +22,7 @@ in {
     osu
     steam
     sober
+    blender
     # system
     use-arm-builders
   ];
