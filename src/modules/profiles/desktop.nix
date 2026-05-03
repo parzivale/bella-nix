@@ -17,6 +17,7 @@
       claude
       spotify-player
       prismlauncher
+      blender
       # desktop hardware/services
       xdg-desktop-portal-termfilepickers
       keyring

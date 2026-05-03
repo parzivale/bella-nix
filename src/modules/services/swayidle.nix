@@ -23,8 +23,8 @@
           }
         ];
         events = {
-          before-sleep = lock_command;
-
+          before-sleep = "${lock_command}; sleep 1";
+          after-resume = "${pkgs.niri}/bin/niri msg action power-on-monitors";
           lock = lock_command;
         };
       };
