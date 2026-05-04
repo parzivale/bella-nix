@@ -49,6 +49,22 @@ in {
 
   services.logind.settings.Login.HandleLidSwitch = "suspend";
 
+  systemd.services.xhci-suspend-rebind = {
+    description = "Unbind xHCI controller before suspend to avoid failed state restore on resume";
+    before = ["sleep.target"];
+    wantedBy = ["sleep.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.writeShellScript "xhci-unbind" ''
+        echo xhci-hcd.2.auto > /sys/bus/platform/drivers/xhci-hcd/unbind
+      ''}";
+      ExecStop = "${pkgs.writeShellScript "xhci-bind" ''
+        echo xhci-hcd.2.auto > /sys/bus/platform/drivers/xhci-hcd/bind
+      ''}";
+    };
+  };
+
   home-manager.users.${user} = {pkgs, ...}: {
     home = {
       stateVersion = "25.11";
