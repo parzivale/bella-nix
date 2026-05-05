@@ -7,6 +7,8 @@
     user = config.systemConstants.username;
     domain = config.systemConstants.domain;
   in {
+    nixpkgs.config.permittedInsecurePackages = ["openssl-1.1.1w"];
+
     home-manager.users.${user} = {
       xdg.dataFile."applications/iamb.desktop".source = "${inputs.iamb}/iamb.desktop";
       xdg.dataFile."icons/hicolor/scalable/apps/iamb.svg".source = "${inputs.iamb}/docs/iamb.svg";
