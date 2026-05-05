@@ -18,10 +18,6 @@
             place-within-backdrop = true;
           }
         ];
-        spawn-at-startup = [
-          {command = ["sh" "-c" "while ! ${pkgs.awww}/bin/awww query 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none ${image}"];}
-          {command = ["sh" "-c" "while ! ${pkgs.awww}/bin/awww query -n overview 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none -n overview ${blurred-image}"];}
-        ];
       };
       systemd.user.services = {
         awww = {
@@ -31,6 +27,7 @@
           };
           Service = {
             ExecStart = "${pkgs.awww}/bin/awww-daemon";
+            ExecStartPost = "${pkgs.bash}/bin/bash -c 'while ! ${pkgs.awww}/bin/awww query 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none ${image}'";
             Restart = "on-failure";
           };
           Install.WantedBy = ["graphical-session.target"];
@@ -44,6 +41,7 @@
           };
           Service = {
             ExecStart = "${pkgs.awww}/bin/awww-daemon -n overview";
+            ExecStartPost = "${pkgs.bash}/bin/bash -c 'while ! ${pkgs.awww}/bin/awww query -n overview 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none -n overview ${blurred-image}'";
             Restart = "on-failure";
           };
           Install.WantedBy = ["graphical-session.target"];
