@@ -13,7 +13,7 @@
         sshKey = config.age.secrets.nix-builder-key.path;
         maxJobs = 8;
         speedFactor = 100;
-        systems = ["x86_64-linux"];
+        systems = ["x86_64-linux" "i686-linux"];
         supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
       }
     ];

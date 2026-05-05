@@ -35,6 +35,8 @@ in {
     }
   ]; # 24GB
 
+  nix.settings.extra-platforms = ["i686-linux"];
+
   services.xserver.xkb.layout = "us";
 
   system.stateVersion = "25.05";
