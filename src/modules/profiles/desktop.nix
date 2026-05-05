@@ -28,6 +28,7 @@
       swayidle
       avahi
       systemd-boot
+      kernel
     ];
   };
 }

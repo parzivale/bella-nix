@@ -1,10 +1,11 @@
 {
-  flake.modules.nixos.nix = {
+  flake.modules.nixos.nix = {pkgs, ...}: {
     nixpkgs.config.allowUnfree = true;
     # documentation.nixos.enable = false;
     # documentation.man.enable = false;
     # documentation.enable = false;
     nix = {
+      package = pkgs.nixVersions.latest;
       settings = {
         download-buffer-size = 268435456;
         experimental-features = "nix-command flakes";

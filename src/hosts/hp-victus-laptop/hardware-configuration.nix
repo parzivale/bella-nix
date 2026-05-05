@@ -7,7 +7,6 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
     initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
     kernelModules = ["kvm-amd" "btusb"];
     kernelParams = ["video=eDP-1:d"];

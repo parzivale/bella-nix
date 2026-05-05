@@ -8,6 +8,7 @@
       deployable
       localization
       zram
+      kernel
     ];
   };
 }
