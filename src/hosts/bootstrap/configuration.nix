@@ -27,7 +27,7 @@ in {
   # Nixos anywhere is a fragile fickle thing that needs its own user who has a posix
   # complient user shell
   users.users.nixos-anywhere = {
-    openssh.authorizedKeys.keyFiles = [../../secrets/yubikey/yubikey_sshkey.pub];
+    openssh.authorizedKeys.keyFiles = [../../secrets/yubikey/yubikey_sshkey_usba.pub ../../secrets/yubikey/yubikey_sshkey_usbc.pub];
     isNormalUser = true;
     hashedPassword = "$y$j9T$3SYXqLHQFhpwfTY8BHXmw.$cQGsYVD7CIWC22AJu1sX8qg4Po8Cyd00KzL9mAXa5F7";
     extraGroups = ["wheel"];
@@ -36,10 +36,10 @@ in {
   hardware.enableAllFirmware = true;
 
   #this must be set no matter what
-  age.rekey.masterIdentities = [../../secrets/yubikey/yubikey_identity.pub];
+  age.rekey.masterIdentities = [../../secrets/yubikey/yubikey_identity_usbc.pub ../../secrets/yubikey/yubikey_identity_usba.pub];
   age.rekey.storageMode = "derivation";
 
-  users.users.root.openssh.authorizedKeys.keyFiles = [../../secrets/yubikey/yubikey_sshkey.pub];
+  users.users.root.openssh.authorizedKeys.keyFiles = [../../secrets/yubikey/yubikey_sshkey_usba.pub ../../secrets/yubikey/yubikey_sshkey_usbc.pub];
   services.openssh.settings.PermitRootLogin = "prohibit-password";
   services.openssh.settings.AllowUsers = ["nixos-anywhere" "root"];
 
