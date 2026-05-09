@@ -5,7 +5,7 @@
     ...
   }: let
     user = config.systemConstants.username;
-    cacheDir = "/run/agenix-rekey.${toString config.systemConstants.uid}";
+    cacheDir = "/tmp/agenix-rekey.${toString config.systemConstants.uid}";
   in {
     home-manager.users.${user}.home = {
       packages = with pkgs; [
@@ -28,7 +28,7 @@
       rekey = {
         requiredSystemFeatures = ["yubikey"];
         inherit cacheDir;
-        masterIdentities = [../../secrets/yubikey/yubikey_identity.pub];
+        masterIdentities = [../../secrets/yubikey/yubikey_identity_usbc.pub ../../secrets/yubikey/yubikey_identity_usba.pub];
         agePlugins = [pkgs.age-plugin-fido2-hmac];
 
         storageMode = "derivation";
