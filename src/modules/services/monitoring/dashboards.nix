@@ -6,6 +6,7 @@
       datasources.settings.datasources = [
         {
           name = "Loki";
+          uid = "loki";
           type = "loki";
           url = "http://127.0.0.1:${toString loki_port}";
           access = "proxy";

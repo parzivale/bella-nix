@@ -32,6 +32,15 @@
             job  = "alloy",
             host = "${hostname}",
           }
+          relabel_rules = loki.relabel.journal.rules
+        }
+
+        loki.relabel "journal" {
+          forward_to = []
+          rule {
+            source_labels = ["__journal__systemd_unit"]
+            target_label  = "unit"
+          }
         }
 
         loki.write "monitoring" {
