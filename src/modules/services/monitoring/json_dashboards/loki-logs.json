@@ -3,10 +3,7 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
-        },
+        "datasource": "-- Grafana --",
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -42,10 +39,7 @@
   ],
   "panels": [
     {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
+      "datasource": "Loki",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -93,10 +87,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
+      "datasource": "Loki",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -131,17 +122,14 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 39,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {},
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
+        "datasource": "Loki",
         "definition": "label_values(job)",
         "hide": 0,
         "includeAll": false,
@@ -199,5 +187,5 @@
   "timezone": "",
   "title": "Logs / App",
   "uid": "sadlil-loki-apps-dashboard",
-  "version": 14
+  "version": 15
 }
