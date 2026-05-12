@@ -13,7 +13,7 @@
       <?php
       Setting('CULTURE', 'en');
       Setting('CURRENCY', 'SEK');
-      Setting('CALENDAR_FIRST_DAY_OF_WEEK', '');
+      Setting('CALENDAR_FIRST_DAY_OF_WEEK', ''');
       Setting('CALENDAR_SHOW_WEEK_OF_YEAR', true);
       Setting('ENTRY_PAGE', 'stock');
     '';
