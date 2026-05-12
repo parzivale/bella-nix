@@ -1,7 +1,7 @@
 {
   flake.modules.nixos.monitoring = {config, ...}: let
     grafana_domain = config.systemConstants.subDomains.grafana;
-    pocket-id_domain = config.systemConstants.subDomains.pocket-id;
+    kanidm_domain = config.systemConstants.subDomains.kanidm;
     grafana_port = config.systemConstants.ports.grafana;
   in {
     age.secrets.grafana-secret-key = {
@@ -9,8 +9,8 @@
       owner = "grafana";
     };
 
-    age.secrets.grafana-oauth-secret = {
-      rekeyFile = ../../../secrets/grafana/oauth-client-secret.age;
+    age.secrets.grafana-kanidm-oauth-secret = {
+      rekeyFile = ../../../secrets/kanidm/grafana-client-secret.age;
       owner = "grafana";
     };
 
@@ -20,22 +20,22 @@
         security.secret_key = "$__file{${config.age.secrets.grafana-secret-key.path}}";
         "auth.generic_oauth" = {
           enabled = true;
-          name = "Pocket ID";
+          name = "Kanidm";
           client_id = "grafana";
-          client_secret = "$__file{${config.age.secrets.grafana-oauth-secret.path}}";
+          client_secret = "$__file{${config.age.secrets.grafana-kanidm-oauth-secret.path}}";
           scopes = "openid profile email groups";
-          auth_url = "https://${pocket-id_domain}/authorize";
-          token_url = "https://${pocket-id_domain}/api/oidc/token";
-          api_url = "https://${pocket-id_domain}/api/oidc/userinfo";
+          auth_url = "https://${kanidm_domain}/ui/oauth2";
+          token_url = "https://${kanidm_domain}/oauth2/token";
+          api_url = "https://${kanidm_domain}/oauth2/openid/grafana/userinfo";
           use_pkce = true;
           use_refresh_token = true;
           auto_login = true;
-          role_attribute_path = "contains(groups[*], 'admins') && 'Admin' || 'Viewer'";
+          role_attribute_path = "contains(groups[*], 'admins@${config.systemConstants.domain}') && 'Admin' || 'Viewer'";
         };
         server = {
           domain = grafana_domain;
           root_url = "https://${grafana_domain}/";
-          http_addr = "127.0.0.1";
+          http_addr = "0.0.0.0";
           http_port = grafana_port;
         };
       };
@@ -47,7 +47,7 @@
       enableACME = true;
       quic = true;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString grafana_port}";
+        proxyPass = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString grafana_port}";
         proxyWebsockets = true;
       };
     };

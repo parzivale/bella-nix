@@ -28,7 +28,7 @@
         listeners = [
           {
             port = matrix_main_port;
-            bind_addresses = ["127.0.0.1"];
+            bind_addresses = ["0.0.0.0"];
             type = "http";
             tls = false;
             x_forwarded = true;
@@ -68,37 +68,6 @@
           TEMPLATE template0;
       '';
       ensureUsers = [{name = "matrix-synapse";}];
-    };
-
-    services.nginx.virtualHosts = {
-      "${matrix_domain}" = {
-        forceSSL = true;
-        enableACME = true;
-        quic = true;
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${toString matrix_main_port}";
-          proxyWebsockets = true;
-        };
-      };
-      "${domain}" = {
-        forceSSL = true;
-        enableACME = true;
-        quic = true;
-        locations."= /.well-known/matrix/server" = {
-          extraConfig = ''
-            default_type application/json;
-            add_header Access-Control-Allow-Origin *;
-            return 200 '{"m.server":"${matrix_domain}:443"}';
-          '';
-        };
-        locations."= /.well-known/matrix/client" = {
-          extraConfig = ''
-            default_type application/json;
-            add_header Access-Control-Allow-Origin *;
-            return 200 '{"m.homeserver":{"base_url":"https://${matrix_domain}"}}';
-          '';
-        };
-      };
     };
 
     preservation.preserveAt."/persistent".directories = [

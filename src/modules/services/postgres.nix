@@ -6,6 +6,7 @@
     ...
   }: {
     age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/cloudflare-buckets/access_env.age;
+    age.secrets.restic-postgres-password.rekeyFile = ../../secrets/restic/postgres-password.age;
 
     services.postgresql = {
       enable = true;
@@ -15,6 +16,7 @@
       initialize = true;
       repository = "s3:https://36a395a8d1dada79c1fc9d8552de08d0.r2.cloudflarestorage.com/postgres-backups";
       environmentFile = config.age.secrets.cloudflare-buckets.path;
+      passwordFile = config.age.secrets.restic-postgres-password.path;
       paths = ["/tmp/postgres-backup"];
       backupPrepareCommand = ''
         mkdir -p /tmp/postgres-backup

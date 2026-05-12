@@ -12,6 +12,7 @@ rec {
 
   subDomains = rec {
     pocket-id = "id.${domain}";
+    kanidm = "kanidm.${domain}";
     matrix = "matrix.${domain}";
     mas = "auth.${matrix}";
     grafana = "grafana.${domain}";
@@ -33,5 +34,6 @@ rec {
       exporter = 9100;
     };
     pocket-id = 1411;
+    kanidm = 8300;
   };
 }
