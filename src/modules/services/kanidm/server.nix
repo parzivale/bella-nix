@@ -34,6 +34,7 @@
     };
 
     services.kanidm = {
+      package = pkgs.kanidmWithSecretProvisioning_1_9;
       enableServer = true;
       serverSettings = {
         domain = base_domain;
