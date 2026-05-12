@@ -35,13 +35,15 @@
 
     services.kanidm = {
       package = pkgs.kanidmWithSecretProvisioning_1_9;
-      enableServer = true;
-      serverSettings = {
-        domain = base_domain;
-        origin = "https://${kanidm_domain}";
-        bindaddress = "0.0.0.0:${toString kanidm_port}";
-        tls_chain = "${certDir}/tls.crt";
-        tls_key = "${certDir}/tls.key";
+      server = {
+        enable = true;
+        settings = {
+          domain = base_domain;
+          origin = "https://${kanidm_domain}";
+          bindaddress = "0.0.0.0:${toString kanidm_port}";
+          tls_chain = "${certDir}/tls.crt";
+          tls_key = "${certDir}/tls.key";
+        };
       };
       provision = {
         enable = true;
