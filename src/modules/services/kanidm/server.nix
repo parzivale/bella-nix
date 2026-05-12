@@ -11,12 +11,16 @@
       owner = "kanidm";
     };
 
+    users.users.kanidm.extraGroups = ["acme"];
+
     services.kanidm = {
       enableServer = true;
       serverSettings = {
         domain = base_domain;
         origin = "https://${kanidm_domain}";
         bindaddress = "0.0.0.0:${toString kanidm_port}";
+        tls_chain = "/var/lib/acme/${kanidm_domain}/fullchain.pem";
+        tls_key = "/var/lib/acme/${kanidm_domain}/key.pem";
       };
       provision = {
         enable = true;
@@ -34,7 +38,8 @@
       enableACME = true;
       quic = true;
       locations."/" = {
-        proxyPass = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString kanidm_port}";
+        proxyPass = "https://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString kanidm_port}";
+        extraConfig = "proxy_ssl_verify off;";
         proxyWebsockets = true;
       };
     };
