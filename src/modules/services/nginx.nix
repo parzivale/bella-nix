@@ -11,6 +11,10 @@
       '';
     };
 
+    systemd.tmpfiles.rules = [
+      "z /var/lib/acme/acme-challenge 750 acme nginx - -"
+    ];
+
     networking.firewall = {
       allowedTCPPorts = [443];
       allowedUDPPorts = [443];
