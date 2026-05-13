@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nginx = {
+  flake.modules.nixos.nginx = {pkgs, ...}: {
     services.nginx = {
       enable = true;
       recommendedTlsSettings = true;
@@ -11,9 +11,8 @@
       '';
     };
 
-    systemd.tmpfiles.rules = [
-      "z /var/lib/acme/acme-challenge 750 acme nginx - -"
-    ];
+    systemd.services.acme-setup.serviceConfig.ExecStartPost =
+      "+${pkgs.coreutils}/bin/chown :nginx /var/lib/acme/acme-challenge";
 
     networking.firewall = {
       allowedTCPPorts = [443];
