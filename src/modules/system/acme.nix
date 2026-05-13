@@ -10,10 +10,6 @@
       };
     };
 
-    systemd.tmpfiles.rules = [
-      "d /var/lib/acme/acme-challenges 0750 acme nginx -"
-    ];
-
     networking.firewall.allowedTCPPorts = [80];
 
     preservation.preserveAt."/persistent".directories = [
