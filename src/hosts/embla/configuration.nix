@@ -17,6 +17,7 @@ in {
     grocy
     matrix
     kanidm
+    pocket-id
     router
     postgres
     monitoring

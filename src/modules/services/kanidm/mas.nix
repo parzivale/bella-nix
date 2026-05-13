@@ -1,7 +1,7 @@
 {
   flake.modules.nixos.kanidm = {config, ...}: let
     mas_domain = config.systemConstants.subDomains.mas;
-    mas_provider_id = "01KP9M2FDVT46D0CXQJAR9ZGG2";
+    mas_provider_id = "01KRHPHYTTHPJT2E1FCJZSZ4SV";
   in {
     age.secrets.kanidm-mas-client-secret = {
       rekeyFile = ../../../secrets/kanidm/mas-client-secret.age;

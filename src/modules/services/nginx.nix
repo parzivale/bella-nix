@@ -12,7 +12,7 @@
     };
 
     systemd.services.acme-setup.serviceConfig.ExecStartPost =
-      "+${pkgs.coreutils}/bin/chown :nginx /var/lib/acme/acme-challenge";
+      "+${pkgs.coreutils}/bin/chown :nginx /var/lib/acme/acme-challenges";
 
     networking.firewall = {
       allowedTCPPorts = [443];
