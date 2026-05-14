@@ -97,6 +97,7 @@
           client_id = "mas";
           client_secret_file = config.age.secrets.mas-kanidm-oauth-client-secret.path;
           token_endpoint_auth_method = "client_secret_basic";
+          id_token_signed_response_alg = "ES256";
           scope = "openid profile email";
           claims_imports = {
             localpart = {
