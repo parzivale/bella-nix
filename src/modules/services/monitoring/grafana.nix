@@ -15,11 +15,6 @@
       owner = "grafana";
     };
 
-    age.secrets.grafana-matrix-env = {
-      rekeyFile = ../../../secrets/grafana/matrix-env.age;
-      owner = "grafana";
-    };
-
     services.grafana = {
       enable = true;
       settings = {
@@ -51,47 +46,8 @@
           http_port = grafana_port;
         };
       };
-      provision = {
-        enable = true;
-        alerting = {
-          contactPoints.settings = {
-            apiVersion = 1;
-            contactPoints = [
-              {
-                orgId = 1;
-                name = "Matrix";
-                receivers = [
-                  {
-                    uid = "matrix-bot";
-                    type = "matrix";
-                    settings = {
-                      url = "https://${config.systemConstants.subDomains.matrix}";
-                      room_id = config.systemConstants.alertsRoomId;
-                      token = "\${MATRIX_BOT_TOKEN}";
-                    };
-                  }
-                ];
-              }
-            ];
-          };
-          policies.settings = {
-            apiVersion = 1;
-            policies = [
-              {
-                orgId = 1;
-                receiver = "Matrix";
-                group_by = ["grafana_folder" "alertname"];
-                group_wait = "30s";
-                group_interval = "5m";
-                repeat_interval = "4h";
-              }
-            ];
-          };
-        };
-      };
+      provision.enable = true;
     };
-
-    systemd.services.grafana.serviceConfig.EnvironmentFile = config.age.secrets.grafana-matrix-env.path;
 
     services.nginx.virtualHosts.${grafana_domain} = {
       forceSSL = true;

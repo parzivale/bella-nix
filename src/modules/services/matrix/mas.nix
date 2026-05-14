@@ -36,6 +36,7 @@
               {name = "compat";}
               {name = "graphql";}
               {name = "assets";}
+              {name = "adminapi";}
             ];
             binds = [
               {

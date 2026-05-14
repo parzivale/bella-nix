@@ -9,7 +9,6 @@ rec {
   };
   domain = "parzivale.dev";
   monitoringHost = "embla";
-  alertsRoomId = "!i0cazxUPxpIFUkMuMh:parzivale.dev";
 
   subDomains = rec {
     pocket-id = "id.${domain}";
@@ -18,6 +17,7 @@ rec {
     mas = "auth.${matrix}";
     grafana = "grafana.${domain}";
     grocy = "grocy.${domain}";
+    synapse-admin = "admin.${matrix}";
   };
 
   ports = {
