@@ -12,6 +12,12 @@
       enable = true;
     };
 
+    services.prometheus.exporters.postgres = {
+      enable = true;
+      runAsLocalSuperUser = true;
+      dataSourceName = "postgresql:///postgres?host=/run/postgresql&sslmode=disable";
+    };
+
     services.restic.backups.postgres-backup = {
       initialize = true;
       repository = "s3:https://36a395a8d1dada79c1fc9d8552de08d0.r2.cloudflarestorage.com/postgres-backups";

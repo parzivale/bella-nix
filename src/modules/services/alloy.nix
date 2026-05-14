@@ -20,6 +20,16 @@
           forward_to = [prometheus.remote_write.monitoring.receiver]
         }
 
+        prometheus.scrape "postgres" {
+          targets = [{"__address__" = "127.0.0.1:9187"}]
+          forward_to = [prometheus.remote_write.monitoring.receiver]
+        }
+
+        prometheus.scrape "nginx" {
+          targets = [{"__address__" = "127.0.0.1:9113"}]
+          forward_to = [prometheus.remote_write.monitoring.receiver]
+        }
+
         prometheus.remote_write "monitoring" {
           endpoint {
             url = "http://${monitoringHost}.${tailscaleDomain}:${toString prometheus_port}/api/v1/write"
