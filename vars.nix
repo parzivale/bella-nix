@@ -9,6 +9,7 @@ rec {
   };
   domain = "parzivale.dev";
   monitoringHost = "embla";
+  alertsRoomId = "!i0cazxUPxpIFUkMuMh:parzivale.dev";
 
   subDomains = rec {
     pocket-id = "id.${domain}";
