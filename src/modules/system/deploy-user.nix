@@ -1,7 +1,5 @@
-{moduleWithSystem, ...}: {
-  flake.modules.nixos.deploy-user = moduleWithSystem ({inputs', ...}: {pkgs, ...}: let
-    activate = "${inputs'.deploy-rs.packages.deploy-rs}/bin/activate";
-  in {
+{...}: {
+  flake.modules.nixos.deploy-user = {pkgs, ...}: {
     users.users.deploy = {
       isSystemUser = true;
       group = "deploy";
@@ -20,11 +18,11 @@
         users = ["deploy"];
         commands = [
           {
-            command = "${activate} *";
+            command = "/nix/store/*/activate-rs *";
             options = ["NOPASSWD"];
           }
         ];
       }
     ];
-  });
+  };
 }
