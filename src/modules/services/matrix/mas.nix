@@ -8,7 +8,6 @@
     inherit (lib) filterAttrs mapAttrs filter isAttrs isList concatMapStringsSep;
     domain = config.systemConstants.domain;
     mas_domain = config.systemConstants.subDomains.mas;
-    pocket-id_domain = config.systemConstants.subDomains.pocket-id;
     kanidm_domain = config.systemConstants.subDomains.kanidm;
     mas_web_port = config.systemConstants.ports.matrix.mas.web;
     mas_internal_port = config.systemConstants.ports.matrix.mas.internal;
@@ -68,29 +67,6 @@
       account.management_url = "https://${mas_domain}/account";
       upstream_oauth2.providers = [
         {
-          id = "01KP9M2FDVT46D0CXQJAR9ZGG2";
-          issuer = "https://${pocket-id_domain}";
-          human_name = "Pocket ID";
-          client_id = "mas";
-          client_secret_file = config.age.secrets.mas-oauth-client-secret.path;
-          token_endpoint_auth_method = "client_secret_basic";
-          scope = "openid profile email";
-          claims_imports = {
-            localpart = {
-              action = "require";
-              template = "{{ user.preferred_username }}";
-            };
-            displayname = {
-              action = "suggest";
-              template = "{{ user.name }}";
-            };
-            email = {
-              action = "suggest";
-              template = "{{ user.email }}";
-            };
-          };
-        }
-        {
           id = "01KRHPHYTTHPJT2E1FCJZSZ4SV";
           issuer = "https://${kanidm_domain}/oauth2/openid/mas";
           human_name = "Kanidm";
@@ -124,10 +100,6 @@
   in {
     age.secrets.mas-config = {
       rekeyFile = ../../../secrets/mas/mas-config.age;
-      owner = "matrix-authentication-service";
-    };
-    age.secrets.mas-oauth-client-secret = {
-      rekeyFile = ../../../secrets/mas/mas-oauth-client-secret.age;
       owner = "matrix-authentication-service";
     };
     age.secrets.mas-kanidm-oauth-client-secret = {
