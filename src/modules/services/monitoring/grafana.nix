@@ -23,14 +23,13 @@
           name = "Kanidm";
           client_id = "grafana";
           client_secret = "$__file{${config.age.secrets.grafana-kanidm-oauth-secret.path}}";
-          scopes = "openid profile email groups";
+          scopes = "openid profile email";
           auth_url = "https://${kanidm_domain}/ui/oauth2";
           token_url = "https://${kanidm_domain}/oauth2/token";
           api_url = "https://${kanidm_domain}/oauth2/openid/grafana/userinfo";
           use_pkce = true;
           use_refresh_token = true;
           auto_login = true;
-          role_attribute_path = "contains(groups[*], 'admins@${config.systemConstants.domain}') && 'Admin' || 'Viewer'";
         };
         server = {
           domain = grafana_domain;
