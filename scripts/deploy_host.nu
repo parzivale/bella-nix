@@ -19,5 +19,5 @@ export def main [
   | each { |h| $"($lib.PROJECT_ROOT)#($h)" }
 
   nix flake check $lib.PROJECT_ROOT
-  deploy -i --skip-checks --targets ...$targets ...$extra_flags
+  deploy --skip-checks --targets ...$targets ...$extra_flags
 }
