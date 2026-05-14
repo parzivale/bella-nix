@@ -20,6 +20,15 @@
           forward_to = [prometheus.remote_write.monitoring.receiver]
         }
 
+        prometheus.exporter.unix "systemd" {
+          set_collectors = ["systemd"]
+        }
+
+        prometheus.scrape "systemd" {
+          targets    = prometheus.exporter.unix.systemd.targets
+          forward_to = [prometheus.remote_write.monitoring.receiver]
+        }
+
         prometheus.scrape "postgres" {
           targets = [{"__address__" = "127.0.0.1:9187"}]
           forward_to = [prometheus.remote_write.monitoring.receiver]
