@@ -174,7 +174,7 @@
       deploy = {
         sshUser = vars.username;
         user = "root";
-        interactiveSudo = true;
+        interactiveSudo = false;
         nodes = nixpkgs.lib.genAttrs hostNames mkDeployForHost;
         confirmTimeout = 120;
         activationTimeout = 180;
