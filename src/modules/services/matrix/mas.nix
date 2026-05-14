@@ -103,6 +103,7 @@
             localpart = {
               action = "require";
               template = "{{ user.preferred_username }}";
+              on_conflict = "set";
             };
             displayname = {
               action = "suggest";
