@@ -13,7 +13,7 @@
       originLanding = "https://${grafana_domain}";
       basicSecretFile = config.age.secrets.kanidm-grafana-client-secret.path;
       preferShortUsername = true;
-      scopeMaps."admins" = ["openid" "profile" "email"];
+      scopeMaps."admins" = ["openid" "profile" "email" "groups"];
     };
   };
 }

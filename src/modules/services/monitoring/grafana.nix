@@ -3,6 +3,7 @@
     grafana_domain = config.systemConstants.subDomains.grafana;
     kanidm_domain = config.systemConstants.subDomains.kanidm;
     grafana_port = config.systemConstants.ports.grafana;
+    domain = config.systemConstants.domain;
   in {
     age.secrets.grafana-secret-key = {
       rekeyFile = ../../../secrets/grafana/secret-key.age;
@@ -18,18 +19,25 @@
       enable = true;
       settings = {
         security.secret_key = "$__file{${config.age.secrets.grafana-secret-key.path}}";
+        users.allow_sign_up = false;
+
         "auth.generic_oauth" = {
+          allow_sign_up = false;
           enabled = true;
           name = "Kanidm";
           client_id = "grafana";
           client_secret = "$__file{${config.age.secrets.grafana-kanidm-oauth-secret.path}}";
-          scopes = "openid profile email";
+          scopes = "openid profile email groups";
           auth_url = "https://${kanidm_domain}/ui/oauth2";
           token_url = "https://${kanidm_domain}/oauth2/token";
           api_url = "https://${kanidm_domain}/oauth2/openid/grafana/userinfo";
           use_pkce = true;
           use_refresh_token = true;
           auto_login = true;
+          login_attribute_path = "preferred_username";
+          name_attribute_path = "name";
+          role_attribute_path = "contains(groups[*], 'admins@${domain}') && 'Admin' || 'Viewer'";
+          role_attribute_strict = false;
         };
         server = {
           domain = grafana_domain;
