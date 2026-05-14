@@ -1,24 +1,13 @@
 {
-  flake.modules.nixos.matrix = {config, pkgs, ...}: let
+  flake.modules.nixos.matrix = {config, ...}: let
     domain = config.systemConstants.domain;
     mas_domain = config.systemConstants.subDomains.mas;
     matrix_domain = config.systemConstants.subDomains.matrix;
-    synapse_admin_domain = config.systemConstants.subDomains.synapse-admin;
     mas_web_port = config.systemConstants.ports.matrix.mas.web;
     matrix_main_port = config.systemConstants.ports.matrix.main;
     backend = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
   in {
     services.nginx.virtualHosts = {
-      ${synapse_admin_domain} = {
-        forceSSL = true;
-        enableACME = true;
-        quic = true;
-        root = pkgs.synapse-admin;
-        locations."/" = {
-          tryFiles = "$uri $uri/ /index.html";
-        };
-      };
-
       ${mas_domain} = {
         forceSSL = true;
         enableACME = true;

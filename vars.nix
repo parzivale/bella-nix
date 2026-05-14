@@ -17,7 +17,6 @@ rec {
     mas = "auth.${matrix}";
     grafana = "grafana.${domain}";
     grocy = "grocy.${domain}";
-    synapse-admin = "admin.${matrix}";
   };
 
   ports = {
