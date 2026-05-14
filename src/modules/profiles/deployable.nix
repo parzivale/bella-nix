@@ -5,6 +5,7 @@
       tailscale
       preservation
       signed-nix
+      deploy-user
     ];
   };
 }
