@@ -1,24 +1,17 @@
 {...}: {
-  flake.modules.nixos.deploy-user = {pkgs, ...}: {
-    users.users.deploy = {
-      isSystemUser = true;
-      group = "deploy";
-      shell = pkgs.bash;
-      openssh.authorizedKeys.keyFiles = [
-        ../../secrets/yubikey/yubikey_sshkey_usbc.pub
-        ../../secrets/yubikey/yubikey_sshkey_usba.pub
-      ];
-    };
-    users.groups.deploy = {};
-
-    services.openssh.settings.AllowUsers = ["deploy"];
-
+  flake.modules.nixos.deploy-user = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
     security.sudo.extraRules = [
       {
-        users = ["deploy"];
+        users = [user];
         commands = [
           {
             command = "/nix/store/*/activate-rs *";
+            options = ["NOPASSWD"];
+          }
+          {
+            command = "/run/current-system/sw/bin/rm /tmp/deploy-rs-canary-*";
             options = ["NOPASSWD"];
           }
         ];

@@ -172,9 +172,9 @@
         nixpkgs.lib.genAttrs hostNames mkSystemForHost;
 
       deploy = {
-        sshUser = "deploy";
+        sshUser = vars.username;
         user = "root";
-        interactiveSudo = false;
+        interactiveSudo = true;
         nodes = nixpkgs.lib.genAttrs hostNames mkDeployForHost;
         confirmTimeout = 120;
         activationTimeout = 180;
