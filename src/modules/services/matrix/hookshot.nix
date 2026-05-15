@@ -19,6 +19,8 @@
         domain = domain;
         url = "http://127.0.0.1:${toString matrix_main_port}";
         mediaUrl = "https://${matrix_domain}";
+        port = appservice_port;
+        bindAddress = "127.0.0.1";
       };
       passFile = config.age.secrets.hookshot-passkey.path;
       generic = {
@@ -37,11 +39,6 @@
           port = webhook_port;
           bindAddress = "127.0.0.1";
           resources = ["webhooks"];
-        }
-        {
-          port = appservice_port;
-          bindAddress = "127.0.0.1";
-          resources = ["appservice" "metrics" "health"];
         }
       ];
     };
