@@ -198,6 +198,7 @@
         ++ (nixpkgs.lib.mapAttrsToList (name: value: {
             flake.modules.nixos.${name}.imports =
               [
+                (import ./lib.nix)
                 inputs.self.modules.nixos.base
                 inputs.disko.nixosModules.disko
                 inputs.agenix.nixosModules.default

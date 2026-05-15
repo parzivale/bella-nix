@@ -1,3 +1,3 @@
-{config, ...}: {
-  options.reverseProxy = config.options.services.nginx.virtualHosts;
+{options, ...}: {
+  options.reverseProxy = options.services.nginx.virtualHosts;
 }
