@@ -10,6 +10,7 @@
     matrix_main_port = config.systemConstants.ports.matrix.main;
     appservice_port = config.systemConstants.ports.hookshot.appservice;
     webhook_port = config.systemConstants.ports.hookshot.webhook;
+    tailscale_host = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
 
     registrationPath = "/var/lib/matrix-hookshot/registration.yaml";
 
@@ -25,7 +26,7 @@
       passFile = config.age.secrets.hookshot-passkey.path;
       generic = {
         enabled = true;
-        urlPrefix = "http://127.0.0.1:${toString webhook_port}";
+        urlPrefix = "http://${tailscale_host}:${toString webhook_port}";
         allowJsTransformationFunctions = true;
         waitForComplete = false;
         userIdPrefix = "_webhooks_";
@@ -60,7 +61,7 @@
       listeners = [
         {
           port = webhook_port;
-          bindAddress = "127.0.0.1";
+          bindAddress = "0.0.0.0";
           resources = ["webhooks"];
         }
       ];
