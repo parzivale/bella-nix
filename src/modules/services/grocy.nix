@@ -5,7 +5,6 @@
     ...
   }: let
     grocy_domain = config.systemConstants.subDomains.grocy;
-    backend = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
     dataDir = "/var/lib/grocy";
     pkg = pkgs.grocy;
   in {
@@ -67,13 +66,16 @@
 
     services.nginx.enable = true;
 
-    services.nginx.virtualHosts.${config.networking.hostName} = {
-      listen = [{addr = "0.0.0.0"; port = 80;}];
+    services.nginx.virtualHosts.${grocy_domain} = {
+      forceSSL = true;
+      enableACME = true;
+      quic = true;
       root = "${pkg}/public";
       locations."/".extraConfig = "rewrite ^ /index.php;";
       locations."~ \\.php$".extraConfig = ''
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass unix:${config.services.phpfpm.pools.grocy.socket};
+        fastcgi_param HTTPS on;
         include ${config.services.nginx.package}/conf/fastcgi.conf;
         include ${config.services.nginx.package}/conf/fastcgi_params;
       '';
@@ -87,17 +89,6 @@
         access_log off;
       '';
       extraConfig = "try_files $uri /index.php;";
-    };
-
-    services.nginx.virtualHosts.${grocy_domain} = {
-      forceSSL = true;
-      enableACME = true;
-      quic = true;
-      locations."/" = {
-        proxyPass = "http://${backend}";
-        extraConfig = "proxy_set_header Host ${config.networking.hostName};";
-        proxyWebsockets = true;
-      };
     };
 
     preservation.preserveAt."/persistent".directories = [
