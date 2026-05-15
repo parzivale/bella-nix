@@ -33,6 +33,10 @@ rec {
       main = 9090;
       exporter = 9100;
     };
+    hookshot = {
+      appservice = 9000;
+      webhook = 9001;
+    };
     pocket-id = 1411;
     kanidm = 8300;
   };

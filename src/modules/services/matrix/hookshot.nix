@@ -1,0 +1,108 @@
+{
+  flake.modules.nixos.hookshot = {
+    config,
+    pkgs,
+    lib,
+    ...
+  }: let
+    domain = config.systemConstants.domain;
+    matrix_domain = config.systemConstants.subDomains.matrix;
+    matrix_main_port = config.systemConstants.ports.matrix.main;
+    appservice_port = config.systemConstants.ports.hookshot.appservice;
+    webhook_port = config.systemConstants.ports.hookshot.webhook;
+
+    registrationPath = "/var/lib/matrix-hookshot/registration.yaml";
+
+    format = pkgs.formats.yaml {};
+    configFile = format.generate "hookshot-config.yaml" {
+      bridge = {
+        domain = domain;
+        url = "http://127.0.0.1:${toString matrix_main_port}";
+        mediaUrl = "https://${matrix_domain}";
+        port = appservice_port;
+        bindAddress = "127.0.0.1";
+      };
+      passFile = config.age.secrets.hookshot-passkey.path;
+      generic = {
+        enabled = true;
+        urlPrefix = "http://127.0.0.1:${toString webhook_port}";
+        allowJsTransformationFunctions = false;
+        waitForComplete = false;
+        userIdPrefix = "_webhooks_";
+      };
+      logging = {
+        level = "warn";
+        colorize = false;
+      };
+      listeners = [
+        {
+          port = webhook_port;
+          bindAddress = "127.0.0.1";
+          resources = ["webhooks"];
+        }
+        {
+          port = appservice_port;
+          bindAddress = "127.0.0.1";
+          resources = ["appservice" "metrics" "health"];
+        }
+      ];
+    };
+
+    generateRegistration = pkgs.writeShellScript "hookshot-gen-registration" ''
+      cat > ${registrationPath} << EOF
+      id: hookshot
+      url: "http://127.0.0.1:${toString appservice_port}"
+      as_token: "$AS_TOKEN"
+      hs_token: "$HS_TOKEN"
+      rate_limited: false
+      sender_localpart: hookshot
+      namespaces:
+        users:
+          - exclusive: true
+            regex: "@_webhooks_.*:${domain}"
+        rooms: []
+        aliases: []
+      EOF
+      chmod 640 ${registrationPath}
+    '';
+  in {
+    age.secrets.hookshot-passkey = {
+      rekeyFile = ../../../secrets/hookshot/passkey.age;
+      owner = "matrix-hookshot";
+    };
+    age.secrets.hookshot-tokens = {
+      rekeyFile = ../../../secrets/hookshot/tokens.age;
+      owner = "matrix-hookshot";
+    };
+
+    services.matrix-synapse.settings.app_service_config_files = [registrationPath];
+
+    systemd.services.matrix-hookshot = {
+      description = "Matrix Hookshot";
+      after = ["network.target" "matrix-synapse.service" "agenix-install-secrets.service"];
+      requires = ["matrix-synapse.service"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "simple";
+        User = "matrix-hookshot";
+        Group = "matrix-hookshot";
+        StateDirectory = "matrix-hookshot";
+        EnvironmentFile = config.age.secrets.hookshot-tokens.path;
+        ExecStartPre = ["+" generateRegistration];
+        ExecStart = "${lib.getExe pkgs.matrix-hookshot} ${configFile} ${registrationPath}";
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
+
+    users.users.matrix-hookshot = {
+      isSystemUser = true;
+      group = "matrix-hookshot";
+    };
+    users.groups.matrix-hookshot = {};
+
+    preservation.preserveAt."/persistent".directories = [
+      {directory = "/var/lib/matrix-hookshot";}
+    ];
+  };
+}

@@ -20,6 +20,7 @@ in {
     router
     postgres
     monitoring
+    hookshot
   ];
 
   system.stateVersion = "25.11";
