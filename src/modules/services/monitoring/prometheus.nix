@@ -11,6 +11,7 @@
     };
     services.grafana.provision.datasources.settings.datasources = [
       {
+        uid = "prometheus";
         name = "Prometheus";
         type = "prometheus";
         url = "http://127.0.0.1:${toString prometheus_main_port}";
