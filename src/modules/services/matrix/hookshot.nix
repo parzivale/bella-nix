@@ -77,18 +77,35 @@
 
     services.matrix-synapse.settings.app_service_config_files = [registrationPath];
 
+    systemd.services.matrix-hookshot-gen-registration = {
+      description = "Generate Matrix Hookshot registration file";
+      before = ["matrix-synapse.service" "matrix-hookshot.service"];
+      wantedBy = ["matrix-synapse.service"];
+      after = ["agenix-install-secrets.service"];
+      requires = ["agenix-install-secrets.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        User = "matrix-hookshot";
+        Group = "matrix-hookshot";
+        EnvironmentFile = config.age.secrets.hookshot-tokens.path;
+        ExecStart = generateRegistration;
+        StateDirectory = "matrix-hookshot";
+      };
+    };
+
+    users.users.matrix-synapse.extraGroups = ["matrix-hookshot"];
+
     systemd.services.matrix-hookshot = {
       description = "Matrix Hookshot";
-      after = ["network.target" "matrix-synapse.service" "agenix-install-secrets.service"];
-      requires = ["matrix-synapse.service"];
+      after = ["network.target" "matrix-synapse.service" "matrix-hookshot-gen-registration.service"];
+      requires = ["matrix-synapse.service" "matrix-hookshot-gen-registration.service"];
       wantedBy = ["multi-user.target"];
       serviceConfig = {
         Type = "simple";
         User = "matrix-hookshot";
         Group = "matrix-hookshot";
         StateDirectory = "matrix-hookshot";
-        EnvironmentFile = config.age.secrets.hookshot-tokens.path;
-        ExecStartPre = ["+" generateRegistration];
         ExecStart = "${lib.getExe pkgs.matrix-hookshot} ${configFile} ${registrationPath}";
         Restart = "on-failure";
         RestartSec = "5s";
