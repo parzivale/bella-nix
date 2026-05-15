@@ -41,6 +41,7 @@
           connectionType = "uk.half-shot.matrix-hookshot.generic.hook";
           stateKey = "grafana-alerts";
           state = {
+            name = "grafana-alerts";
             transformationFunction = ''
               const emoji = data.status === "firing" ? "🔥" : "✅";
               const status = data.status === "firing" ? "FIRING" : "RESOLVED";
