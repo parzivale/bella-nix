@@ -13,7 +13,7 @@
       lib.mapAttrsToList (
         _: nixosCfg:
           nixosCfg.config.reverseProxy
-      ) (builtins.removeAttrs self.nixosConfigurations [config.networking.hostName])
+      ) self.nixosConfigurations
     );
   };
 }
