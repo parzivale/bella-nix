@@ -46,7 +46,37 @@
           http_port = grafana_port;
         };
       };
-      provision.enable = true;
+      provision = {
+        enable = true;
+        alerting.notificationPolicies.settings = {
+          apiVersion = 1;
+          policies = [
+            {
+              orgId = 1;
+              receiver = "matrix-hookshot";
+            }
+          ];
+        };
+        alerting.contactPoints.settings = {
+          apiVersion = 1;
+          contactPoints = [
+            {
+              orgId = 1;
+              name = "matrix-hookshot";
+              receivers = [
+                {
+                  uid = "matrix-hookshot-webhook";
+                  type = "webhook";
+                  settings = {
+                    url = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString config.systemConstants.ports.hookshot.webhook}/grafana-alerts";
+                    httpMethod = "POST";
+                  };
+                }
+              ];
+            }
+          ];
+        };
+      };
     };
 
     services.nginx.virtualHosts.${grafana_domain} = {
