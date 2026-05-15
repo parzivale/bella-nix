@@ -38,24 +38,22 @@
       connections = [
         {
           roomId = "!MSzUstXqWnQtCaRwpU:parzivale.dev";
-          type = "uk.half-shot.matrix-hookshot.generic.hook";
+          connectionType = "uk.half-shot.matrix-hookshot.generic.hook";
+          stateKey = "grafana-alerts";
           state = {
-            stateKey = "grafana-alerts";
-            config = {
-              transformationFunction = ''
-                const emoji = data.status === "firing" ? "🔥" : "✅";
-                const status = data.status === "firing" ? "FIRING" : "RESOLVED";
-                const alerts = data.alerts.map(function(a) {
-                  const name = a.labels.alertname || "Unknown";
-                  const summary = a.annotations.summary || a.annotations.description || "";
-                  return summary ? ("• " + name + ": " + summary) : ("• " + name);
-                }).join("\n");
-                return {
-                  plain: emoji + " " + status + ": " + data.title + "\n" + alerts,
-                  msgtype: "m.text"
-                };
-              '';
-            };
+            transformationFunction = ''
+              const emoji = data.status === "firing" ? "🔥" : "✅";
+              const status = data.status === "firing" ? "FIRING" : "RESOLVED";
+              const alerts = data.alerts.map(function(a) {
+                const name = a.labels.alertname || "Unknown";
+                const summary = a.annotations.summary || a.annotations.description || "";
+                return summary ? ("• " + name + ": " + summary) : ("• " + name);
+              }).join("\n");
+              return {
+                plain: emoji + " " + status + ": " + data.title + "\n" + alerts,
+                msgtype: "m.text"
+              };
+            '';
           };
         }
       ];
