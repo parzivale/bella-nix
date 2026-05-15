@@ -26,7 +26,7 @@
       generic = {
         enabled = true;
         urlPrefix = "http://127.0.0.1:${toString webhook_port}";
-        allowJsTransformationFunctions = false;
+        allowJsTransformationFunctions = true;
         waitForComplete = false;
         userIdPrefix = "_webhooks_";
       };
@@ -39,7 +39,21 @@
           {
             type = "uk.half-shot.matrix-hookshot.generic.hook";
             state_key = "grafana-alerts";
-            config = {};
+            config = {
+              transformationFunction = ''
+                const emoji = data.status === "firing" ? "🔥" : "✅";
+                const status = data.status === "firing" ? "FIRING" : "RESOLVED";
+                const alerts = data.alerts.map(function(a) {
+                  const name = a.labels.alertname || "Unknown";
+                  const summary = a.annotations.summary || a.annotations.description || "";
+                  return summary ? ("• " + name + ": " + summary) : ("• " + name);
+                }).join("\n");
+                return {
+                  plain: emoji + " " + status + ": " + data.title + "\n" + alerts,
+                  msgtype: "m.text"
+                };
+              '';
+            };
           }
         ];
       };
