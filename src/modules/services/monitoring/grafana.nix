@@ -48,7 +48,7 @@
       };
       provision = {
         enable = true;
-        alerting.notificationPolicies.settings = {
+        alerting.policies.settings = {
           apiVersion = 1;
           policies = [
             {
