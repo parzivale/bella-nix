@@ -18,6 +18,13 @@
       dataSourceName = "postgresql:///postgres?host=/run/postgresql&sslmode=disable";
     };
 
+    environment.etc."alloy/postgres.alloy".text = ''
+      prometheus.scrape "postgres" {
+        targets = [{"__address__" = "127.0.0.1:${toString config.services.prometheus.exporters.postgres.port}"}]
+        forward_to = [prometheus.remote_write.monitoring.receiver]
+      }
+    '';
+
     services.restic.backups.postgres-backup = {
       initialize = true;
       repository = "s3:https://36a395a8d1dada79c1fc9d8552de08d0.r2.cloudflarestorage.com/postgres-backups";

@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nginx = {...}: {
+  flake.modules.nixos.nginx = {config, ...}: {
     services.nginx = {
       enable = true;
       recommendedTlsSettings = true;
@@ -19,6 +19,13 @@
       enable = true;
       scrapeUri = "http://127.0.0.1:81/stub_status";
     };
+
+    environment.etc."alloy/nginx.alloy".text = ''
+      prometheus.scrape "nginx" {
+        targets = [{"__address__" = "127.0.0.1:${toString config.services.prometheus.exporters.nginx.port}"}]
+        forward_to = [prometheus.remote_write.monitoring.receiver]
+      }
+    '';
 
     networking.firewall = {
       allowedTCPPorts = [443];
