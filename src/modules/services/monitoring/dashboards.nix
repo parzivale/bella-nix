@@ -5,6 +5,7 @@
     services.grafana.provision = {
       datasources.settings.datasources = [
         {
+          uid = "loki";
           name = "Loki";
           type = "loki";
           url = "http://127.0.0.1:${toString loki_port}";
