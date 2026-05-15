@@ -34,6 +34,15 @@
         level = "warn";
         colorize = false;
       };
+      connections = {
+        "!MSzUstXqWnQtCaRwpU:parzivale.dev" = [
+          {
+            type = "uk.half-shot.matrix-hookshot.generic.hook";
+            state_key = "grafana-alerts";
+            config = {};
+          }
+        ];
+      };
       listeners = [
         {
           port = webhook_port;
