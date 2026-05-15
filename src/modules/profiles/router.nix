@@ -12,7 +12,7 @@
     services.nginx.virtualHosts = lib.mkMerge (
       lib.mapAttrsToList (
         _: nixosCfg:
-          nixosCfg.config.services.nginx.virtualHosts
+          nixosCfg.config.reverseProxy
       ) (builtins.removeAttrs self.nixosConfigurations [config.networking.hostName])
     );
   };

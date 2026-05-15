@@ -56,7 +56,7 @@
       };
     };
 
-    services.nginx.virtualHosts.${kanidm_domain} = {
+    reverseProxy.${kanidm_domain} = {
       forceSSL = true;
       enableACME = true;
       quic = true;

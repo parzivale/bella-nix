@@ -39,5 +39,6 @@ rec {
     };
     pocket-id = 1411;
     kanidm = 8300;
+    grocy = 8080;
   };
 }

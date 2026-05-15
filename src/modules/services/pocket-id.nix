@@ -32,12 +32,12 @@
       ];
     };
 
-    services.nginx.virtualHosts."${pocket-id_domain}" = {
+    reverseProxy.${pocket-id_domain} = {
       forceSSL = true;
       enableACME = true;
       quic = true;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString pocket-id_port}";
+        proxyPass = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString pocket-id_port}";
         proxyWebsockets = true;
       };
     };

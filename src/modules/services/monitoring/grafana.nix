@@ -79,7 +79,7 @@
       };
     };
 
-    services.nginx.virtualHosts.${grafana_domain} = {
+    reverseProxy.${grafana_domain} = {
       forceSSL = true;
       enableACME = true;
       quic = true;

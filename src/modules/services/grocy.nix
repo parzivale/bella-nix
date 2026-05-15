@@ -5,6 +5,8 @@
     ...
   }: let
     grocy_domain = config.systemConstants.subDomains.grocy;
+    tailscale_host = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
+    grocy_port = config.systemConstants.ports.grocy;
     dataDir = "/var/lib/grocy";
     pkg = pkgs.grocy;
   in {
@@ -64,12 +66,20 @@
       script = "rm -rf ${dataDir}/viewcache/*";
     };
 
-    services.nginx.enable = true;
-
-    services.nginx.virtualHosts.${grocy_domain} = {
+    reverseProxy.${grocy_domain} = {
       forceSSL = true;
       enableACME = true;
       quic = true;
+      locations."/" = {
+        proxyPass = "http://${tailscale_host}:${toString grocy_port}";
+        proxyWebsockets = true;
+      };
+    };
+
+    services.nginx.enable = true;
+
+    services.nginx.virtualHosts."grocy-backend" = {
+      listen = [{addr = "0.0.0.0"; port = grocy_port;}];
       root = "${pkg}/public";
       locations."/".extraConfig = "rewrite ^ /index.php;";
       locations."~ \\.php$".extraConfig = ''

@@ -7,7 +7,7 @@
     matrix_main_port = config.systemConstants.ports.matrix.main;
     backend = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
   in {
-    services.nginx.virtualHosts = {
+    reverseProxy = {
       ${mas_domain} = {
         forceSSL = true;
         enableACME = true;
