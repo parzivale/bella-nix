@@ -1,4 +1,8 @@
-{moduleWithSystem, inputs, ...}: {
+{
+  moduleWithSystem,
+  inputs,
+  ...
+}: {
   flake.modules.nixos.tailscale = moduleWithSystem ({system, ...}: {
     config,
     lib,
