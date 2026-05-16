@@ -13,7 +13,7 @@
     '';
     loader.efi.canTouchEfiVariables = false;
     binfmt.emulatedSystems = ["x86_64-linux"];
-    kernel.sysctl."vm.mmap_rnd_bits" = lib.mkForce 31;
+    # kernel.sysctl."vm.mmap_rnd_bits" = lib.mkForce 31;
   };
 
   # networking.useNetworkd = true;
@@ -32,18 +32,54 @@
       settings = {
         MediaLayerDefault = true;
         MediaLayerKeys = [
-          { Icon = "brightness_low";  Action = "BrightnessDown"; }
-          { Icon = "brightness_high"; Action = "BrightnessUp";   }
-          { Icon = "mic_off";         Action = "MicMute";        }
-          { Icon = "screenshot";      Action = "Sysrq";          }
-          { Icon = "backlight_low";   Action = "IllumDown";      }
-          { Icon = "backlight_high";  Action = "IllumUp";        }
-          { Icon = "fast_rewind";     Action = "PreviousSong";   }
-          { Icon = "play_pause";      Action = "PlayPause";      }
-          { Icon = "fast_forward";    Action = "NextSong";       }
-          { Icon = "volume_off";      Action = "Mute";           }
-          { Icon = "volume_down";     Action = "VolumeDown";     }
-          { Icon = "volume_up";       Action = "VolumeUp";       }
+          {
+            Icon = "brightness_low";
+            Action = "BrightnessDown";
+          }
+          {
+            Icon = "brightness_high";
+            Action = "BrightnessUp";
+          }
+          {
+            Icon = "mic_off";
+            Action = "MicMute";
+          }
+          {
+            Icon = "screenshot";
+            Action = "Sysrq";
+          }
+          {
+            Icon = "backlight_low";
+            Action = "IllumDown";
+          }
+          {
+            Icon = "backlight_high";
+            Action = "IllumUp";
+          }
+          {
+            Icon = "fast_rewind";
+            Action = "PreviousSong";
+          }
+          {
+            Icon = "play_pause";
+            Action = "PlayPause";
+          }
+          {
+            Icon = "fast_forward";
+            Action = "NextSong";
+          }
+          {
+            Icon = "volume_off";
+            Action = "Mute";
+          }
+          {
+            Icon = "volume_down";
+            Action = "VolumeDown";
+          }
+          {
+            Icon = "volume_up";
+            Action = "VolumeUp";
+          }
         ];
       };
     };

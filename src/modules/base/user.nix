@@ -11,7 +11,7 @@
 
     security.pam.services.sudo.startSession = true;
 
-    systemd.additionalUpstreamSystemUnits = ["systemd-soft-reboot.service"];
+    # systemd.additionalUpstreamSystemUnits = ["systemd-soft-reboot.service"];
 
     # Grant wheel unconditional yes for power actions (same as Fedora's 49-wheel.rules).
     security.polkit.extraConfig = ''
