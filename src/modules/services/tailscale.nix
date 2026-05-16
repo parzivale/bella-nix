@@ -1,9 +1,10 @@
-{
-  flake.modules.nixos.tailscale = {
+{moduleWithSystem, inputs, ...}: {
+  flake.modules.nixos.tailscale = moduleWithSystem ({system, ...}: {
     config,
     lib,
     ...
   }: {
+    services.tailscale.package = (import inputs.nixpkgs-tailscale {inherit system;}).tailscale;
     systemd.services = {
       tailscaled-autoconnect.after = ["agenix-install-secrets.service" "network-online.target"];
       tailscaled-autoconnect.requires = ["agenix-install-secrets.service" "network-online.target"];
@@ -29,5 +30,5 @@
       extraUpFlags = ["--advertise-tags=tag:nixos"];
       disableTaildrop = true;
     };
-  };
+  });
 }

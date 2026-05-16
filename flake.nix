@@ -6,6 +6,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-tailscale.url = "github:nixos/nixpkgs/6f2615d8183b23a55a533615689e059c3ff86b87";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     agenix = {
