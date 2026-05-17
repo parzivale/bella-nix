@@ -1,10 +1,17 @@
-{
+{inputs, ...}: {
   flake.modules.nixos.hookshot = {
     config,
     pkgs,
     lib,
     ...
   }: let
+    hookshot = pkgs.matrix-hookshot.overrideAttrs (old: {
+      src = inputs.matrix-hookshot-src;
+      offlineCache = pkgs.fetchYarnDeps {
+        src = inputs.matrix-hookshot-src;
+        hash = "sha256-qxaC/SMBQhCcXXRFMM5WWHw3xUKTVWweLGQRlkzaT1Q=";
+      };
+    });
     domain = config.systemConstants.domain;
     matrix_domain = config.systemConstants.subDomains.matrix;
     matrix_main_port = config.systemConstants.ports.matrix.main;
@@ -42,6 +49,37 @@
           stateKey = "grafana-alerts";
           state = {
             name = "grafana-alerts";
+            transformationFunction = ''
+              const body = data.body;
+              if (!body || !body.alerts || body.alerts.length === 0) {
+                return { empty: true };
+              }
+
+              const firing = body.alerts.filter(a => a.status === "firing");
+              const resolved = body.alerts.filter(a => a.status === "resolved");
+
+              const formatAlert = (a, emoji) => {
+                const name = a.labels.alertname || "Unknown";
+                const severity = a.labels.severity ? " [" + a.labels.severity + "]" : "";
+                const host = a.labels.instance || a.labels.host || a.labels.hostname || "";
+                const summary = a.annotations.summary || a.annotations.description || "";
+                const value = a.valueString || "";
+
+                const lines = [emoji + " " + name + severity];
+                if (host) lines.push("  Host: " + host);
+                if (summary) lines.push("  " + summary);
+                if (value) lines.push("  Value: " + value);
+                if (a.generatorURL) lines.push("  Source: " + a.generatorURL);
+                if (a.silenceURL) lines.push("  Silence: " + a.silenceURL);
+                return lines.join("\n");
+              };
+
+              const parts = [];
+              if (firing.length > 0) parts.push("🔥 FIRING\n" + firing.map(a => formatAlert(a, "▶")).join("\n\n"));
+              if (resolved.length > 0) parts.push("✅ RESOLVED\n" + resolved.map(a => formatAlert(a, "▶")).join("\n\n"));
+
+              return { plain: parts.join("\n\n"), msgtype: "m.notice" };
+            '';
           };
         }
       ];
@@ -112,7 +150,7 @@
         User = "matrix-hookshot";
         Group = "matrix-hookshot";
         StateDirectory = "matrix-hookshot";
-        ExecStart = "${lib.getExe pkgs.matrix-hookshot} ${configFile} ${registrationPath}";
+        ExecStart = "${lib.getExe hookshot} ${configFile} ${registrationPath}";
         Restart = "on-failure";
         RestartSec = "5s";
       };

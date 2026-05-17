@@ -859,6 +859,23 @@
         "type": "github"
       }
     },
+    "matrix-hookshot-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772126732,
+        "narHash": "sha256-Bldg2mvvddWU+2M0D8JmIf7zUhRhmwEvTtaN/V0WZk0=",
+        "owner": "matrix-org",
+        "repo": "matrix-hookshot",
+        "rev": "5b93d1e8e4c310bb4cf8c19a5bc032d74ce80bb7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "matrix-org",
+        "ref": "hs/fix-init-sequence",
+        "repo": "matrix-hookshot",
+        "type": "github"
+      }
+    },
     "niri-flake": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -1230,6 +1247,7 @@
         "haumea": "haumea_2",
         "home-manager": "home-manager_2",
         "iamb": "iamb",
+        "matrix-hookshot-src": "matrix-hookshot-src",
         "niri-flake": "niri-flake",
         "nix-flatpak": "nix-flatpak",
         "nix-minecraft": "nix-minecraft",

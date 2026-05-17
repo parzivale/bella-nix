@@ -127,6 +127,11 @@
       url = "github:Guekka/xdg-desktop-portal-termfilepickers";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    matrix-hookshot-src = {
+      url = "github:matrix-org/matrix-hookshot/hs/fix-init-sequence";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
