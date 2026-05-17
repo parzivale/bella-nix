@@ -1,12 +1,6 @@
 {
-  flake.modules.nixos.helix = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.programs.helix.languages = {
+  flake.modules.homeManager.helix = {pkgs, ...}: {
+    programs.helix.languages = {
       language = [
         {
           name = "nix";

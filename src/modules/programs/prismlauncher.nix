@@ -1,13 +1,5 @@
-{
-  flake.modules.nixos.prismlauncher = {
-    config,
-    pkgs,
-    lib,
-    ...
-  }: let
-    user = config.systemConstants.username;
-
-    # CEF runtime dependencies for MCEF mod
+{inputs, ...}: {
+  flake.modules.homeManager.prismlauncher = {pkgs, lib, ...}: let
     cefLibs = with pkgs; [
       libgbm
       glib
@@ -36,7 +28,6 @@
       cairo
     ];
 
-    # Wrap Java with CEF libraries for MCEF mod support
     wrapJava = jdk:
       pkgs.symlinkJoin {
         name = "${jdk.pname}-with-cef";
@@ -47,6 +38,7 @@
             --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath cefLibs}"
         '';
       };
+
     prismlauncherDgpu = pkgs.symlinkJoin {
       name = "prismlauncher-dgpu";
       paths = [
@@ -65,7 +57,46 @@
       '';
     };
   in {
-    home-manager.users.${user}.home.packages = [prismlauncherDgpu];
+    home.packages = [prismlauncherDgpu];
+  };
+
+  flake.modules.nixos.prismlauncher = {
+    config,
+    pkgs,
+    lib,
+    ...
+  }: let
+    user = config.systemConstants.username;
+
+    cefLibs = with pkgs; [
+      libgbm
+      glib
+      nss
+      nspr
+      libdrm
+      expat
+      libxkbcommon
+      mesa
+      alsa-lib
+      dbus
+      at-spi2-core
+      cups
+      libX11
+      libXcomposite
+      libXdamage
+      libXext
+      libXfixes
+      libXrandr
+      libxcb
+      libxshmfence
+      atk
+      at-spi2-atk
+      gtk3
+      pango
+      cairo
+    ];
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.prismlauncher];
 
     preservation.preserveAt."/persistent".users.${user}.directories = [
       {
@@ -74,7 +105,6 @@
       }
     ];
 
-    # Enable nix-ld for MCEF's dynamically linked jcef_helper binary
     programs.nix-ld.enable = true;
     programs.nix-ld.libraries = cefLibs;
   };

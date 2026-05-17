@@ -1,4 +1,25 @@
 {inputs, ...}: {
+  flake.modules.homeManager.stylix = {osConfig, ...}: let
+    user = osConfig.systemConstants.username;
+  in {
+    stylix.targets.zen-browser.profileNames = [user];
+    gtk.gtk4.theme = null;
+    xdg.desktopEntries = {
+      qt5ct = {
+        name = "Qt5 Settings";
+        noDisplay = true;
+      };
+      qt6ct = {
+        name = "Qt6 Settings";
+        noDisplay = true;
+      };
+      kvantummanager = {
+        name = "Kvantum Manager";
+        noDisplay = true;
+      };
+    };
+  };
+
   flake.modules.nixos.stylix = {
     pkgs,
     config,
@@ -8,24 +29,8 @@
   in {
     imports = [inputs.stylix.nixosModules.default];
     programs.dconf.enable = true;
-    home-manager.users.${user} = {
-      stylix.targets.zen-browser.profileNames = [user];
-      gtk.gtk4.theme = null;
-      xdg.desktopEntries = {
-        qt5ct = {
-          name = "Qt5 Settings";
-          noDisplay = true;
-        };
-        qt6ct = {
-          name = "Qt6 Settings";
-          noDisplay = true;
-        };
-        kvantummanager = {
-          name = "Kvantum Manager";
-          noDisplay = true;
-        };
-      };
-    };
+
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.stylix];
 
     stylix = {
       enable = true;

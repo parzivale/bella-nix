@@ -1,9 +1,11 @@
-{
-  flake.modules.nixos.nh = {config, ...}: {
-    home-manager.users.${config.systemConstants.username} = {
-      programs = {
-        nh.enable = true;
-      };
-    };
+{inputs, ...}: {
+  flake.modules.homeManager.nh = {...}: {
+    programs.nh.enable = true;
+  };
+
+  flake.modules.nixos.nh = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.nh];
   };
 }

@@ -1,12 +1,5 @@
-{
-  flake.modules.nixos.nushell = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user} = {config, ...}: {
+{inputs, ...}: {
+  flake.modules.homeManager.nushell = {config, pkgs, ...}: {
       programs = {
         lazygit.enableNushellIntegration = true;
         # I would rather rename it myself
@@ -48,6 +41,11 @@
         };
       };
       home.shell.enableNushellIntegration = true;
-    };
+  };
+
+  flake.modules.nixos.nushell = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.nushell];
   };
 }

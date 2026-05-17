@@ -1,14 +1,7 @@
-{...}: {
-  flake.modules.nixos.swayidle = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
+{inputs, ...}: {
+  flake.modules.homeManager.swayidle = {pkgs, ...}: let
+    lock_command = "${pkgs.swaylock-effects}/bin/swaylock -f --clock --fade-in 1";
   in {
-    home-manager.users.${user} = let
-      lock_command = "${pkgs.swaylock-effects}/bin/swaylock -f --clock --fade-in 1";
-    in {
       services.swayidle = {
         enable = true;
         timeouts = [
@@ -37,6 +30,11 @@
           indicator-idle-visible = true;
         };
       };
-    };
+  };
+
+  flake.modules.nixos.swayidle = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.swayidle];
   };
 }

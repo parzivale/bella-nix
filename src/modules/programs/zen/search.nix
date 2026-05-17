@@ -1,12 +1,8 @@
 {
-  flake.modules.nixos.zen = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
+  flake.modules.homeManager.zen = {pkgs, osConfig, ...}: let
+    user = osConfig.systemConstants.username;
   in {
-    home-manager.users.${user}.programs.zen-browser.profiles.${user}.search = {
+    programs.zen-browser.profiles.${user}.search = {
       force = true;
       default = "duckduckgo";
       privateDefault = "duckduckgo";

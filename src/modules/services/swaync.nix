@@ -1,12 +1,7 @@
-{...}: {
-  flake.modules.nixos.swaync = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user} = {
-      programs.niri.settings.binds = {
-        "Mod+N".action.spawn = ["swaync-client" "-t"];
-      };
-      services.swaync = {
+{inputs, ...}: {
+  flake.modules.homeManager.swaync = {...}: {
+    programs.niri.settings.binds."Mod+N".action.spawn = ["swaync-client" "-t"];
+    services.swaync = {
         enable = true;
         settings = {
           positionX = "right";
@@ -21,5 +16,10 @@
         };
       };
     };
+
+  flake.modules.nixos.swaync = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.swaync];
   };
 }

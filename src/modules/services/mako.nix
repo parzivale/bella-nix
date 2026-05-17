@@ -1,8 +1,6 @@
-{...}: {
-  flake.modules.nixos.mako = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.services.mako = {
+{inputs, ...}: {
+  flake.modules.homeManager.mako = {...}: {
+    services.mako = {
       enable = true;
       settings = {
         default-timeout = 5000;
@@ -12,5 +10,11 @@
         icon-path = "/run/current-system/sw/share/icons/Papirus-Dark";
       };
     };
+  };
+
+  flake.modules.nixos.mako = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.mako];
   };
 }

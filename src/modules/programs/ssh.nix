@@ -1,21 +1,13 @@
 {inputs, ...}: {
-  flake.modules.nixos.ssh = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    imports = with inputs.self.modules.nixos; [secrets openssh preservation];
-
-    age.secrets.github-key = {
-      rekeyFile = ../../secrets/github/github-key.age;
-      owner = user;
-    };
-    home-manager.users.${user}.programs.ssh = {
+  flake.modules.homeManager.ssh = {osConfig, ...}: {
+    programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
       matchBlocks = {
         "github.com" = {
           hostname = "github.com";
           user = "git";
-          identityFile = config.age.secrets.github-key.path;
+          identityFile = osConfig.age.secrets.github-key.path;
           identitiesOnly = true;
         };
 
@@ -33,6 +25,19 @@
         };
       };
     };
+  };
+
+  flake.modules.nixos.ssh = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    imports = with inputs.self.modules.nixos; [secrets openssh preservation];
+
+    age.secrets.github-key = {
+      rekeyFile = ../../secrets/github/github-key.age;
+      owner = user;
+    };
+
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.ssh];
 
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [

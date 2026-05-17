@@ -1,12 +1,8 @@
 {
-  flake.modules.nixos.zen = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
+  flake.modules.homeManager.zen = {osConfig, ...}: let
+    user = osConfig.systemConstants.username;
   in {
-    home-manager.users.${user}.programs.zen-browser.profiles.${user} = rec {
+    programs.zen-browser.profiles.${user} = rec {
       containersForce = true;
       containers = {
         "Personal" = {

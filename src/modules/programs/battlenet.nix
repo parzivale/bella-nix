@@ -1,11 +1,5 @@
-{self, ...}: {
-  flake.modules.nixos.battlenet = {
-    config,
-    pkgs,
-    lib,
-    ...
-  }: let
-    user = config.systemConstants.username;
+{inputs, ...}: {
+  flake.modules.homeManager.battlenet = {pkgs, lib, ...}: let
     wine = "${pkgs.wineWow64Packages.stagingFull}/bin/wine";
 
     installer = pkgs.fetchurl {
@@ -23,17 +17,21 @@
       ${wine} "$HOME/${battlenet-exe}"
     '';
   in {
-    imports = [self.modules.nixos.wine];
-
-    home-manager.users.${user} = {
-      home.packages = [battlenet-launcher];
-      xdg.desktopEntries.battlenet = {
-        name = "Battle.net";
-        exec = "battlenet";
-        terminal = false;
-        categories = ["Game"];
-        comment = "Blizzard Battle.net launcher";
-      };
+    home.packages = [battlenet-launcher];
+    xdg.desktopEntries.battlenet = {
+      name = "Battle.net";
+      exec = "battlenet";
+      terminal = false;
+      categories = ["Game"];
+      comment = "Blizzard Battle.net launcher";
     };
+  };
+
+  flake.modules.nixos.battlenet = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    imports = [inputs.self.modules.nixos.wine];
+
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.battlenet];
   };
 }

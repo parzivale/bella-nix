@@ -1,12 +1,12 @@
-{
-  flake.modules.nixos.blender = {
-    config,
-    pkgs,
-    ...
-  }: let
+{inputs, ...}: {
+  flake.modules.homeManager.blender = {pkgs, ...}: {
+    home.packages = [pkgs.blender];
+  };
+
+  flake.modules.nixos.blender = {config, ...}: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user}.home.packages = [pkgs.blender];
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.blender];
 
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [

@@ -1,8 +1,6 @@
 {
-  flake.modules.nixos.zen = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.programs.zen-browser.policies = {
+  flake.modules.homeManager.zen = {...}: {
+    programs.zen-browser.policies = {
       DisableTelemetry = true;
       DisableFirefoxStudies = true;
       EnableTrackingProtection = {

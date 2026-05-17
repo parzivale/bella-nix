@@ -1,9 +1,6 @@
-{
-  flake.modules.nixos.yazi = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user} = {
-      programs.yazi = {
+{inputs, ...}: {
+  flake.modules.homeManager.yazi = {...}: {
+    programs.yazi = {
         shellWrapperName = "yy";
         enable = true;
         settings = {
@@ -29,5 +26,10 @@
         };
       };
     };
+
+  flake.modules.nixos.yazi = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.yazi];
   };
 }

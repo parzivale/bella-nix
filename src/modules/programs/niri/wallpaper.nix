@@ -1,16 +1,10 @@
 {
-  flake.modules.nixos.niri = {
-    config,
-    pkgs,
-    ...
-  }: let
-    image = config.systemConstants.bg_img;
-    user = config.systemConstants.username;
+  flake.modules.homeManager.niri = {pkgs, osConfig, ...}: let
+    image = osConfig.systemConstants.bg_img;
     blurred-image = pkgs.runCommand "blurred-wallpaper.png" {} ''
       ${pkgs.imagemagick}/bin/magick "${image}" -blur 0x8 $out
     '';
   in {
-    home-manager.users.${user} = {
       programs.niri.settings = {
         layer-rules = [
           {
@@ -47,6 +41,5 @@
           Install.WantedBy = ["graphical-session.target"];
         };
       };
-    };
   };
 }

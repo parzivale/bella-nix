@@ -1,12 +1,5 @@
 {
-  flake.modules.nixos.niri = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user} = {config, ...}: {
+  flake.modules.homeManager.niri = {config, pkgs, ...}: {
       home.packages = [pkgs.playerctl pkgs.wireplumber];
 
       programs.niri.settings.binds = with config.lib.niri.actions; {
@@ -67,7 +60,6 @@
         "XF86AudioPlay".action.spawn = ["playerctl" "play-pause"];
         "XF86AudioNext".action.spawn = ["playerctl" "next"];
         "XF86AudioPrev".action.spawn = ["playerctl" "previous"];
-      };
     };
   };
 }

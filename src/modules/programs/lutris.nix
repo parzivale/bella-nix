@@ -1,13 +1,6 @@
-{
-  flake.modules.nixos.lutris = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user} = {
-      programs.lutris = {
+{inputs, ...}: {
+  flake.modules.homeManager.lutris = {pkgs, ...}: {
+    programs.lutris = {
         enable = true;
         package = pkgs.lutris.override {
           extraLibraries = pkgs:
@@ -18,14 +11,16 @@
         };
         winePackages = [pkgs.wineWow64Packages.stagingFull];
         defaultWinePackage = pkgs.wineWow64Packages.stagingFull;
-      };
     };
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = "/Games";
-        }
-      ];
-    };
+  };
+
+  flake.modules.nixos.lutris = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.lutris];
+
+    preservation.preserveAt."/persistent".users.${user}.directories = [
+      {directory = "/Games";}
+    ];
   };
 }

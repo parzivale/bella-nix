@@ -1,12 +1,12 @@
-{
-  flake.modules.nixos.cinny = {
-    config,
-    pkgs,
-    ...
-  }: let
+{inputs, ...}: {
+  flake.modules.homeManager.cinny = {pkgs, ...}: {
+    home.packages = [pkgs.cinny-desktop];
+  };
+
+  flake.modules.nixos.cinny = {config, ...}: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user}.home.packages = [pkgs.cinny-desktop];
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.cinny];
 
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [

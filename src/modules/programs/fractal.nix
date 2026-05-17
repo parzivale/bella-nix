@@ -1,12 +1,12 @@
-{
-  flake.modules.nixos.fractal = {
-    config,
-    pkgs,
-    ...
-  }: let
+{inputs, ...}: {
+  flake.modules.homeManager.fractal = {pkgs, ...}: {
+    home.packages = [pkgs.fractal];
+  };
+
+  flake.modules.nixos.fractal = {config, ...}: let
     user = config.systemConstants.username;
   in {
-    home-manager.users.${user}.home.packages = [pkgs.fractal];
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.fractal];
 
     preservation.preserveAt."/persistent".users.${user} = {
       directories = [

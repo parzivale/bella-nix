@@ -1,17 +1,9 @@
-{
-  flake.modules.nixos.helix = {
-    config,
-    pkgs,
-    ...
-  }: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.programs.helix = {
+{inputs, ...}: {
+  flake.modules.homeManager.helix = {pkgs, ...}: {
+    programs.helix = {
       enable = true;
       defaultEditor = true;
-      extraPackages = with pkgs; [
-        cargo
-      ];
+      extraPackages = with pkgs; [cargo];
       settings.editor = {
         bufferline = "multiple";
         statusline = {
@@ -46,5 +38,11 @@
         };
       };
     };
+  };
+
+  flake.modules.nixos.helix = {config, ...}: let
+    user = config.systemConstants.username;
+  in {
+    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.helix];
   };
 }
