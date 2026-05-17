@@ -27,6 +27,7 @@
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       extraPackages = [pkgs.faudio];
+      extraCompatPackages = [pkgs.proton-ge-bin];
     };
     programs.gamemode.enable = true;
 
