@@ -7,16 +7,10 @@
       enable = true;
       polkitPolicyOwners = [user];
     };
-    preservation.preserveAt."/persistent".users.${user} = {
+    preservation = config.helpers.mkPreserve user {
       directories = [
-        {
-          directory = ".config/1Password";
-          mode = "0700";
-        }
-        {
-          directory = ".config/op";
-          mode = "0700";
-        }
+        {directory = ".config/1Password"; mode = "0700";}
+        {directory = ".config/op"; mode = "0700";}
       ];
     };
   };

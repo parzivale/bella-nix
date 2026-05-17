@@ -11,13 +11,8 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.lazygit];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".local/state/lazygit";
-          mode = "0755";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".local/state/lazygit"; mode = "0755";}];
     };
   };
 }

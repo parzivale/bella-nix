@@ -11,8 +11,8 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.wine];
 
-    preservation.preserveAt."/persistent".users.${user}.directories = [
-      {directory = ".wine";}
-    ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".wine";}];
+    };
   };
 }

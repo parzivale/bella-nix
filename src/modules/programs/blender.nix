@@ -8,13 +8,8 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.blender];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".config/blender";
-          mode = "0755";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".config/blender"; mode = "0755";}];
     };
   };
 }

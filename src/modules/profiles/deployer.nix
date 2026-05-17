@@ -10,13 +10,8 @@
       "yubikey"
     ];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = "develop";
-          mode = "0755";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = "develop"; mode = "0755";}];
     };
   };
 }

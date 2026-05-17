@@ -10,12 +10,8 @@
   flake.modules.nixos.discord = {config, ...}: let
     user = config.systemConstants.username;
   in {
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".config/discordcanary";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".config/discordcanary";}];
     };
 
     xdg.portal = {

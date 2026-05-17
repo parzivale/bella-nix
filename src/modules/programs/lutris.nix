@@ -19,8 +19,8 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.lutris];
 
-    preservation.preserveAt."/persistent".users.${user}.directories = [
-      {directory = "/Games";}
-    ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = "/Games";}];
+    };
   };
 }

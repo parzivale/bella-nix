@@ -39,13 +39,8 @@
 
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.ssh];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".ssh";
-          mode = "0700";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".ssh"; mode = "0700";}];
     };
   };
 }

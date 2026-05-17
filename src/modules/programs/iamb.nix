@@ -59,7 +59,7 @@
 
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.iamb];
 
-    preservation.preserveAt."/persistent".users.${user} = {
+    preservation = config.helpers.mkPreserve user {
       directories = [".local/share/iamb"];
     };
   };

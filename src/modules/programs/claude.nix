@@ -8,18 +8,9 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.claude];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".claude";
-          mode = "0755";
-        }
-      ];
-      files = [
-        {
-          file = ".claude.json";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".claude"; mode = "0755";}];
+      files = [{file = ".claude.json";}];
     };
   };
 }

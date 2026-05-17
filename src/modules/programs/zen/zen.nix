@@ -34,12 +34,8 @@
   in {
     home-manager.sharedModules = [inputs.zen-browser.homeModules.twilight];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".config/zen";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".config/zen";}];
     };
 
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.zen];

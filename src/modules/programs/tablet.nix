@@ -7,13 +7,8 @@
       daemon.enable = true;
     };
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".config/OpenTableDriver";
-          mode = "0755";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".config/OpenTableDriver"; mode = "0755";}];
     };
   };
 }

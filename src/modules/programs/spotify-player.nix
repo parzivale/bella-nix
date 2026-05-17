@@ -16,13 +16,8 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.spotify-player];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".cache/spotify-player";
-          mode = "0755";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".cache/spotify-player"; mode = "0755";}];
     };
   };
 }

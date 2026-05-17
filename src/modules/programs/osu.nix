@@ -8,13 +8,8 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.osu];
 
-    preservation.preserveAt."/persistent".users.${user} = {
-      directories = [
-        {
-          directory = ".local/share/osu";
-          mode = "0755";
-        }
-      ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".local/share/osu"; mode = "0755";}];
     };
   };
 }

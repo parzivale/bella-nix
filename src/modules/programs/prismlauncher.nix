@@ -98,12 +98,9 @@
   in {
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.prismlauncher];
 
-    preservation.preserveAt."/persistent".users.${user}.directories = [
-      {
-        directory = ".local/share/PrismLauncher";
-        mode = "0755";
-      }
-    ];
+    preservation = config.helpers.mkPreserve user {
+      directories = [{directory = ".local/share/PrismLauncher"; mode = "0755";}];
+    };
 
     programs.nix-ld.enable = true;
     programs.nix-ld.libraries = cefLibs;

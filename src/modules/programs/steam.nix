@@ -30,16 +30,10 @@
     };
     programs.gamemode.enable = true;
 
-    preservation.preserveAt."/persistent".users.${user} = {
+    preservation = config.helpers.mkPreserve user {
       directories = [
-        {
-          directory = ".steam";
-          mode = "0755";
-        }
-        {
-          directory = ".local/share/Steam";
-          mode = "0755";
-        }
+        {directory = ".steam"; mode = "0755";}
+        {directory = ".local/share/Steam"; mode = "0755";}
       ];
     };
   };
