@@ -50,35 +50,34 @@
           state = {
             name = "grafana-alerts";
             transformationFunction = ''
-              const body = data.body;
-              if (!body || !body.alerts || body.alerts.length === 0) {
-                return { empty: true };
+              if (!data || !data.alerts || data.alerts.length === 0) {
+                result = { version: "v2", empty: true };
+              } else {
+                const firing = data.alerts.filter(a => a.status === "firing");
+                const resolved = data.alerts.filter(a => a.status === "resolved");
+
+                const formatAlert = (a, emoji) => {
+                  const name = a.labels.alertname || "Unknown";
+                  const severity = a.labels.severity ? " [" + a.labels.severity + "]" : "";
+                  const host = a.labels.instance || a.labels.host || a.labels.hostname || "";
+                  const summary = a.annotations.summary || a.annotations.description || "";
+                  const value = a.valueString || "";
+
+                  const lines = [emoji + " " + name + severity];
+                  if (host) lines.push("  Host: " + host);
+                  if (summary) lines.push("  " + summary);
+                  if (value) lines.push("  Value: " + value);
+                  if (a.generatorURL) lines.push("  Source: " + a.generatorURL);
+                  if (a.silenceURL) lines.push("  Silence: " + a.silenceURL);
+                  return lines.join("\n");
+                };
+
+                const parts = [];
+                if (firing.length > 0) parts.push("🔥 FIRING\n" + firing.map(a => formatAlert(a, "▶")).join("\n\n"));
+                if (resolved.length > 0) parts.push("✅ RESOLVED\n" + resolved.map(a => formatAlert(a, "▶")).join("\n\n"));
+
+                result = { version: "v2", plain: parts.join("\n\n"), msgtype: "m.notice" };
               }
-
-              const firing = body.alerts.filter(a => a.status === "firing");
-              const resolved = body.alerts.filter(a => a.status === "resolved");
-
-              const formatAlert = (a, emoji) => {
-                const name = a.labels.alertname || "Unknown";
-                const severity = a.labels.severity ? " [" + a.labels.severity + "]" : "";
-                const host = a.labels.instance || a.labels.host || a.labels.hostname || "";
-                const summary = a.annotations.summary || a.annotations.description || "";
-                const value = a.valueString || "";
-
-                const lines = [emoji + " " + name + severity];
-                if (host) lines.push("  Host: " + host);
-                if (summary) lines.push("  " + summary);
-                if (value) lines.push("  Value: " + value);
-                if (a.generatorURL) lines.push("  Source: " + a.generatorURL);
-                if (a.silenceURL) lines.push("  Silence: " + a.silenceURL);
-                return lines.join("\n");
-              };
-
-              const parts = [];
-              if (firing.length > 0) parts.push("🔥 FIRING\n" + firing.map(a => formatAlert(a, "▶")).join("\n\n"));
-              if (resolved.length > 0) parts.push("✅ RESOLVED\n" + resolved.map(a => formatAlert(a, "▶")).join("\n\n"));
-
-              return { plain: parts.join("\n\n"), msgtype: "m.notice" };
             '';
           };
         }
