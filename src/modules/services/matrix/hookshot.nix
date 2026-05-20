@@ -58,17 +58,10 @@
 
                 const formatAlert = (a, emoji) => {
                   const name = a.labels.alertname || "Unknown";
-                  const severity = a.labels.severity ? " [" + a.labels.severity + "]" : "";
                   const host = a.labels.instance || a.labels.host || a.labels.hostname || "";
                   const summary = a.annotations.summary || a.annotations.description || "";
-                  const value = a.valueString || "";
-
-                  const lines = [emoji + " " + name + severity];
-                  if (host) lines.push("  Host: " + host);
+                  const lines = [emoji + " " + name + (host ? " (" + host + ")" : "")];
                   if (summary) lines.push("  " + summary);
-                  if (value) lines.push("  Value: " + value);
-                  if (a.generatorURL) lines.push("  Source: " + a.generatorURL);
-                  if (a.silenceURL) lines.push("  Silence: " + a.silenceURL);
                   return lines.join("\n");
                 };
 
