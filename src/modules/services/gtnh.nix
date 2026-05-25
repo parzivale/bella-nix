@@ -1,8 +1,5 @@
 {inputs, ...}: {
-  flake.modules.nixos.gtnh = {
-    config,
-    ...
-  }: {
+  flake.modules.nixos.gtnh = {config, ...}: {
     imports = [inputs.gtnh-nix.nixosModules."2.8.4"];
 
     programs.gtnh = {

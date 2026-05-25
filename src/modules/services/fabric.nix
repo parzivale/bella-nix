@@ -16,7 +16,7 @@
 
         serverProperties = {
           white-list = true;
-          server-port = 25565;
+          server-port = 25566;
           difficulty = "normal";
           gamemode = "survival";
           max-players = 10;

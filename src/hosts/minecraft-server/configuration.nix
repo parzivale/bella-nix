@@ -14,6 +14,7 @@ in {
     cli
     server
     fabric
+    gtnh
     playit
     systemd-boot
     networkd
