@@ -28,7 +28,7 @@
                   };
                 }
               ];
-              noDataState = "NoData";
+              noDataState = "OK";
               execErrState = "Error";
               for = "2m";
               labels = {severity = "critical";};
