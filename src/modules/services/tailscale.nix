@@ -12,6 +12,8 @@
     systemd.services = {
       tailscaled-autoconnect.after = ["agenix-install-secrets.service" "network-online.target"];
       tailscaled-autoconnect.requires = ["agenix-install-secrets.service" "network-online.target"];
+      nginx.after = ["tailscaled-autoconnect.service"];
+      nginx.wants = ["tailscaled-autoconnect.service"];
     };
 
     preservation.preserveAt."/persistent" = {
