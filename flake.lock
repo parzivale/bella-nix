@@ -172,6 +172,21 @@
     },
     "crane_3": {
       "locked": {
+        "lastModified": 1773857772,
+        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
+    "crane_4": {
+      "locked": {
         "lastModified": 1759893430,
         "narHash": "sha256-yAy4otLYm9iZ+NtQwTMEbqHwswSFUbhn7x826RR6djw=",
         "owner": "ipetkov",
@@ -697,18 +712,20 @@
     },
     "gtnh-nix": {
       "inputs": {
+        "crane": "crane_3",
         "flake-parts": "flake-parts_4",
         "haumea": "haumea",
         "nixpkgs": [
           "nixpkgs"
-        ]
+        ],
+        "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1772397490,
-        "narHash": "sha256-uDIoATHc1yVa9cpaRJCnFEvvQrLFa9aE4UMJa8rCh+o=",
+        "lastModified": 1779655720,
+        "narHash": "sha256-i4QjfzaJ6qNLJAvXEcd7TA0bruuwBS0w138QTBrdWrE=",
         "owner": "parzivale",
         "repo": "gtnh-nix",
-        "rev": "294b2ae8cb6f542e79f3f219718d6062be5f039a",
+        "rev": "8e06e2e4a1922137ef4e8994e958bd252d7c0d43",
         "type": "github"
       },
       "original": {
@@ -821,7 +838,7 @@
     },
     "iamb": {
       "inputs": {
-        "crane": "crane_3",
+        "crane": "crane_4",
         "fenix": "fenix",
         "flake-utils": "flake-utils_2",
         "nixpkgs": [
@@ -1304,6 +1321,27 @@
     "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
+          "gtnh-nix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1773803479,
+        "narHash": "sha256-GD6i1F2vrSxbsmbS92+8+x3DbHOJ+yrS78Pm4xigW4M=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "f17186f52e82ec5cf40920b58eac63b78692ac7c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_3": {
+      "inputs": {
+        "nixpkgs": [
           "wezterm",
           "nixpkgs"
         ]
@@ -1659,7 +1697,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_2",
+        "rust-overlay": "rust-overlay_3",
         "zlib": "zlib"
       },
       "locked": {
