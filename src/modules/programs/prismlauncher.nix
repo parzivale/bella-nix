@@ -1,5 +1,9 @@
 {inputs, ...}: {
-  flake.modules.homeManager.prismlauncher = {pkgs, lib, ...}: let
+  flake.modules.homeManager.prismlauncher = {
+    pkgs,
+    lib,
+    ...
+  }: let
     cefLibs = with pkgs; [
       libgbm
       glib
@@ -99,7 +103,12 @@
     home-manager.users.${user}.imports = [inputs.self.modules.homeManager.prismlauncher];
 
     preservation = config.helpers.mkPreserve user {
-      directories = [{directory = ".local/share/PrismLauncher"; mode = "0755";}];
+      directories = [
+        {
+          directory = ".local/share/PrismLauncher";
+          mode = "0755";
+        }
+      ];
     };
 
     programs.nix-ld.enable = true;

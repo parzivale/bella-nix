@@ -1,15 +1,28 @@
-{inputs, ...}: {
+{...}: {
   flake.modules.nixos.hookshot = {
     config,
     pkgs,
     lib,
     ...
   }: let
+    hookshot-src = pkgs.fetchFromGitHub {
+      owner = "matrix-org";
+      repo = "matrix-hookshot";
+      rev = "7.3.3";
+      hash = "sha256-SVQsXzQU3TTiKjd1manEsqL/Ui6s/sFoZPBf9mWp31k=";
+    };
     hookshot = pkgs.matrix-hookshot.overrideAttrs (old: {
-      src = inputs.matrix-hookshot-src;
+      src = hookshot-src;
+      version = "7.3.3";
       offlineCache = pkgs.fetchYarnDeps {
-        src = inputs.matrix-hookshot-src;
-        hash = "sha256-qxaC/SMBQhCcXXRFMM5WWHw3xUKTVWweLGQRlkzaT1Q=";
+        src = hookshot-src;
+        hash = "sha256-1J2a0ZRARYOEQE70WnKZlgwjIwafPfmgBtUVXX106lg=";
+      };
+      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+        pname = "matrix-hookshot";
+        version = "7.3.3";
+        src = hookshot-src;
+        hash = "sha256-EMwrIo17d5+LTczv4/+4m6XALfH0dCHnWtBU17h+mxI=";
       };
     });
     domain = config.systemConstants.domain;

@@ -1,5 +1,9 @@
 {inputs, ...}: {
-  flake.modules.homeManager.zen = {pkgs, osConfig, ...}: let
+  flake.modules.homeManager.zen = {
+    pkgs,
+    osConfig,
+    ...
+  }: let
     user = osConfig.systemConstants.username;
     system = pkgs.stdenv.hostPlatform.system;
   in {
