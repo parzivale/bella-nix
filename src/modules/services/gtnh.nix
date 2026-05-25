@@ -6,6 +6,7 @@
       enable = true;
       minecraft.instance-options.jvmMaxAllocation = "15G";
       minecraft.server-properties.rcon-port = 25575;
+      minecraft.server-properties.max-tick-time = -1;
     };
 
     age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/cloudflare-buckets/access_env.age;
