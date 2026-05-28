@@ -23,6 +23,7 @@ in {
     # power
     batsignal
     # system
+    wireshark
     use-x86-builders
   ];
   # Allow x86_64 Wine runners to execute on ARM via FEX

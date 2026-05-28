@@ -24,7 +24,6 @@ in {
     steam
     sober
     # system
-    wireshark
     use-arm-builders
   ];
 
