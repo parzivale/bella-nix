@@ -61,6 +61,7 @@
           connectionType = "uk.half-shot.matrix-hookshot.generic.hook";
           stateKey = "grafana-alerts";
           state = {
+            hookId = "b4dd5dd7-b580-46f6-bb17-310e8fae8120";
             name = "grafana-alerts";
             transformationFunction = ''
               if (!data || !data.alerts || data.alerts.length === 0) {

@@ -68,7 +68,7 @@
                   uid = "matrix-hookshot-webhook";
                   type = "webhook";
                   settings = {
-                    url = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString config.systemConstants.ports.hookshot.webhook}/grafana-alerts";
+                    url = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString config.systemConstants.ports.hookshot.webhook}/webhook/b4dd5dd7-b580-46f6-bb17-310e8fae8120";
                     httpMethod = "POST";
                   };
                 }
