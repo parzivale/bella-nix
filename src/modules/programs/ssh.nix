@@ -4,20 +4,20 @@
       enable = true;
       enableDefaultConfig = false;
       settings = {
-        Host."github.com" = {
-          Hostname = "github.com";
+        "github.com" = {
+          HostName = "github.com";
           User = "git";
           IdentityFile = osConfig.age.secrets.github-key.path;
-          IdentitiesOnly = "yes";
+          IdentitiesOnly = true;
         };
 
-        Host."*" = {
-          ForwardAgent = "no";
+        "*" = {
+          ForwardAgent = false;
           AddKeysToAgent = "no";
-          Compression = "no";
+          Compression = false;
           ServerAliveInterval = 0;
           ServerAliveCountMax = 3;
-          HashKnownHosts = "no";
+          HashKnownHosts = false;
           UserKnownHostsFile = "~/.ssh/known_hosts";
           ControlMaster = "auto";
           ControlPath = "~/.ssh/master-%r@%n:%p";
