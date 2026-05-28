@@ -3,25 +3,25 @@
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
-      matchBlocks = {
-        "github.com" = {
-          hostname = "github.com";
-          user = "git";
-          identityFile = osConfig.age.secrets.github-key.path;
-          identitiesOnly = true;
+      settings = {
+        Host."github.com" = {
+          Hostname = "github.com";
+          User = "git";
+          IdentityFile = osConfig.age.secrets.github-key.path;
+          IdentitiesOnly = "yes";
         };
 
-        "*" = {
-          forwardAgent = false;
-          addKeysToAgent = "no";
-          compression = false;
-          serverAliveInterval = 0;
-          serverAliveCountMax = 3;
-          hashKnownHosts = false;
-          userKnownHostsFile = "~/.ssh/known_hosts";
-          controlMaster = "auto";
-          controlPath = "~/.ssh/master-%r@%n:%p";
-          controlPersist = "15m";
+        Host."*" = {
+          ForwardAgent = "no";
+          AddKeysToAgent = "no";
+          Compression = "no";
+          ServerAliveInterval = 0;
+          ServerAliveCountMax = 3;
+          HashKnownHosts = "no";
+          UserKnownHostsFile = "~/.ssh/known_hosts";
+          ControlMaster = "auto";
+          ControlPath = "~/.ssh/master-%r@%n:%p";
+          ControlPersist = "15m";
         };
       };
     };
