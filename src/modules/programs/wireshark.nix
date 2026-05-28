@@ -1,14 +1,11 @@
-{inputs, ...}: {
-  flake.modules.homeManager.wireshark = {pkgs, ...}: {
-    home.packages = [pkgs.wireshark];
-  };
-
-  flake.modules.nixos.wireshark = {config, ...}: let
+{...}: {
+  flake.modules.nixos.wireshark = {pkgs, config, ...}: let
     user = config.systemConstants.username;
   in {
-    programs.wireshark.enable = true;
+    programs.wireshark = {
+      enable = true;
+      package = pkgs.wireshark;
+    };
     users.users.${user}.extraGroups = ["wireshark"];
-
-    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.wireshark];
   };
 }
