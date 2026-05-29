@@ -24,6 +24,7 @@ in {
     steam
     sober
     # system
+    zram
     use-arm-builders
   ];
 
@@ -33,6 +34,7 @@ in {
     {
       device = "/persistent/swapfile";
       size = 24576;
+      priority = 1;
     }
   ]; # 24GB
 

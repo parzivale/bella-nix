@@ -8,6 +8,7 @@
       commonHttpConfig = ''
         http2 on;
         add_header Alt-Svc 'h3=":443"; ma=86400' always;
+        limit_req_zone $binary_remote_addr zone=ratelimit:10m rate=10r/s;
       '';
       virtualHosts."localhost" = {
         listen = [{ addr = "127.0.0.1"; port = 81; }];

@@ -10,54 +10,55 @@
     allHosts = builtins.attrNames (lib.filterAttrs (_: type: type == "directory") (builtins.readDir ../../hosts));
     remoteHosts = builtins.filter (name: name != currentHost && name != "bootstrap") allHosts;
 
-    mkSshDomain = host: ''
-      { name = '${host}', remote_address = '${host}', username = '${user}', multiplexing = 'None' },
-    '';
   in {
     home.packages = [pkgs.wl-clipboard];
     programs = {
       wezterm = {
         enable = true;
         package = inputs.wezterm.packages.${pkgs.stdenv.hostPlatform.system}.default;
-        extraConfig = ''
-          config.check_for_updates = false
-          config.enable_tab_bar = false
-          config.ssh_domains = {
-            ${lib.concatMapStrings mkSshDomain remoteHosts}
-          }
-          config.keys = {
+        settings = {
+          check_for_updates = false;
+          enable_tab_bar = false;
+          enable_kitty_graphics = true;
+          ssh_domains = map (host: {
+            name = host;
+            remote_address = host;
+            username = user;
+            multiplexing = "None";
+          }) remoteHosts;
+          keys = [
             {
-              key = 't',
-              mods = 'CTRL|SHIFT',
-              action = wezterm.action.DisableDefaultAssignment,
-            },
+              key = "t";
+              mods = "CTRL|SHIFT";
+              action = lib.generators.mkLuaInline "wezterm.action.DisableDefaultAssignment";
+            }
             {
-              key = 't',
-              mods = 'SUPER',
-              action = wezterm.action.DisableDefaultAssignment,
-            },
+              key = "t";
+              mods = "SUPER";
+              action = lib.generators.mkLuaInline "wezterm.action.DisableDefaultAssignment";
+            }
             {
-              key = 'w',
-              mods = 'CTRL',
-              action = wezterm.action.CloseCurrentTab { confirm = true },
-            },
+              key = "w";
+              mods = "CTRL";
+              action = lib.generators.mkLuaInline "wezterm.action.CloseCurrentTab { confirm = true }";
+            }
             {
-              key = 'v',
-              mods = 'CTRL|SHIFT',
-              action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-            },
+              key = "v";
+              mods = "CTRL|SHIFT";
+              action = lib.generators.mkLuaInline "wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }";
+            }
             {
-              key = 'h',
-              mods = 'CTRL|SHIFT',
-              action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
-            },
+              key = "h";
+              mods = "CTRL|SHIFT";
+              action = lib.generators.mkLuaInline "wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }";
+            }
             {
-              key = 'w',
-              mods = 'CTRL|SHIFT',
-              action = wezterm.action.CloseCurrentPane { confirm = true },
-            },
-          }
-        '';
+              key = "w";
+              mods = "CTRL|SHIFT";
+              action = lib.generators.mkLuaInline "wezterm.action.CloseCurrentPane { confirm = true }";
+            }
+          ];
+        };
       };
       niri.settings.binds."Mod+Return".action.spawn = "wezterm";
     };

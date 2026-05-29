@@ -33,6 +33,7 @@
             templates = dump;
             videos = dump;
             publicShare = dump;
+            projects = dump;
           };
         };
       };

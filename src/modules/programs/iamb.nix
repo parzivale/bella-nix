@@ -13,7 +13,7 @@
         settings = {
           image_preview = {
             protocol = {
-              type = "iterm2";
+              type = "kitty";
               font_size = [19 43];
             };
             size = {
