@@ -16,49 +16,29 @@
       wezterm = {
         enable = true;
         package = inputs.wezterm.packages.${pkgs.stdenv.hostPlatform.system}.default;
-        settings = {
-          check_for_updates = false;
-          enable_tab_bar = false;
-          enable_kitty_graphics = true;
-          ssh_domains = map (host: {
+        extraConfig = let
+          sshDomains = lib.generators.toLua {} (map (host: {
             name = host;
             remote_address = host;
             username = user;
             multiplexing = "None";
-          }) remoteHosts;
-          keys = [
-            {
-              key = "t";
-              mods = "CTRL|SHIFT";
-              action = lib.generators.mkLuaInline "wezterm.action.DisableDefaultAssignment";
-            }
-            {
-              key = "t";
-              mods = "SUPER";
-              action = lib.generators.mkLuaInline "wezterm.action.DisableDefaultAssignment";
-            }
-            {
-              key = "w";
-              mods = "CTRL";
-              action = lib.generators.mkLuaInline "wezterm.action.CloseCurrentTab { confirm = true }";
-            }
-            {
-              key = "v";
-              mods = "CTRL|SHIFT";
-              action = lib.generators.mkLuaInline "wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }";
-            }
-            {
-              key = "h";
-              mods = "CTRL|SHIFT";
-              action = lib.generators.mkLuaInline "wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' }";
-            }
-            {
-              key = "w";
-              mods = "CTRL|SHIFT";
-              action = lib.generators.mkLuaInline "wezterm.action.CloseCurrentPane { confirm = true }";
-            }
-          ];
-        };
+          }) remoteHosts);
+        in ''
+          return {
+            check_for_updates = false,
+            enable_tab_bar = false,
+            enable_kitty_graphics = true,
+            ssh_domains = ${sshDomains},
+            keys = {
+              { key = "t", mods = "CTRL|SHIFT", action = wezterm.action.DisableDefaultAssignment },
+              { key = "t", mods = "SUPER", action = wezterm.action.DisableDefaultAssignment },
+              { key = "w", mods = "CTRL", action = wezterm.action.CloseCurrentTab { confirm = true } },
+              { key = "v", mods = "CTRL|SHIFT", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
+              { key = "h", mods = "CTRL|SHIFT", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
+              { key = "w", mods = "CTRL|SHIFT", action = wezterm.action.CloseCurrentPane { confirm = true } },
+            },
+          }
+        '';
       };
       niri.settings.binds."Mod+Return".action.spawn = "wezterm";
     };
