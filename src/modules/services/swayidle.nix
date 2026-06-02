@@ -41,6 +41,7 @@
       description = "Screen locker";
       after = ["graphical-session.target"];
       partOf = ["graphical-session.target"];
+      wantedBy = ["graphical-session.target"];
       serviceConfig = {
         Type = "simple";
         ExecStart = "${pkgs.swaylock-effects}/bin/swaylock --clock --fade-in 1";
