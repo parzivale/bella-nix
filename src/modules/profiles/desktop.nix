@@ -11,7 +11,7 @@
       lazygit
       yazi
       zen
-      walker
+      fuzzel
       _1password
       claude
       spotify-player
