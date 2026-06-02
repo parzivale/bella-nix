@@ -48,7 +48,32 @@ in {
 
   services.getty.autologinUser = user;
 
-  services.logind.settings.Login.HandleLidSwitch = "suspend";
+  boot.kernelParams = ["button.lid_init_state=open"];
+
+  services.logind.settings = {
+    Login = {
+      HandleLidSwitch = "suspend";
+      HandleLidSwitchExternalPower = "suspend";
+      HandleLidSwitchDocked = "suspend";
+      # Respect handle-lid-switch inhibitors so powerManagement.resumeCommands
+      # can block stale close events after wake
+      LidSwitchIgnoreInhibited = "no";
+      # Shorten from the 30s default — the inhibitor below covers the race
+      # window, so we don't need 30s of lid-close being ignored after wake
+      HoldoffTimeoutSec = "3";
+    };
+  };
+
+  powerManagement.resumeCommands = ''
+    # Block lid-switch handling for 3s after resume to swallow the stale
+    # close event that causes an immediate re-suspend on Apple Silicon
+    ${pkgs.systemd}/bin/systemd-inhibit \
+      --what=handle-lid-switch \
+      --who=post-resume-delay \
+      --why="Swallow stale lid-close event after resume" \
+      --mode=block \
+      sleep 3 &
+  '';
 
   home-manager.users.${user} = {pkgs, ...}: {
     home = {
