@@ -14,7 +14,7 @@
         # sshd jail is auto-enabled by NixOS when services.openssh.enable = true
         nginx-limit-req.settings = {
           # filter defines journalmatch; works with NixOS default systemd backend
-          maxretry = 2;
+          maxretry = 5;
         };
         nginx-botsearch.settings = {
           # access log is file-based, not captured in journald

@@ -11,7 +11,12 @@
         limit_req_zone $binary_remote_addr zone=ratelimit:10m rate=10r/s;
       '';
       virtualHosts."localhost" = {
-        listen = [{ addr = "127.0.0.1"; port = 81; }];
+        listen = [
+          {
+            addr = "127.0.0.1";
+            port = 81;
+          }
+        ];
         locations."/stub_status".extraConfig = "stub_status;";
       };
     };

@@ -1,13 +1,11 @@
 {self, ...}: {
-  flake.modules.nixos.router = {
-    lib,
-    ...
-  }: let
-    allProxyDomains = lib.concatMap
+  flake.modules.nixos.router = {lib, ...}: let
+    allProxyDomains =
+      lib.concatMap
       (nixosCfg: lib.attrNames nixosCfg.config.reverseProxy)
       (lib.attrValues self.nixosConfigurations);
     rateLimitConfig = lib.genAttrs allProxyDomains (_: {
-      extraConfig = "limit_req zone=ratelimit burst=20 nodelay;";
+      extraConfig = "limit_req zone=ratelimit burst=40 nodelay;";
     });
   in {
     imports = with self.modules.nixos; [
@@ -21,7 +19,8 @@
         lib.mapAttrsToList (
           _: nixosCfg:
             nixosCfg.config.reverseProxy
-        ) self.nixosConfigurations
+        )
+        self.nixosConfigurations
       ))
       rateLimitConfig
     ];
