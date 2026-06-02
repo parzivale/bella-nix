@@ -721,11 +721,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1779655720,
-        "narHash": "sha256-i4QjfzaJ6qNLJAvXEcd7TA0bruuwBS0w138QTBrdWrE=",
+        "lastModified": 1780370515,
+        "narHash": "sha256-I9D3wfG+vD5DASnOGsomVXMLctKMtDY1WfwNM3Urhf4=",
         "owner": "parzivale",
         "repo": "gtnh-nix",
-        "rev": "8e06e2e4a1922137ef4e8994e958bd252d7c0d43",
+        "rev": "690b620a6e3e819ba3dd58295c65a07bcc2a2a99",
         "type": "github"
       },
       "original": {

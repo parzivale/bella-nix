@@ -9,7 +9,6 @@
     currentHost = osConfig.networking.hostName;
     allHosts = builtins.attrNames (lib.filterAttrs (_: type: type == "directory") (builtins.readDir ../../hosts));
     remoteHosts = builtins.filter (name: name != currentHost && name != "bootstrap") allHosts;
-
   in {
     home.packages = [pkgs.wl-clipboard];
     programs = {
@@ -18,11 +17,12 @@
         package = inputs.wezterm.packages.${pkgs.stdenv.hostPlatform.system}.default;
         extraConfig = let
           sshDomains = lib.generators.toLua {} (map (host: {
-            name = host;
-            remote_address = host;
-            username = user;
-            multiplexing = "None";
-          }) remoteHosts);
+              name = host;
+              remote_address = host;
+              username = user;
+              multiplexing = "None";
+            })
+            remoteHosts);
         in ''
           return {
             check_for_updates = false,

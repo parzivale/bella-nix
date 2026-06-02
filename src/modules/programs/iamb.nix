@@ -1,5 +1,9 @@
 {inputs, ...}: {
-  flake.modules.homeManager.iamb = {pkgs, osConfig, ...}: let
+  flake.modules.homeManager.iamb = {
+    pkgs,
+    osConfig,
+    ...
+  }: let
     domain = osConfig.systemConstants.domain;
     user = osConfig.systemConstants.username;
   in {
@@ -14,7 +18,7 @@
           image_preview = {
             protocol = {
               type = "kitty";
-              font_size = [19 43];
+              # font_size = [19 43];
             };
             size = {
               width = 60;
