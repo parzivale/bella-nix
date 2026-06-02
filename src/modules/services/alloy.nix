@@ -1,8 +1,5 @@
 {
-  flake.modules.nixos.alloy = {
-    config,
-    ...
-  }: let
+  flake.modules.nixos.alloy = {config, ...}: let
     tailscaleDomain = config.systemConstants.tailscale_dns;
     monitoringHost = config.systemConstants.monitoringHost;
     loki_port = config.systemConstants.ports.loki;

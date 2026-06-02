@@ -19,7 +19,7 @@ in {
     kanidm
     router
     postgres
-    monitoring
+    # monitoring
     hookshot
   ];
 

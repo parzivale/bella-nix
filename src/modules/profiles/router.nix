@@ -5,7 +5,7 @@
       (nixosCfg: lib.attrNames nixosCfg.config.reverseProxy)
       (lib.attrValues self.nixosConfigurations);
     rateLimitConfig = lib.genAttrs allProxyDomains (_: {
-      extraConfig = "limit_req zone=ratelimit burst=40 nodelay;";
+      extraConfig = "limit_req zone=ratelimit burst=60 nodelay;";
     });
   in {
     imports = with self.modules.nixos; [
