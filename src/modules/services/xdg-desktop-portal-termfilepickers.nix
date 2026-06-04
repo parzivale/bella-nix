@@ -3,10 +3,7 @@
   inputs,
   ...
 }: {
-  flake.modules.nixos.xdg-desktop-portal-termfilepickers = moduleWithSystem ({inputs', ...}: {
-    pkgs,
-    ...
-  }: {
+  flake.modules.nixos.xdg-desktop-portal-termfilepickers = moduleWithSystem ({inputs', ...}: {pkgs, ...}: {
     imports = [
       inputs.xdg-desktop-portal-termfilepickers.nixosModules.default
     ];
