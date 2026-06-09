@@ -1,10 +1,11 @@
-{inputs, ...}: {
+{ inputs, ... }:
+{
   flake.modules.nixos.preservation = {
     imports = [
       inputs.preservation.nixosModules.preservation
     ];
     boot.initrd.systemd.enable = true;
-    systemd.suppressedSystemUnits = ["systemd-machine-id-commit.service"];
+    systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 
     systemd.services.systemd-machine-id-commit = {
       unitConfig.ConditionPathIsMountPoint = [

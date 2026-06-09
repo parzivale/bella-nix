@@ -1,9 +1,15 @@
-{options, lib, config, ...}: {
+{
+  options,
+  lib,
+  config,
+  ...
+}:
+{
   options.reverseProxy = options.services.nginx.virtualHosts;
 
   options.helpers = lib.mkOption {
     type = lib.types.attrsOf lib.types.unspecified;
-    default = {};
+    default = { };
   };
 
   config.helpers.mkPreserve = user: attrs: {

@@ -1,15 +1,15 @@
-{inputs}: {
+{ inputs }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   path = ./ssh_host_ed25519_key.pub;
-  key =
-    if builtins.pathExists path
-    then builtins.readFile path
-    else "";
+  key = if builtins.pathExists path then builtins.readFile path else "";
   user = config.systemConstants.username;
-in {
+in
+{
   imports = with inputs.self.modules.nixos; [
     helix
     git

@@ -1,4 +1,5 @@
-{inputs, ...}: {
+{ inputs, ... }:
+{
   flake.modules.homeManager.starship = _: {
     programs.starship = {
       enable = true;
@@ -33,9 +34,12 @@
     };
   };
 
-  flake.modules.nixos.starship = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.starship];
-  };
+  flake.modules.nixos.starship =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.starship ];
+    };
 }

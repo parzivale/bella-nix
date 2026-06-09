@@ -1,4 +1,5 @@
-{inputs, ...}: {
+{ inputs, ... }:
+{
   flake.modules.homeManager.git = _: {
     programs.git = {
       enable = true;
@@ -14,9 +15,12 @@
     };
   };
 
-  flake.modules.nixos.git = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.git];
-  };
+  flake.modules.nixos.git =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.git ];
+    };
 }

@@ -1,4 +1,5 @@
-{inputs, ...}: {
+{ inputs, ... }:
+{
   flake.modules.homeManager.lazygit = _: {
     programs.lazygit = {
       enable = true;
@@ -6,13 +7,21 @@
     };
   };
 
-  flake.modules.nixos.lazygit = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.lazygit];
+  flake.modules.nixos.lazygit =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.lazygit ];
 
-    preservation = config.helpers.mkPreserve user {
-      directories = [{directory = ".local/state/lazygit"; mode = "0755";}];
+      preservation = config.helpers.mkPreserve user {
+        directories = [
+          {
+            directory = ".local/state/lazygit";
+            mode = "0755";
+          }
+        ];
+      };
     };
-  };
 }

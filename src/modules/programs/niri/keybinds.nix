@@ -1,6 +1,11 @@
 {
-  flake.modules.homeManager.niri = {config, pkgs, ...}: {
-      home.packages = [pkgs.playerctl pkgs.wireplumber];
+  flake.modules.homeManager.niri =
+    { config, pkgs, ... }:
+    {
+      home.packages = [
+        pkgs.playerctl
+        pkgs.wireplumber
+      ];
 
       programs.niri.settings.binds = with config.lib.niri.actions; {
         "Mod+Shift+Slash".action = show-hotkey-overlay;
@@ -43,23 +48,52 @@
 
         "Mod+Shift+E".action.quit.skip-confirmation = true;
 
-        "Print".action.screenshot = [];
-        "Sys_Req".action.screenshot = [];
+        "Print".action.screenshot = [ ];
+        "Sys_Req".action.screenshot = [ ];
 
         # Notification center
 
         # Volume controls
-        "XF86AudioRaiseVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"];
-        "XF86AudioLowerVolume".action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"];
-        "XF86AudioMute".action.spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
+        "XF86AudioRaiseVolume".action.spawn = [
+          "wpctl"
+          "set-volume"
+          "@DEFAULT_AUDIO_SINK@"
+          "5%+"
+        ];
+        "XF86AudioLowerVolume".action.spawn = [
+          "wpctl"
+          "set-volume"
+          "@DEFAULT_AUDIO_SINK@"
+          "5%-"
+        ];
+        "XF86AudioMute".action.spawn = [
+          "wpctl"
+          "set-mute"
+          "@DEFAULT_AUDIO_SINK@"
+          "toggle"
+        ];
 
         # Mic mute
-        "XF86AudioMicMute".action.spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"];
+        "XF86AudioMicMute".action.spawn = [
+          "wpctl"
+          "set-mute"
+          "@DEFAULT_AUDIO_SOURCE@"
+          "toggle"
+        ];
 
         # Playback controls
-        "XF86AudioPlay".action.spawn = ["playerctl" "play-pause"];
-        "XF86AudioNext".action.spawn = ["playerctl" "next"];
-        "XF86AudioPrev".action.spawn = ["playerctl" "previous"];
+        "XF86AudioPlay".action.spawn = [
+          "playerctl"
+          "play-pause"
+        ];
+        "XF86AudioNext".action.spawn = [
+          "playerctl"
+          "next"
+        ];
+        "XF86AudioPrev".action.spawn = [
+          "playerctl"
+          "previous"
+        ];
+      };
     };
-  };
 }

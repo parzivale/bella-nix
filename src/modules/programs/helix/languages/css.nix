@@ -1,25 +1,33 @@
 {
-  flake.modules.homeManager.helix = {pkgs, ...}: {
-    programs.helix.languages = {
-      language = [
-        {
-          name = "css";
-          auto-format = true;
-          language-servers = ["vscode-css-language-server" "harper-ls"];
-          formatter = {
-            command = "${pkgs.prettier}/bin/prettier";
-            args = ["--parser" "css"];
+  flake.modules.homeManager.helix =
+    { pkgs, ... }:
+    {
+      programs.helix.languages = {
+        language = [
+          {
+            name = "css";
+            auto-format = true;
+            language-servers = [
+              "vscode-css-language-server"
+              "harper-ls"
+            ];
+            formatter = {
+              command = "${pkgs.prettier}/bin/prettier";
+              args = [
+                "--parser"
+                "css"
+              ];
+            };
+          }
+        ];
+        language-server.vscode-css-language-server = {
+          command = "${pkgs.vscode-langservers-extracted}/bin/vscode-css-language-server";
+          args = [ "--stdio" ];
+          config = {
+            provideFormatter = true;
+            css.validate.enable = true;
           };
-        }
-      ];
-      language-server.vscode-css-language-server = {
-        command = "${pkgs.vscode-langservers-extracted}/bin/vscode-css-language-server";
-        args = ["--stdio"];
-        config = {
-          provideFormatter = true;
-          css.validate.enable = true;
         };
       };
     };
-  };
 }

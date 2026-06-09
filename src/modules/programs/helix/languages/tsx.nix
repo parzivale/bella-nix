@@ -7,7 +7,7 @@
         language-servers = [
           {
             name = "typescript-language-server";
-            except-features = ["format"];
+            except-features = [ "format" ];
           }
           "biome"
           "harper-ls"

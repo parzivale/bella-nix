@@ -1,4 +1,5 @@
-{inputs, ...}: {
+{ inputs, ... }:
+{
   flake.modules.homeManager.mako = _: {
     services.mako = {
       enable = true;
@@ -12,9 +13,12 @@
     };
   };
 
-  flake.modules.nixos.mako = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.mako];
-  };
+  flake.modules.nixos.mako =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mako ];
+    };
 }

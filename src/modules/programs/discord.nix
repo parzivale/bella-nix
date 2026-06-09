@@ -1,23 +1,29 @@
-{inputs, ...}: {
-  flake.modules.homeManager.discord = {pkgs, ...}: {
-    home.sessionVariables.NIXOS_OZONE_WL = "1";
-    programs.discord = {
-      enable = true;
-      package = pkgs.discord-canary;
-    };
-  };
-
-  flake.modules.nixos.discord = {config, ...}: let
-    user = config.systemConstants.username;
-  in {
-    preservation = config.helpers.mkPreserve user {
-      directories = [{directory = ".config/discordcanary";}];
+{ inputs, ... }:
+{
+  flake.modules.homeManager.discord =
+    { pkgs, ... }:
+    {
+      home.sessionVariables.NIXOS_OZONE_WL = "1";
+      programs.discord = {
+        enable = true;
+        package = pkgs.discord-canary;
+      };
     };
 
-    xdg.portal = {
-      enable = true;
-    };
+  flake.modules.nixos.discord =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      preservation = config.helpers.mkPreserve user {
+        directories = [ { directory = ".config/discordcanary"; } ];
+      };
 
-    home-manager.users.${user}.imports = [inputs.self.modules.homeManager.discord];
-  };
+      xdg.portal = {
+        enable = true;
+      };
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.discord ];
+    };
 }

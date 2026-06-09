@@ -1,26 +1,36 @@
-{inputs}: {
+{ inputs }:
+{
   config,
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   boot = {
-    initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
-    kernelModules = ["kvm-amd" "btusb"];
-    kernelParams = ["video=eDP-1:d"];
-    blacklistedKernelModules = ["serial_8250"];
+    initrd.availableKernelModules = [
+      "nvme"
+      "xhci_pci"
+      "usbhid"
+      "sdhci_pci"
+    ];
+    kernelModules = [
+      "kvm-amd"
+      "btusb"
+    ];
+    kernelParams = [ "video=eDP-1:d" ];
+    blacklistedKernelModules = [ "serial_8250" ];
     # binfmt.emulatedSystems = ["aarch64-linux"];
     loader.timeout = 0;
-    binfmt.emulatedSystems = ["aarch64-linux"];
+    binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
-  systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [];
+  systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [ ];
   networking.useNetworkd = true;
 
   hardware = {
-    firmware = with pkgs; [linux-firmware];
+    firmware = with pkgs; [ linux-firmware ];
     enableAllFirmware = true;
     enableRedistributableFirmware = true;
     cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;

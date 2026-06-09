@@ -31,7 +31,9 @@
               noDataState = "OK";
               execErrState = "Error";
               for = "2m";
-              labels = {severity = "critical";};
+              labels = {
+                severity = "critical";
+              };
               annotations = {
                 summary = "{{ $labels.name }} has failed";
                 description = "Systemd unit {{ $labels.name }} has been in a failed state for more than 2 minutes";

@@ -1,57 +1,60 @@
 {
-  flake.modules.nixos.matrix = {config, ...}: let
-    domain = config.systemConstants.domain;
-    matrix_domain = config.systemConstants.subDomains.matrix;
-  in {
-    nixpkgs.overlays = [
-      (_final: prev: {
-        mautrix-whatsapp = prev.mautrix-whatsapp.override {withGoolm = true;};
-      })
-    ];
+  flake.modules.nixos.matrix =
+    { config, ... }:
+    let
+      domain = config.systemConstants.domain;
+      matrix_domain = config.systemConstants.subDomains.matrix;
+    in
+    {
+      nixpkgs.overlays = [
+        (_final: prev: {
+          mautrix-whatsapp = prev.mautrix-whatsapp.override { withGoolm = true; };
+        })
+      ];
 
-    age.secrets.mautrix-whatsapp-env = {
-      rekeyFile = ../../../../secrets/mautrix/mautrix-whatsapp.age;
-      owner = "mautrix-whatsapp";
-    };
+      age.secrets.mautrix-whatsapp-env = {
+        rekeyFile = ../../../../secrets/mautrix/mautrix-whatsapp.age;
+        owner = "mautrix-whatsapp";
+      };
 
-    systemd.services.mautrix-whatsapp-registration = {
-      after = ["agenix-install-secrets.service"];
-      wants = ["agenix-install-secrets.service"];
-    };
+      systemd.services.mautrix-whatsapp-registration = {
+        after = [ "agenix-install-secrets.service" ];
+        wants = [ "agenix-install-secrets.service" ];
+      };
 
-    services.mautrix-whatsapp = {
-      enable = true;
-      environmentFile = config.age.secrets.mautrix-whatsapp-env.path;
-      settings = {
-        homeserver = {
-          address = "https://${matrix_domain}";
-          inherit domain;
-        };
-        database = {
-          type = "postgres";
-          uri = "postgresql:///mautrix-whatsapp?host=/run/postgresql";
-        };
-        bridge.permissions."${domain}" = "user";
-        encryption = {
-          allow = true;
-          msc4190 = true;
-          pickle_key = "$ENCRYPTION_PICKLE_KEY";
+      services.mautrix-whatsapp = {
+        enable = true;
+        environmentFile = config.age.secrets.mautrix-whatsapp-env.path;
+        settings = {
+          homeserver = {
+            address = "https://${matrix_domain}";
+            inherit domain;
+          };
+          database = {
+            type = "postgres";
+            uri = "postgresql:///mautrix-whatsapp?host=/run/postgresql";
+          };
+          bridge.permissions."${domain}" = "user";
+          encryption = {
+            allow = true;
+            msc4190 = true;
+            pickle_key = "$ENCRYPTION_PICKLE_KEY";
+          };
         };
       };
-    };
 
-    services.postgresql = {
-      ensureDatabases = ["mautrix-whatsapp"];
-      ensureUsers = [
-        {
-          name = "mautrix-whatsapp";
-          ensureDBOwnership = true;
-        }
+      services.postgresql = {
+        ensureDatabases = [ "mautrix-whatsapp" ];
+        ensureUsers = [
+          {
+            name = "mautrix-whatsapp";
+            ensureDBOwnership = true;
+          }
+        ];
+      };
+
+      preservation.preserveAt."/persistent".directories = [
+        { directory = "/var/lib/mautrix-whatsapp"; }
       ];
     };
-
-    preservation.preserveAt."/persistent".directories = [
-      {directory = "/var/lib/mautrix-whatsapp";}
-    ];
-  };
 }

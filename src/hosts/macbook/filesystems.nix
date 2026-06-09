@@ -1,29 +1,37 @@
-{inputs}: {
+{ inputs }:
+{
   fileSystems = {
     "/persistent" = {
       device = "/dev/nvme0n1p5";
       neededForBoot = true;
       fsType = "btrfs";
-      options = ["subvol=persistent"];
+      options = [ "subvol=persistent" ];
     };
 
     "/nix" = {
       device = "/dev/nvme0n1p5";
       neededForBoot = true;
       fsType = "btrfs";
-      options = ["subvol=nix"];
+      options = [ "subvol=nix" ];
     };
 
     "/" = {
       device = "none";
       fsType = "tmpfs";
-      options = ["defaults" "size=2G" "mode=755"];
+      options = [
+        "defaults"
+        "size=2G"
+        "mode=755"
+      ];
     };
 
     "/boot" = {
       device = "/dev/disk/by-partuuid/8a5dc817-ca90-4ec5-9e27-7e8c2f18aaa0";
       fsType = "vfat";
-      options = ["fmask=0077" "dmask=0077"];
+      options = [
+        "fmask=0077"
+        "dmask=0077"
+      ];
     };
   };
 }

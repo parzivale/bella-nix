@@ -1,9 +1,11 @@
-{inputs}: {
+{ inputs }:
+{
   config,
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     inputs.nixos-apple-silicon.nixosModules.default
   ];
@@ -12,12 +14,12 @@
       options hid_apple iso_layout=0
     '';
     loader.efi.canTouchEfiVariables = false;
-    binfmt.emulatedSystems = ["x86_64-linux"];
+    binfmt.emulatedSystems = [ "x86_64-linux" ];
     # kernel.sysctl."vm.mmap_rnd_bits" = lib.mkForce 31;
   };
 
   # networking.useNetworkd = true;
-  systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [];
+  systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [ ];
 
   services.xserver.xkb.layout = "es";
   console.keyMap = "es";

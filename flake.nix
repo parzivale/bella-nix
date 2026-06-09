@@ -262,6 +262,7 @@
                   deploy-rs
                   statix
                   deadnix
+                  nixfmt-tree
                 ];
 
                 shellHook = ''
