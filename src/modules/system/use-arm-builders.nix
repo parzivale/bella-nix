@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.modules.nixos.use-arm-builders = {config, ...}: {
     programs.ssh.knownHosts."macbook".publicKey = builtins.readFile ../../hosts/macbook/ssh_host_ed25519_key.pub;
 

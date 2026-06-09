@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.modules.nixos.use-x86-builders = {config, ...}: {
     programs.ssh.knownHosts."hp-victus-laptop".publicKey = builtins.readFile ../../hosts/hp-victus-laptop/ssh_host_ed25519_key.pub;
 

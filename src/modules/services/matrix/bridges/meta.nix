@@ -52,8 +52,8 @@
         enable = true;
         environmentFile = config.age.secrets.mautrix-instagram-env.path;
         settings = {
-          homeserver = homeserver;
-          encryption = encryption;
+          inherit homeserver;
+          inherit encryption;
           database = {
             type = "postgres";
             uri = "postgresql:///mautrix-meta-instagram?host=/run/postgresql";
@@ -65,8 +65,8 @@
         enable = true;
         environmentFile = config.age.secrets.mautrix-facebook-env.path;
         settings = {
-          homeserver = homeserver;
-          encryption = encryption;
+          inherit homeserver;
+          inherit encryption;
           database = {
             type = "postgres";
             uri = "postgresql:///mautrix-meta-facebook?host=/run/postgresql";

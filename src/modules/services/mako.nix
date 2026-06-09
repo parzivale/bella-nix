@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.mako = {...}: {
+  flake.modules.homeManager.mako = _: {
     services.mako = {
       enable = true;
       settings = {

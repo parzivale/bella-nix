@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.starship = {...}: {
+  flake.modules.homeManager.starship = _: {
     programs.starship = {
       enable = true;
       settings = {

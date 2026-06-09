@@ -1,8 +1,10 @@
-{inputs}: {
+{ inputs }:
+{
   lib,
   modulesPath,
   ...
-}: {
+}:
+{
   imports = [
     "${modulesPath}/installer/cd-dvd/iso-image.nix"
   ];
@@ -11,6 +13,6 @@
   isoImage.makeEfiBootable = true;
   isoImage.makeUsbBootable = true;
 
-  boot.kernelParams = ["boot=live"];
+  boot.kernelParams = [ "boot=live" ];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

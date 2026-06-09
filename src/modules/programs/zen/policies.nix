@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.zen = {...}: {
+  flake.modules.homeManager.zen = _: {
     programs.zen-browser.policies = {
       DisableTelemetry = true;
       DisableFirefoxStudies = true;

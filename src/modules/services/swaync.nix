@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.swaync = {...}: {
+  flake.modules.homeManager.swaync = _: {
     programs.niri.settings.binds."Mod+N".action.spawn = ["swaync-client" "-t"];
     services.swaync = {
         enable = true;

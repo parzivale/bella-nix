@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.modules.nixos.wireshark = {pkgs, config, ...}: let
     user = config.systemConstants.username;
   in {

@@ -11,7 +11,7 @@
     services.xdg-desktop-portal-termfilepickers = {
       enable = true;
       package = inputs'.xdg-desktop-portal-termfilepickers.packages.default;
-      config.terminal_command = ["${pkgs.wezterm}/bin/wezterm" "start" "--"];
+      config.terminal_command = ["${pkgs.wezterm}/bin/wezterm" "start" "--always-new-process" "--"];
     };
 
     xdg.portal = {

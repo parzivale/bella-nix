@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.modules.nixos.deploy-user = {config, ...}: let
     user = config.systemConstants.username;
   in {

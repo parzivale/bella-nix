@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.claude = {...}: {
+  flake.modules.homeManager.claude = _: {
     programs.claude-code.enable = true;
   };
 

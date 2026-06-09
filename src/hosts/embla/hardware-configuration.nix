@@ -1,4 +1,6 @@
-{inputs}: {lib, ...}: {
+{ inputs }:
+{ lib, ... }:
+{
   networking = {
     useDHCP = false;
     dhcpcd.enable = false;
@@ -14,7 +16,7 @@
       ];
 
       routes = [
-        {Gateway = "130.240.202.1";}
+        { Gateway = "130.240.202.1"; }
       ];
 
       networkConfig = {

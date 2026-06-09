@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.monitoring = {...}: {
+  flake.modules.nixos.monitoring = _: {
     services.grafana.provision.alerting.rules.settings = {
       apiVersion = 1;
       groups = [

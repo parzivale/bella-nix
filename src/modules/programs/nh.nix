@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.nh = {...}: {
+  flake.modules.homeManager.nh = _: {
     programs.nh.enable = true;
   };
 

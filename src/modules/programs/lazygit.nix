@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.lazygit = {...}: {
+  flake.modules.homeManager.lazygit = _: {
     programs.lazygit = {
       enable = true;
       settings.git.autoForwardBranches = "allBranches";

@@ -1,14 +1,14 @@
-{inputs}: {
+{ inputs }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   path = ./ssh_host_ed25519_key.pub;
-  key =
-    if builtins.pathExists path
-    then builtins.readFile path
-    else "";
-in {
+  key = if builtins.pathExists path then builtins.readFile path else "";
+in
+{
   imports = with inputs.self.modules.nixos; [
     cli
     deployer
@@ -38,7 +38,7 @@ in {
     }
   ]; # 24GB
 
-  nix.settings.extra-platforms = ["i686-linux"];
+  nix.settings.extra-platforms = [ "i686-linux" ];
 
   services.xserver.xkb.layout = "us";
 

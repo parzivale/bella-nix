@@ -48,42 +48,43 @@
       };
       provision = {
         enable = true;
-        alerting.templates.settings = {
-          apiVersion = 1;
-          templates = [
-            {
-              orgId = 1;
-              name = "matrix-alert";
-              template = ''
-                {{ define "matrix-alert" -}}
-                {{ if .Alerts.Firing -}}
-                🔥 FIRING
-                {{ range .Alerts.Firing -}}
-                ▶ {{ .Labels.alertname }}{{ if .Labels.instance }} ({{ .Labels.instance }}){{ end }}
-                {{ if .Annotations.summary }}  {{ .Annotations.summary }}{{ else if .Annotations.description }}  {{ .Annotations.description }}{{ end }}
-                {{ end -}}
-                {{ end -}}
-                {{ if .Alerts.Resolved -}}
-                ✅ RESOLVED
-                {{ range .Alerts.Resolved -}}
-                ▶ {{ .Labels.alertname }}{{ if .Labels.instance }} ({{ .Labels.instance }}){{ end }}
-                {{ end -}}
-                {{ end -}}
-                {{- end }}
-              '';
-            }
-          ];
-        };
-        alerting.policies.settings = {
-          apiVersion = 1;
-          policies = [
-            {
-              orgId = 1;
-              receiver = "matrix-hookshot";
-            }
-          ];
-        };
-        alerting.contactPoints.settings = {
+        alerting = {
+          templates.settings = {
+            apiVersion = 1;
+            templates = [
+              {
+                orgId = 1;
+                name = "matrix-alert";
+                template = ''
+                  {{ define "matrix-alert" -}}
+                  {{ if .Alerts.Firing -}}
+                  🔥 FIRING
+                  {{ range .Alerts.Firing -}}
+                  ▶ {{ .Labels.alertname }}{{ if .Labels.instance }} ({{ .Labels.instance }}){{ end }}
+                  {{ if .Annotations.summary }}  {{ .Annotations.summary }}{{ else if .Annotations.description }}  {{ .Annotations.description }}{{ end }}
+                  {{ end -}}
+                  {{ end -}}
+                  {{ if .Alerts.Resolved -}}
+                  ✅ RESOLVED
+                  {{ range .Alerts.Resolved -}}
+                  ▶ {{ .Labels.alertname }}{{ if .Labels.instance }} ({{ .Labels.instance }}){{ end }}
+                  {{ end -}}
+                  {{ end -}}
+                  {{- end }}
+                '';
+              }
+            ];
+          };
+          policies.settings = {
+            apiVersion = 1;
+            policies = [
+              {
+                orgId = 1;
+                receiver = "matrix-hookshot";
+              }
+            ];
+          };
+          contactPoints.settings = {
           apiVersion = 1;
           contactPoints = [
             {
@@ -104,6 +105,7 @@
           ];
         };
       };
+    };
     };
 
     reverseProxy.${grafana_domain} = {

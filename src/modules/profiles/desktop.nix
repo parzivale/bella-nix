@@ -26,6 +26,7 @@
       swaync
       swayidle
       avahi
+      printing
       systemd-boot
       kernel
     ];

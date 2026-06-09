@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.modules.nixos.iwd = {
     networking.wireless.iwd = {
       enable = true;

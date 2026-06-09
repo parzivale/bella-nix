@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.spotify-player = {...}: {
+  flake.modules.homeManager.spotify-player = _: {
     programs.spotify-player.enable = true;
 
     xdg.desktopEntries.spotify-player = {

@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.modules.nixos.remote-builder = {pkgs, ...}: {
     users.groups.nix-build = {};
     users.users.nix-builder = {

@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.modules.homeManager.batsignal = {...}: {
+  flake.modules.homeManager.batsignal = _: {
     services.batsignal.enable = true;
   };
 

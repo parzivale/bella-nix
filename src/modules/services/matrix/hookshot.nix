@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.modules.nixos.hookshot = {
     config,
     pkgs,
@@ -45,7 +45,7 @@
     format = pkgs.formats.yaml {};
     configFile = format.generate "hookshot-config.yaml" {
       bridge = {
-        domain = domain;
+        inherit domain;
         url = "http://127.0.0.1:${toString matrix_main_port}";
         mediaUrl = "https://${matrix_domain}";
         port = appservice_port;
@@ -151,8 +151,6 @@
       };
     };
 
-    users.users.matrix-synapse.extraGroups = ["matrix-hookshot"];
-
     systemd.services.matrix-hookshot = {
       description = "Matrix Hookshot";
       after = ["network.target" "matrix-synapse.service" "matrix-hookshot-gen-registration.service"];
@@ -169,11 +167,14 @@
       };
     };
 
-    users.users.matrix-hookshot = {
-      isSystemUser = true;
-      group = "matrix-hookshot";
+    users = {
+      users.matrix-synapse.extraGroups = ["matrix-hookshot"];
+      users.matrix-hookshot = {
+        isSystemUser = true;
+        group = "matrix-hookshot";
+      };
+      groups.matrix-hookshot = {};
     };
-    users.groups.matrix-hookshot = {};
 
     preservation.preserveAt."/persistent".directories = [
       {directory = "/var/lib/matrix-hookshot";}

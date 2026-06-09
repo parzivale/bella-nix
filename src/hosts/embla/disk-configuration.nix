@@ -1,4 +1,5 @@
-{...}: {
+_:
+{
   disko.devices = {
     disk = {
       main = {
@@ -15,7 +16,7 @@
               size = "100%";
               content = {
                 type = "btrfs";
-                extraArgs = ["-f"]; # Override existing partition
+                extraArgs = [ "-f" ]; # Override existing partition
                 subvolumes = {
                   boot = {
                     mountpoint = "/boot";

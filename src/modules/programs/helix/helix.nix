@@ -3,7 +3,7 @@
     programs.helix = {
       enable = true;
       defaultEditor = true;
-      extraPackages = with pkgs; [cargo];
+      extraPackages = with pkgs; [cargo statix deadnix nixfmt-tree efm-langserver];
       settings.editor = {
         bufferline = "multiple";
         statusline = {
@@ -18,9 +18,11 @@
             "file-type"
           ];
           separator = "|";
-          mode.normal = "NORMAL";
-          mode.insert = "INSERT";
-          mode.select = "SELECT";
+          mode = {
+            normal = "NORMAL";
+            insert = "INSERT";
+            select = "SELECT";
+          };
         };
         lsp.display-inlay-hints = true;
         whitespace.characters = {

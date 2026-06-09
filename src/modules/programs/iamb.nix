@@ -17,7 +17,7 @@
         settings = {
           image_preview = {
             protocol = {
-              type = "iterm";
+              type = "iterm2";
               font_size = [19 43];
             };
             size = {

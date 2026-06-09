@@ -5,7 +5,7 @@
     security.acme = {
       acceptTerms = true;
       defaults = {
-        email = email;
+        inherit email;
         group = "nginx";
       };
     };

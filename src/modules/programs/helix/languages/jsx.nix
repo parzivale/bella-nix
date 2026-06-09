@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.helix = {...}: {
+  flake.modules.homeManager.helix = _: {
     programs.helix.languages.language = [
       {
         name = "jsx";
