@@ -245,6 +245,8 @@
           {
             agenix-rekey.nixosConfigurations = inputs.self.nixosConfigurations; # (not technically needed, as it is already the default)
 
+            formatter = pkgs.nixfmt-tree;
+
             devShells = {
               default = pkgs.mkShell {
                 nativeBuildInputs = [
