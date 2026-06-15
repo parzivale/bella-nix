@@ -17,6 +17,7 @@ rec {
     mas = "auth.${matrix}";
     grafana = "grafana.${domain}";
     grocy = "grocy.${domain}";
+    vpn = "vpn.${domain}";
   };
 
   ports = {
@@ -40,5 +41,9 @@ rec {
     pocket-id = 1411;
     kanidm = 8300;
     grocy = 8080;
+    xray = {
+      reality = 8443;
+      xhttp = 2001;
+    };
   };
 }

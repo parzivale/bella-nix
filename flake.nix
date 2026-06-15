@@ -265,6 +265,7 @@
                   statix
                   deadnix
                   nixfmt-tree
+                  xray
                 ];
 
                 shellHook = ''
