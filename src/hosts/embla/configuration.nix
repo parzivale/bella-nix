@@ -21,8 +21,6 @@ in
     postgres
     monitoring
     hookshot
-    xray-reality
-    xray-xhttp
   ];
 
   system.stateVersion = "25.11";
