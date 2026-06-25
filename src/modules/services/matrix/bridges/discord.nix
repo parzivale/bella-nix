@@ -6,18 +6,6 @@
       matrix_domain = config.systemConstants.subDomains.matrix;
     in
     {
-      nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
-
-      nixpkgs.overlays = [
-        (_final: prev: {
-          mautrix-discord = prev.mautrix-discord.override {
-            olm = prev.olm.overrideAttrs (_: {
-              meta.knownVulnerabilities = [ ];
-            });
-          };
-        })
-      ];
-
       age.secrets.mautrix-discord-env = {
         rekeyFile = ../../../../secrets/mautrix/mautrix-discord.age;
         owner = "mautrix-discord";

@@ -6,12 +6,6 @@
       matrix_domain = config.systemConstants.subDomains.matrix;
     in
     {
-      nixpkgs.overlays = [
-        (_final: prev: {
-          mautrix-whatsapp = prev.mautrix-whatsapp.override { withGoolm = true; };
-        })
-      ];
-
       age.secrets.mautrix-whatsapp-env = {
         rekeyFile = ../../../../secrets/mautrix/mautrix-whatsapp.age;
         owner = "mautrix-whatsapp";
