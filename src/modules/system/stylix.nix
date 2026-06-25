@@ -7,7 +7,6 @@
     in
     {
       stylix.targets.zen-browser.profileNames = [ user ];
-      gtk.gtk4.theme = null;
       xdg.desktopEntries = {
         qt5ct = {
           name = "Qt5 Settings";
