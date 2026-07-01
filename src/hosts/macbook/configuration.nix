@@ -21,7 +21,8 @@ in
     iwd
     zram
     # power
-    batsignal
+    upower
+    poweralertd
     # system
     wireshark
     use-x86-builders
