@@ -4,13 +4,18 @@
     { pkgs, ... }:
     {
       systemd.user.services.poweralertd = {
-        description = "UPower-powered power alerter";
-        wantedBy = [ "graphical-session.target" ];
-        after = [ "graphical-session.target" ];
-        serviceConfig = {
+        Unit = {
+          Description = "UPower-powered power alerter";
+          After = "graphical-session.target";
+          PartOf = "graphical-session.target";
+        };
+        Service = {
           ExecStart = "${pkgs.poweralertd}/bin/poweralertd";
           Restart = "on-failure";
           RestartSec = 1;
+        };
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
         };
       };
     };
