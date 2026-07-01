@@ -26,7 +26,8 @@ in
     wireshark
     use-x86-builders
   ];
-  # Allow x86_64 Wine runners to execute on ARM via FEX
+  # FEX registered for x86_64 Wine gaming; QEMU (from emulatedSystems) takes
+  # priority in binfmt due to alphabetical registration order (x > f).
   boot.binfmt.registrations.fex-x86_64 = {
     interpreter = "${pkgs.fex-headless}/bin/FEXInterpreter";
     magicOrExtension = ''\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00'';

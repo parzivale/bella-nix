@@ -30,6 +30,7 @@
       printing
       systemd-boot
       kernel
+      powertop
     ];
   };
 }

@@ -36,8 +36,13 @@ in
 
   nixpkgs.overlays = [
     (final: prev: {
+      # QEMU linux-user has a race in TCG block-chaining when multiple guest
+      # threads run concurrently: dlsym("_Unwind_Backtrace") returns NULL from
+      # Node.js Worker Thread pthread_exit → glibc 2.42 fatal assert.
+      # QEMU_LOG=nochain disables block-chaining to force serialised dispatch,
+      # which avoids the buggy optimisation path.
       matrix-authentication-service = prev.matrix-authentication-service.overrideAttrs (_old: {
-        RUSTFLAGS = "-C target-cpu=x86-64";
+        QEMU_LOG = "nochain";
       });
     })
   ];

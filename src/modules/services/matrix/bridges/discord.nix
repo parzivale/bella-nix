@@ -16,6 +16,8 @@
         wants = [ "agenix-install-secrets.service" ];
       };
 
+      nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
+
       services.mautrix-discord = {
         enable = true;
         environmentFile = config.age.secrets.mautrix-discord-env.path;
