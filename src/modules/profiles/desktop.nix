@@ -24,7 +24,7 @@
       pipewire
       bluetooth
       networkd
-      swaync
+      mako
       swayidle
       avahi
       printing
