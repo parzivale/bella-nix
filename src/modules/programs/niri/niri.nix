@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.homeManager.niri =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       programs.niri = {
         package = pkgs.niri-unstable;
@@ -12,6 +12,8 @@
           };
 
           prefer-no-csd = true;
+
+          screenshot-path = "${config.xdg.userDirs.pictures}/Screenshot from %Y-%m-%d %H-%M-%S.png";
 
           layout = {
             empty-workspace-above-first = true;
