@@ -36,13 +36,12 @@ in
 
   nixpkgs.overlays = [
     (final: prev: {
-      # QEMU linux-user has a race in TCG block-chaining when multiple guest
-      # threads run concurrently: dlsym("_Unwind_Backtrace") returns NULL from
-      # Node.js Worker Thread pthread_exit → glibc 2.42 fatal assert.
-      # QEMU_LOG=nochain disables block-chaining to force serialised dispatch,
-      # which avoids the buggy optimisation path.
+      # Upstream's .cargo/config.toml targets x86-64-v2 (SSE4.2+), which the
+      # Xeon E5420 (SSE4.1 max) cannot execute — mas-cli SIGILLs on pcmpgtq.
+      # The RUSTFLAGS env var takes precedence over config-file rustflags,
+      # forcing the baseline x86-64 target.
       matrix-authentication-service = prev.matrix-authentication-service.overrideAttrs (_old: {
-        QEMU_LOG = "nochain";
+        RUSTFLAGS = "-C target-cpu=x86-64";
       });
     })
   ];
