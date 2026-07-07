@@ -6,7 +6,10 @@
       systemd.user.services.poweralertd = {
         Unit = {
           Description = "UPower-powered power alerter";
-          After = "graphical-session.target";
+          After = [
+            "graphical-session.target"
+            "mako.service"
+          ];
           PartOf = "graphical-session.target";
         };
         Service = {

@@ -25,7 +25,7 @@
 
       xdg.portal = {
         enable = true;
-        config.common.default = [ "gnome" ];
+        config.common.default = [ "gtk" ];
       };
     }
   );
