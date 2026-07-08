@@ -14,6 +14,13 @@
             IdentitiesOnly = true;
           };
 
+          "tangled.sh" = {
+            HostName = "tangled.sh";
+            User = "git";
+            IdentityFile = osConfig.age.secrets.tangled-key.path;
+            IdentitiesOnly = true;
+          };
+
           "*" = {
             ForwardAgent = false;
             AddKeysToAgent = "no";
@@ -44,6 +51,11 @@
 
       age.secrets.github-key = {
         rekeyFile = ../../secrets/github/github-key.age;
+        owner = user;
+      };
+
+      age.secrets.tangled-key = {
+        rekeyFile = ../../secrets/tangled/tangled-key.age;
         owner = user;
       };
 

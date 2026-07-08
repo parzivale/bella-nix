@@ -1,6 +1,11 @@
 { inputs, ... }:
 {
   flake.modules.homeManager.git = _: {
+    home.file.".cargo/config.toml".text = ''
+      [net]
+      git-fetch-with-cli = true
+    '';
+
     programs.git = {
       enable = true;
       settings = {
