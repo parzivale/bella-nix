@@ -10,9 +10,9 @@
     inputs.nixos-apple-silicon.nixosModules.default
   ];
   boot = {
-    extraModprobeConfig = ''
-      options hid_apple iso_layout=0
-    '';
+    # extraModprobeConfig = ''
+    #   options hid_apple iso_layout=0
+    # '';
     loader.efi.canTouchEfiVariables = false;
     binfmt.emulatedSystems = [ "x86_64-linux" ];
     # kernel.sysctl."vm.mmap_rnd_bits" = lib.mkForce 31;

@@ -21,6 +21,14 @@
             IdentitiesOnly = true;
           };
 
+          "tangled.org" = {
+            HostName = "tangled.org";
+            User = "git";
+            IdentityFile = osConfig.age.secrets.tangled-key.path;
+            IdentitiesOnly = true;
+          };
+
+
           "*" = {
             ForwardAgent = false;
             AddKeysToAgent = "no";
