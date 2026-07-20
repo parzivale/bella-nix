@@ -28,7 +28,6 @@
             IdentitiesOnly = true;
           };
 
-
           "*" = {
             ForwardAgent = false;
             AddKeysToAgent = "no";

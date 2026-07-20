@@ -14,17 +14,7 @@
         package = pkgs.steam.override {
           extraEnv = {
             PROTON_ENABLE_WAYLAND = 1;
-            DRI_PRIME = 1;
-            STEAM_FRAME_FORCE_CLOSE = 1;
-            STEAM_DISABLE_BROWSER_COMPOSITOR = 1;
           };
-          extraArgs = builtins.concatStringsSep " " [
-            "-cef-single-process"
-            "-cef-in-process-gpu"
-            "-cef-disable-gpu"
-            "-cef-disable-gpu-compositing"
-            "+open steam://open/minigameslist"
-          ];
           extraPkgs = pkgs: [
             pkgs.gamemode
             pkgs.faudio

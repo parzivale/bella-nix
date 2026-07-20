@@ -47,8 +47,8 @@
           '';
         };
 
-      prismlauncherDgpu = pkgs.symlinkJoin {
-        name = "prismlauncher-dgpu";
+      prismlauncherCef = pkgs.symlinkJoin {
+        name = "prismlauncher-cef";
         paths = [
           (pkgs.prismlauncher.override {
             jdks = [
@@ -58,15 +58,10 @@
             ];
           })
         ];
-        nativeBuildInputs = [ pkgs.makeWrapper ];
-        postBuild = ''
-          wrapProgram $out/bin/prismlauncher \
-            --set DRI_PRIME 1
-        '';
       };
     in
     {
-      home.packages = [ prismlauncherDgpu ];
+      home.packages = [ prismlauncherCef ];
     };
 
   flake.modules.nixos.prismlauncher =
