@@ -4,7 +4,6 @@
     { config, pkgs, ... }:
     {
       programs.niri = {
-        package = pkgs.niri-unstable;
         settings = {
           xwayland-satellite = {
             enable = true;
@@ -55,6 +54,7 @@
   flake.modules.nixos.niri =
     {
       config,
+      pkgs,
       ...
     }:
     let
@@ -80,7 +80,10 @@
       };
 
       services.getty.autologinUser = user;
-      programs.niri.enable = true;
+      programs.niri = {
+        enable = true;
+        package = pkgs.niri-unstable;
+      };
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.niri ];
     };

@@ -11,6 +11,7 @@
     # which nixpkgs has since removed. Drop once niri-flake moves to libdisplay-info 0.3+.
     nixpkgs-libdisplay-info.url = "github:nixos/nixpkgs/753cc8a3a87467296ddd1fa93f0cc3e81120ee46";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    niri-unstable.url = "github:YaLTeR/niri";
 
     agenix = {
       url = "github:yaxitech/ragenix";
@@ -59,7 +60,10 @@
 
     niri-flake = {
       url = "github:sodiboo/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        niri-unstable.follows = "niri-unstable";
+      };
     };
 
     zen-browser = {
