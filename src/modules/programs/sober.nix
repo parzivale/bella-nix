@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.sober =
-    { config, ... }:
+    { config, lib, ... }:
     let
       user = config.systemConstants.username;
     in
@@ -13,16 +13,20 @@
         overrides."org.vinegarhq.Sober".Environment.DRI_PRIME = "1";
       };
 
-      preservation.preserveAt."/persistent" = {
-        directories = [
-          {
-            directory = "/var/lib/flatpak";
-            mode = "0755";
-          }
-        ];
-        users.${user}.directories = [
-          { directory = ".var/app/org.vinegarhq.Sober/data"; }
-        ];
-      };
+      preservation = lib.mkMerge [
+        {
+          preserveAt."/persistent".directories = [
+            {
+              directory = "/var/lib/flatpak";
+              mode = "0755";
+            }
+          ];
+        }
+        (config.helpers.mkPreserve user {
+          directories = [
+            { directory = ".var/app/org.vinegarhq.Sober/data"; }
+          ];
+        })
+      ];
     };
 }

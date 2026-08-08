@@ -6,6 +6,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-tailscale.url = "github:nixos/nixpkgs/6f2615d8183b23a55a533615689e059c3ff86b87";
+    # Pinned to the last nixpkgs rev that still provides libdisplay-info_0_2, which
+    # niri-flake requires (niri's libdisplay-info-sys demands >=0.1.0, <0.3.0) but
+    # which nixpkgs has since removed. Drop once niri-flake moves to libdisplay-info 0.3+.
+    nixpkgs-libdisplay-info.url = "github:nixos/nixpkgs/753cc8a3a87467296ddd1fa93f0cc3e81120ee46";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     agenix = {
@@ -213,6 +217,16 @@
             inputs.nix-flatpak.nixosModules.nix-flatpak
             {
               nixpkgs.overlays = [
+                # niri-flake (as of rev 9ee3e13) still builds against libdisplay-info_0_2,
+                # which nixpkgs removed. niri's libdisplay-info-sys crate pins the pkg-config
+                # library to >=0.1.0, <0.3.0, so 0.3+ won't do — pull the real 0.2 package
+                # from a pinned pre-removal nixpkgs.
+                (final: prev: {
+                  libdisplay-info_0_2 =
+                    (import inputs.nixpkgs-libdisplay-info {
+                      inherit (prev.stdenv.hostPlatform) system;
+                    }).libdisplay-info_0_2;
+                })
                 inputs.niri-flake.overlays.niri
                 inputs.gtnh-nix.overlays.default
                 inputs.nixos-apple-silicon.overlays.default
@@ -269,7 +283,7 @@
                 ];
 
                 shellHook = ''
-                  exec nu -I '${inputs.self}' -e "use scripts/mod.nu *"
+                  use scripts/mod.nu *
                 '';
               };
             };

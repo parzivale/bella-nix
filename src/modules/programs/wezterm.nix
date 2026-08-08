@@ -20,7 +20,7 @@
       programs = {
         wezterm = {
           enable = true;
-          package = inputs.wezterm.packages.${pkgs.stdenv.hostPlatform.system}.default;
+          # package = inputs.wezterm.packages.${pkgs.stdenv.hostPlatform.system}.default;
           extraConfig =
             let
               sshDomains = lib.generators.toLua { } (

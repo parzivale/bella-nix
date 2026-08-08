@@ -6,6 +6,7 @@
       stylix
       # CLI aps
       iamb
+      direnv
       # compositor + GUI apps
       niri
       wezterm

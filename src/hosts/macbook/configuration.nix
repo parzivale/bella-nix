@@ -50,6 +50,8 @@ in
 
   services.getty.autologinUser = user;
 
+  security.polkit.enablePkexecWrapper = true;
+
   boot.kernelParams = [ "button.lid_init_state=open" ];
 
   services.logind.settings = {
@@ -85,33 +87,39 @@ in
         packages = [ pkgs.brightnessctl ];
       };
 
-      programs.niri.settings.input.touchpad.scroll-factor = 0.5;
+      programs.niri.settings = {
+        input = {
 
-      programs.niri.settings.binds = {
-        "XF86MonBrightnessUp".action.spawn = [
-          "brightnessctl"
-          "set"
-          "5%+"
-        ];
-        "XF86MonBrightnessDown".action.spawn = [
-          "brightnessctl"
-          "set"
-          "5%-"
-        ];
-        "XF86KbdBrightnessUp".action.spawn = [
-          "brightnessctl"
-          "-d"
-          "apple::kbd_backlight"
-          "set"
-          "5%+"
-        ];
-        "XF86KbdBrightnessDown".action.spawn = [
-          "brightnessctl"
-          "-d"
-          "apple::kbd_backlight"
-          "set"
-          "5%-"
-        ];
+          touchpad.scroll-factor = 0.5;
+          keyboard.xkb.layout = "es";
+        };
+        binds = {
+          "XF86MonBrightnessUp".action.spawn = [
+            "brightnessctl"
+            "set"
+            "5%+"
+          ];
+          "XF86MonBrightnessDown".action.spawn = [
+            "brightnessctl"
+            "set"
+            "5%-"
+          ];
+          "XF86KbdBrightnessUp".action.spawn = [
+            "brightnessctl"
+            "-d"
+            "apple::kbd_backlight"
+            "set"
+            "5%+"
+          ];
+          "XF86KbdBrightnessDown".action.spawn = [
+            "brightnessctl"
+            "-d"
+            "apple::kbd_backlight"
+            "set"
+            "5%-"
+          ];
+        };
       };
+
     };
 }
