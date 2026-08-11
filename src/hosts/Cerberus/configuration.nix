@@ -11,20 +11,27 @@ let
 in
 {
   imports = with inputs.self.modules.nixos; [
-    helix
-    git
-    ssh
-    localization
-    avahi
-    systemd-boot
+    zram
+    use-arm-builders
     deployable
     desktop
+    cli
+    steam
   ];
+
+  swapDevices = [
+    {
+      device = "/persistent/swapfile";
+      size = 40960;
+      priority = 1;
+    }
+  ];
+
   system.stateVersion = "25.11";
   home-manager.users.${user}.home.stateVersion = "25.11";
 
-  hardware.facter.reportPath = ./facter.json;
+  btop.gpu.amd = true;
+
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
-  services.getty.autologinUser = user;
 }
