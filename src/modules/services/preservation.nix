@@ -5,12 +5,11 @@
       inputs.preservation.nixosModules.preservation
     ];
     boot.initrd.systemd.enable = true;
-    systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 
     systemd.services.systemd-machine-id-commit = {
-      unitConfig.ConditionPathIsMountPoint = [
+      unitConfig.ConditionPathExists = [
         ""
-        "/persistent/etc/machine-id"
+        "!/persistent/etc/machine-id"
       ];
       serviceConfig.ExecStart = [
         ""
