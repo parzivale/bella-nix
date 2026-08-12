@@ -13,6 +13,7 @@ in
   imports = with inputs.self.modules.nixos; [
     zram
     use-arm-builders
+    deployer
     deployable
     desktop
     cli
