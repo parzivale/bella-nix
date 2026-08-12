@@ -19,6 +19,7 @@ in
     desktop
     cli
     steam
+    iwd
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
