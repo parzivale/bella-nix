@@ -7,9 +7,9 @@
     boot.initrd.systemd.enable = true;
 
     systemd.services.systemd-machine-id-commit = {
-      unitConfig.ConditionPathExists = [
+      unitConfig.ConditionPathIsMountPoint = [
         ""
-        "!/persistent/etc/machine-id"
+        "/persistent/etc/machine-id"
       ];
       serviceConfig.ExecStart = [
         ""
@@ -39,6 +39,8 @@
           {
             file = "/etc/machine-id";
             inInitrd = true;
+            how = "symlink";
+            configureParent = true;
           }
           {
             file = "/etc/ssh/ssh_host_ed25519_key";
