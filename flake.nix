@@ -13,6 +13,11 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     niri-unstable.url = "github:YaLTeR/niri";
 
+    # Deliberately NOT following our nixpkgs: chaotic-nyx's binary cache is built
+    # against their own pinned nixpkgs rev, so letting this follow ours would cause
+    # cache misses and force a from-source kernel build.
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+
     agenix = {
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -219,6 +224,7 @@
             inputs.agenix.nixosModules.default
             inputs.agenix-rekey.nixosModules.default
             inputs.nix-flatpak.nixosModules.nix-flatpak
+            inputs.chaotic.nixosModules.default
             {
               nixpkgs.overlays = [
                 # niri-flake (as of rev 9ee3e13) still builds against libdisplay-info_0_2,

@@ -2,6 +2,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -19,6 +20,8 @@ in
     cli
     steam
   ];
+
+  boot.kernelPackages = pkgs.linuxPackages_cachyos;
 
   swapDevices = [
     {
