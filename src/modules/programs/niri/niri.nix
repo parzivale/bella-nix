@@ -12,6 +12,10 @@
 
           prefer-no-csd = true;
 
+          debug = {
+            disable-direct-scanout = true;
+          };
+
           screenshot-path = "${config.xdg.userDirs.pictures}/Screenshot from %Y-%m-%d %H-%M-%S.png";
 
           layout = {
