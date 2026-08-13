@@ -5,7 +5,13 @@
       enable = true;
       settings = {
         fps = true;
+        fps_metrics = [
+          "avg"
+          "0.01"
+          "0.001"
+        ]; # avg, 1% low, 0.1% low
         frametime = true;
+        frame_timing_detailed = true; # min/max/current frametime for pacing
         cpu_stats = true;
         gpu_stats = true;
         vram = true;
