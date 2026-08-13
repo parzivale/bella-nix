@@ -19,6 +19,7 @@ in
     desktop
     cli
     steam
+    mangohud
     iwd
   ];
 
