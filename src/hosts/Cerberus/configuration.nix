@@ -21,6 +21,7 @@ in
     steam
     mangohud
     iwd
+    obs
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
