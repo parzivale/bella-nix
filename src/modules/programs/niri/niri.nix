@@ -38,7 +38,7 @@
 
           outputs = {
             HDMI-A-1 = {
-              variable-refresh-rate = false;
+              variable-refresh-rate = true;
               focus-at-startup = true;
               mode = {
                 width = 2560;
