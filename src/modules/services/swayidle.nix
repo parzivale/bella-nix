@@ -4,6 +4,10 @@
     { pkgs, ... }:
     let
       lock_service = "${pkgs.systemd}/bin/systemctl --user start swaylock.service";
+      after_resume = pkgs.writeShellScript "swayidle-after-resume" ''
+        ${pkgs.niri}/bin/niri msg action power-on-monitors
+        ${pkgs.systemd}/bin/systemctl --user restart awww.service awww-overview.service
+      '';
     in
     {
       services.swayidle = {
@@ -21,7 +25,7 @@
         ];
         events = {
           before-sleep = lock_service;
-          after-resume = "${pkgs.niri}/bin/niri msg action power-on-monitors";
+          after-resume = "${after_resume}";
           lock = lock_service;
         };
       };
