@@ -40,7 +40,12 @@ in
 
   # gaming rig: don't let powertop's auto-tune (ASPM/USB/SATA power saving) fight for latency
   powerManagement.powertop.enable = lib.mkForce false;
-  boot.kernelParams = [ "usbcore.autosuspend=-1" ];
+  boot.kernelParams = [
+    "usbcore.autosuspend=-1"
+    # workaround for amdgpu optc401_disable_crtc REG_WAIT hang on Navi 31
+    # when leaving fullscreen games; disables DC idle power optimizations
+    "amdgpu.dcdebugmask=0x10"
+  ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
