@@ -12,6 +12,7 @@
       enable = true;
       enable32Bit = true;
     };
+    amdgpu.overdrive.enable = true;
     facter.reportPath = ./facter.json;
   };
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

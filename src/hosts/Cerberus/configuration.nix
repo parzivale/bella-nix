@@ -22,6 +22,7 @@ in
     mangohud
     iwd
     obs
+    lact
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
@@ -43,9 +44,6 @@ in
   powerManagement.powertop.enable = lib.mkForce false;
   boot.kernelParams = [
     "usbcore.autosuspend=-1"
-    # workaround for amdgpu optc401_disable_crtc REG_WAIT hang on Navi 31
-    # when leaving fullscreen games; disables DC idle power optimizations
-    "amdgpu.dcdebugmask=0x10"
   ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
