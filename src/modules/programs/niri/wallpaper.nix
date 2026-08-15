@@ -26,6 +26,7 @@
             PartOf = [ "graphical-session.target" ];
           };
           Service = {
+            Environment = [ "PATH=${pkgs.awww}/bin:/run/current-system/sw/bin" ];
             ExecStart = "${pkgs.awww}/bin/awww-daemon";
             ExecStartPost = "${pkgs.bash}/bin/bash -c 'while ! ${pkgs.awww}/bin/awww query 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none ${image}'";
             Restart = "on-failure";
@@ -43,6 +44,7 @@
             PartOf = [ "graphical-session.target" ];
           };
           Service = {
+            Environment = [ "PATH=${pkgs.awww}/bin:/run/current-system/sw/bin" ];
             ExecStart = "${pkgs.awww}/bin/awww-daemon -n overview";
             ExecStartPost = "${pkgs.bash}/bin/bash -c 'while ! ${pkgs.awww}/bin/awww query -n overview 2>/dev/null; do sleep 0.1; done; ${pkgs.awww}/bin/awww img -t none -n overview ${blurred-image}'";
             Restart = "on-failure";
