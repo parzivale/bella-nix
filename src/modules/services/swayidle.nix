@@ -6,6 +6,9 @@
       lock_service = "${pkgs.systemd}/bin/systemctl --user start swaylock.service";
       after_resume = pkgs.writeShellScript "swayidle-after-resume" ''
         ${pkgs.niri}/bin/niri msg action power-on-monitors
+        while ! ${pkgs.niri}/bin/niri msg --json outputs | ${pkgs.gnugrep}/bin/grep -q '"logical":{'; do
+          sleep 0.1
+        done
         ${pkgs.systemd}/bin/systemctl --user restart awww.service awww-overview.service
       '';
     in
