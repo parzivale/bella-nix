@@ -23,6 +23,7 @@ in
     iwd
     obs
     lact
+    flightcore
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
