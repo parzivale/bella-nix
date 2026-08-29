@@ -24,6 +24,8 @@ in
     obs
     lact
     flightcore
+    r8126
+    modprobed-db
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
