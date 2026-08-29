@@ -7,7 +7,7 @@
     in
     {
       age.secrets.kanidm-mas-client-secret = {
-        rekeyFile = ../../../secrets/kanidm/mas-client-secret.age;
+        rekeyFile = ../../../secrets/master/kanidm/mas-client-secret.age;
         owner = "kanidm";
       };
 

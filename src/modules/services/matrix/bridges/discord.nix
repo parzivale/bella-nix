@@ -7,7 +7,7 @@
     in
     {
       age.secrets.mautrix-discord-env = {
-        rekeyFile = ../../../../secrets/mautrix/mautrix-discord.age;
+        rekeyFile = ../../../../secrets/master/mautrix/mautrix-discord.age;
         owner = "mautrix-discord";
       };
 

@@ -21,9 +21,6 @@
     ];
     kernelParams = [ "video=eDP-1:d" ];
     blacklistedKernelModules = [ "serial_8250" ];
-    # binfmt.emulatedSystems = ["aarch64-linux"];
-    loader.timeout = 0;
-    binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
   systemd.services.tailscaled-autoconnect.wantedBy = lib.mkForce [ ];

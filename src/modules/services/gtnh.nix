@@ -23,8 +23,8 @@
           };
         };
       };
-      age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/cloudflare-buckets/access_env.age;
-      age.secrets.restic-gtnh-password.rekeyFile = ../../secrets/restic/gtnh-password.age;
+      age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/master/cloudflare-buckets/access_env.age;
+      age.secrets.restic-gtnh-password.rekeyFile = ../../secrets/master/restic/gtnh-password.age;
 
       services.restic.backups.gtnh-backup = {
         initialize = true;

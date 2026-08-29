@@ -5,7 +5,7 @@ _: {
       programs.ssh.knownHosts."hp-victus-laptop".publicKey =
         builtins.readFile ../../hosts/hp-victus-laptop/ssh_host_ed25519_key.pub;
 
-      age.secrets.nix-builder-key.rekeyFile = ../../secrets/nix-builder/nix-builder-key.age;
+      age.secrets.nix-builder-key.rekeyFile = ../../secrets/master/nix-builder/nix-builder-key.age;
 
       nix.distributedBuilds = true;
       nix.buildMachines = [

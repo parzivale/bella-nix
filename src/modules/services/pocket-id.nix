@@ -7,7 +7,7 @@
     in
     {
       age.secrets.pocket-id-env = {
-        rekeyFile = ../../secrets/pocket-id/pocket-id.age;
+        rekeyFile = ../../secrets/master/pocket-id/pocket-id.age;
         owner = "pocket-id";
       };
 

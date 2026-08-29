@@ -116,11 +116,11 @@
     in
     {
       age.secrets.mas-config = {
-        rekeyFile = ../../../secrets/mas/mas-config.age;
+        rekeyFile = ../../../secrets/master/mas/mas-config.age;
         owner = "matrix-authentication-service";
       };
       age.secrets.mas-kanidm-oauth-client-secret = {
-        rekeyFile = ../../../secrets/kanidm/mas-client-secret.age;
+        rekeyFile = ../../../secrets/master/kanidm/mas-client-secret.age;
         owner = "matrix-authentication-service";
       };
 

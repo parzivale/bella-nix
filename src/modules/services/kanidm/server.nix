@@ -15,7 +15,7 @@
     in
     {
       age.secrets.kanidm-idm-admin-password = {
-        rekeyFile = ../../../secrets/kanidm/idm-admin-password.age;
+        rekeyFile = ../../../secrets/master/kanidm/idm-admin-password.age;
         owner = "kanidm";
       };
 

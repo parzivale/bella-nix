@@ -6,7 +6,7 @@
     in
     {
       age.secrets.kanidm-grafana-client-secret = {
-        rekeyFile = ../../../secrets/kanidm/grafana-client-secret.age;
+        rekeyFile = ../../../secrets/master/kanidm/grafana-client-secret.age;
         owner = "kanidm";
       };
 

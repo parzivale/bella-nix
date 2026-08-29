@@ -7,7 +7,7 @@
     in
     {
       age.secrets.mautrix-whatsapp-env = {
-        rekeyFile = ../../../../secrets/mautrix/mautrix-whatsapp.age;
+        rekeyFile = ../../../../secrets/master/mautrix/mautrix-whatsapp.age;
         owner = "mautrix-whatsapp";
       };
 

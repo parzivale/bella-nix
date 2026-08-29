@@ -4,7 +4,7 @@
     { config, ... }:
     {
       imports = with inputs.self.modules.nixos; [ secrets ];
-      age.secrets.deploy-key.rekeyFile = ../../secrets/nix-deploy/deploy-key.age;
+      age.secrets.deploy-key.rekeyFile = ../../secrets/master/nix-deploy/deploy-key.age;
 
       nix.settings.secret-key-files = [ config.age.secrets.deploy-key.path ];
     };

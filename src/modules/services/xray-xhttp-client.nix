@@ -9,7 +9,7 @@
       vpn_domain = config.systemConstants.subDomains.vpn;
     in
     {
-      age.secrets.xray-xhttp-client.rekeyFile = ../../secrets/xray/xhttp-client.age;
+      age.secrets.xray-xhttp-client.rekeyFile = ../../secrets/master/xray/xhttp-client.age;
 
       systemd.services.xray-xhttp-client = {
         description = "Xray VLESS+xhttp client";

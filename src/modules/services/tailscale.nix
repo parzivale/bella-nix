@@ -34,7 +34,7 @@
           }
         ];
       };
-      age.secrets.tailscale_token.rekeyFile = ../../secrets/tailscale/tailscale_key.age;
+      age.secrets.tailscale_token.rekeyFile = ../../secrets/master/tailscale/tailscale_key.age;
 
       services.tailscale = {
         enable = true;

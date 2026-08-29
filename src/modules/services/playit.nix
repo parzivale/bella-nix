@@ -5,7 +5,7 @@
     {
       imports = [ inputs.playit-nixos-module.nixosModules.default ];
 
-      age.secrets.playit-secret.rekeyFile = ../../secrets/playit/playit-secret.age;
+      age.secrets.playit-secret.rekeyFile = ../../secrets/master/playit/playit-secret.age;
 
       services.playit = {
         enable = true;

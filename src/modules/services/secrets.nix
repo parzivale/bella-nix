@@ -7,7 +7,6 @@
     }:
     let
       user = config.systemConstants.username;
-      cacheDir = "/tmp/agenix-rekey.${toString config.systemConstants.uid}";
     in
     {
       home-manager.users.${user}.home = {
@@ -22,22 +21,16 @@
         requires = [ "preservation.target" ];
       };
 
-      nix.settings.extra-sandbox-paths = [ config.age.rekey.cacheDir ];
-      systemd.tmpfiles.rules = [
-        "d ${cacheDir} 1777 ${user} users"
-      ];
-
       age = {
         rekey = {
-          requiredSystemFeatures = [ "yubikey" ];
-          inherit cacheDir;
           masterIdentities = [
             ../../secrets/yubikey/yubikey_identity_usbc.pub
             ../../secrets/yubikey/yubikey_identity_usba.pub
           ];
           agePlugins = [ pkgs.age-plugin-fido2-hmac ];
 
-          storageMode = "derivation";
+          storageMode = "local";
+          localStorageDir = ../../secrets/rekeyed/${config.networking.hostName};
         };
       };
     };

@@ -23,7 +23,10 @@
         };
         remotePlay.openFirewall = true;
         dedicatedServer.openFirewall = true;
-        extraCompatPackages = [ pkgs.proton-ge-bin ];
+        extraCompatPackages = [
+          pkgs.proton-ge-bin
+          pkgs.proton-cachyos_x86_64_v3
+        ];
       };
       programs.gamemode = {
         enable = true;

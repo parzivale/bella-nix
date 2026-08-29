@@ -127,11 +127,11 @@ _: {
     in
     {
       age.secrets.hookshot-passkey = {
-        rekeyFile = ../../../secrets/hookshot/passkey.age;
+        rekeyFile = ../../../secrets/master/hookshot/passkey.age;
         owner = "matrix-hookshot";
       };
       age.secrets.hookshot-tokens = {
-        rekeyFile = ../../../secrets/hookshot/tokens.age;
+        rekeyFile = ../../../secrets/master/hookshot/tokens.age;
         owner = "matrix-hookshot";
       };
 

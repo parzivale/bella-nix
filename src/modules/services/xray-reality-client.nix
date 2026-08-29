@@ -6,7 +6,7 @@
       ...
     }:
     {
-      age.secrets.xray-reality-client.rekeyFile = ../../secrets/xray/reality-client.age;
+      age.secrets.xray-reality-client.rekeyFile = ../../secrets/master/xray/reality-client.age;
 
       systemd.services.xray-reality-client = {
         description = "Xray VLESS+REALITY client";

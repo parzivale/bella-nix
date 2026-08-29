@@ -9,7 +9,7 @@
       port = config.systemConstants.ports.xray.reality;
     in
     {
-      age.secrets.xray-reality-server.rekeyFile = ../../secrets/xray/reality-server.age;
+      age.secrets.xray-reality-server.rekeyFile = ../../secrets/master/xray/reality-server.age;
 
       systemd.services.xray-reality = {
         description = "Xray VLESS+REALITY server";

@@ -17,11 +17,11 @@
     in
     {
       age.secrets.mautrix-instagram-env = {
-        rekeyFile = ../../../../secrets/mautrix/mautrix-instagram.age;
+        rekeyFile = ../../../../secrets/master/mautrix/mautrix-instagram.age;
         owner = "mautrix-meta-instagram";
       };
       age.secrets.mautrix-facebook-env = {
-        rekeyFile = ../../../../secrets/mautrix/mautrix-facebook.age;
+        rekeyFile = ../../../../secrets/master/mautrix/mautrix-facebook.age;
         owner = "mautrix-meta-facebook";
       };
 

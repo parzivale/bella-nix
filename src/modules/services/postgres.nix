@@ -7,8 +7,8 @@
       ...
     }:
     {
-      age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/cloudflare-buckets/access_env.age;
-      age.secrets.restic-postgres-password.rekeyFile = ../../secrets/restic/postgres-password.age;
+      age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/master/cloudflare-buckets/access_env.age;
+      age.secrets.restic-postgres-password.rekeyFile = ../../secrets/master/restic/postgres-password.age;
 
       environment.etc."alloy/postgres.alloy".text = ''
         prometheus.scrape "postgres" {

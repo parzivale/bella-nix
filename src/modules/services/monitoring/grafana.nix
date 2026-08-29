@@ -9,12 +9,12 @@
     in
     {
       age.secrets.grafana-secret-key = {
-        rekeyFile = ../../../secrets/grafana/secret-key.age;
+        rekeyFile = ../../../secrets/master/grafana/secret-key.age;
         owner = "grafana";
       };
 
       age.secrets.grafana-kanidm-oauth-secret = {
-        rekeyFile = ../../../secrets/kanidm/grafana-client-secret.age;
+        rekeyFile = ../../../secrets/master/kanidm/grafana-client-secret.age;
         owner = "grafana";
       };
 

@@ -7,7 +7,7 @@ _: {
         isSystemUser = true;
         group = "nix-build";
         shell = pkgs.bash;
-        openssh.authorizedKeys.keyFiles = [ ../../secrets/nix-builder/nix-builder-key.pub ];
+        openssh.authorizedKeys.keyFiles = [ ../../secrets/master/nix-builder/nix-builder-key.pub ];
       };
 
       nix.settings.trusted-users = [ "nix-builder" ];

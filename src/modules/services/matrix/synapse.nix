@@ -14,11 +14,11 @@
     in
     {
       age.secrets.synapse-secret = {
-        rekeyFile = ../../../secrets/synapse-secrets/synapse-secrets.age;
+        rekeyFile = ../../../secrets/master/synapse-secrets/synapse-secrets.age;
         owner = "matrix-synapse";
       };
       age.secrets.synapse-mas-secret = {
-        rekeyFile = ../../../secrets/synapse-secrets/synapse-mas.age;
+        rekeyFile = ../../../secrets/master/synapse-secrets/synapse-mas.age;
         owner = "matrix-synapse";
       };
 

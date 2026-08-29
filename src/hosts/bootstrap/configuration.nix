@@ -46,7 +46,8 @@ in
     ../../secrets/yubikey/yubikey_identity_usbc.pub
     ../../secrets/yubikey/yubikey_identity_usba.pub
   ];
-  age.rekey.storageMode = "derivation";
+  age.rekey.storageMode = "local";
+  age.rekey.localStorageDir = ../../secrets/rekeyed/${config.networking.hostName};
 
   users.users.root.openssh.authorizedKeys.keyFiles = [
     ../../secrets/yubikey/yubikey_sshkey_usba.pub

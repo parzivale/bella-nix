@@ -5,7 +5,7 @@ _: {
       programs.ssh.knownHosts."macbook".publicKey =
         builtins.readFile ../../hosts/macbook/ssh_host_ed25519_key.pub;
 
-      age.secrets.nix-builder-key.rekeyFile = ../../secrets/nix-builder/nix-builder-key.age;
+      age.secrets.nix-builder-key.rekeyFile = ../../secrets/master/nix-builder/nix-builder-key.age;
 
       nix.distributedBuilds = true;
       nix.buildMachines = [
