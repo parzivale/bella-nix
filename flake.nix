@@ -291,8 +291,9 @@
                   nixfmt-tree
                   xray
                   (pkgs.runCommand "bnix" { nativeBuildInputs = [ pkgs.nushell ]; } ''
-                    mkdir -p $out/bin
-                    cp -r ${inputs.self}/scripts/. $out/bin/
+                    cp -r ${inputs.self} $out
+                    chmod -R u+w $out
+                    mv $out/scripts $out/bin
                     mv $out/bin/mod.nu $out/bin/bnix
                     chmod +x $out/bin/bnix
                     patchShebangs $out/bin/bnix
