@@ -1,35 +1,36 @@
+#!/usr/bin/env nu
+
 use bootstrap.nu *
 use delete_host.nu *
 use template_host.nu *
 use deploy_host.nu *
-export use lib
 
-export def bnix []: nothing -> nothing {
-  help bnix
+def main []: nothing -> nothing {
+  help main
 }
 
-# Bootstraps a new machine to join the fleet
+# Bootstraps a new machine to join the fleet
 # Will:
 # - create host folder
 # - format hosts disk
 # - create host pubkey
 # - setup tailscale client
 # - deploy a template config
-export def "bnix host bootstrap" [
+def "main host bootstrap" [
   target_hostname: string # The name to set the new host as
 ]: nothing -> nothing {
   bootstrap $target_hostname
 }
 
 # Deletes a host from the repo
-export def "bnix host delete" [
+def "main host delete" [
   target_hostname: string # The host to delete
 ]: nothing -> nothing {
   delete_host $target_hostname
 }
 
 # Creates a new host template for a given hostname
-export def "bnix host template" [
+def "main host template" [
   target_hostname: string # The name of the new host
 ]: nothing -> nothing {
   template_host $target_hostname
@@ -39,7 +40,7 @@ export def "bnix host template" [
 # Accepts a list of hostnames as arguments or via pipe.
 # Defaults to all hosts except bootstrap and the current machine.
 # Runs nix flake check once before deploying.
-export def "bnix host deploy" [
+def "main host deploy" [
   ...hosts: string               # Hosts to deploy (optional, defaults to all deployable hosts)
   --dry-activate                 # Build and prepare activation but don't activate
   --no-auto-rollback             # Disable automatic rollback on activation failure
