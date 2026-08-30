@@ -55,4 +55,12 @@
       ];
     };
   };
+
+  # disko's btrfs-subvolume module doesn't set neededForBoot, but preservation's
+  # inInitrd bind-mounts (machine-id, ssh host keys, random-seed) run during
+  # initrd before switch-root — without this, /persistent isn't mounted yet at
+  # that point and the bind-mounts silently attach to the empty tmpfs root
+  # instead of the real disk, so machine-id (and host keys) regenerate every boot.
+  fileSystems."/persistent".neededForBoot = true;
+
 }
