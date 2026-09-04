@@ -45,5 +45,13 @@ rec {
       reality = 8443;
       xhttp = 2001;
     };
+    minecraft = {
+      fabric = 25566;
+      atm10 = 25567;
+      gtnh = {
+        game = 25565;
+        rcon = 25575;
+      };
+    };
   };
 }

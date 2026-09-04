@@ -13,8 +13,8 @@ in
   imports = with inputs.self.modules.nixos; [
     cli
     server
-    fabric
     gtnh
+    atm10
     playit
     systemd-boot
     networkd

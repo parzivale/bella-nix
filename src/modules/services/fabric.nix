@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.fabric =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     {
       imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
 
@@ -23,7 +23,7 @@
 
           serverProperties = {
             white-list = true;
-            server-port = 25566;
+            server-port = config.systemConstants.ports.minecraft.fabric;
             difficulty = "normal";
             gamemode = "survival";
             max-players = 10;
