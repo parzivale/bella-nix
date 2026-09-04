@@ -81,6 +81,8 @@
         };
       };
 
+      networking.firewall.allowedTCPPorts = [ config.systemConstants.ports.minecraft.atm10 ];
+
       age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/master/cloudflare-buckets/access_env.age;
       age.secrets.restic-atm10-password.rekeyFile = ../../secrets/master/restic/atm10-password.age;
 
