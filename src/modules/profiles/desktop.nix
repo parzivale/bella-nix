@@ -7,6 +7,7 @@
       # CLI aps
       iamb
       direnv
+      github
       # compositor + GUI apps
       niri
       wezterm
