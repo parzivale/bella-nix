@@ -10,8 +10,19 @@
     # niri-flake requires (niri's libdisplay-info-sys demands >=0.1.0, <0.3.0) but
     # which nixpkgs has since removed. Drop once niri-flake moves to libdisplay-info 0.3+.
     nixpkgs-libdisplay-info.url = "github:nixos/nixpkgs/753cc8a3a87467296ddd1fa93f0cc3e81120ee46";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    niri-unstable.url = "github:YaLTeR/niri";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      # flake-parts only reads `.lib` off this, which nixpkgs provides too — so
+      # point it at ours instead of fetching a separate nixpkgs.lib tree.
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+
+    niri-unstable = {
+      url = "github:YaLTeR/niri";
+      # Consumed purely as a source tree by niri-flake; its own nixpkgs would
+      # otherwise be a second full tree in the lock for nothing.
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Deliberately NOT following our nixpkgs: chaotic-nyx's binary cache is built
     # against their own pinned nixpkgs rev, so letting this follow ours would cause
@@ -66,6 +77,10 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         niri-unstable.follows = "niri-unstable";
+        # niri-flake only touches nixpkgs-stable in its own checks and cache job
+        # (packages.all-niri-flake-packages) — nothing we consume. Collapse it
+        # rather than locking a third nixpkgs.
+        nixpkgs-stable.follows = "nixpkgs";
       };
     };
 
@@ -109,7 +124,10 @@
 
     gtnh-nix = {
       url = "github:parzivale/gtnh-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+      };
     };
 
     nixos-apple-silicon = {
@@ -126,7 +144,10 @@
 
     playit-nixos-module = {
       url = "github:pedorich-n/playit-nixos-module";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+      };
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
@@ -138,7 +159,11 @@
 
     xdg-desktop-portal-termfilepickers = {
       url = "github:Guekka/xdg-desktop-portal-termfilepickers";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+        treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+      };
     };
   };
 
