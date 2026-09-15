@@ -5,7 +5,6 @@
   # https://nixos.org/manual/nix/unstable/command-ref/new-cli/nix3-flake.html#flake-inputs
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-tailscale.url = "github:nixos/nixpkgs/6f2615d8183b23a55a533615689e059c3ff86b87";
     # Pinned to the last nixpkgs rev that still provides libdisplay-info_0_2, which
     # niri-flake requires (niri's libdisplay-info-sys demands >=0.1.0, <0.3.0) but
     # which nixpkgs has since removed. Drop once niri-flake moves to libdisplay-info 0.3+.

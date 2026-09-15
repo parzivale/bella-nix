@@ -953,22 +953,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-tailscale": {
-      "locked": {
-        "lastModified": 1775046487,
-        "narHash": "sha256-WDUbf6k9XlF+Cb+m3ID/D+gNr+wZqNxSBliey6UC5uM=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "6f2615d8183b23a55a533615689e059c3ff86b87",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "6f2615d8183b23a55a533615689e059c3ff86b87",
-        "type": "github"
-      }
-    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1787736819,
@@ -1090,7 +1074,6 @@
         "nixos-apple-silicon": "nixos-apple-silicon",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-libdisplay-info": "nixpkgs-libdisplay-info",
-        "nixpkgs-tailscale": "nixpkgs-tailscale",
         "playit-nixos-module": "playit-nixos-module",
         "preservation": "preservation",
         "stylix": "stylix",

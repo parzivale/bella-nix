@@ -1,18 +1,8 @@
+{ ... }:
 {
-  moduleWithSystem,
-  inputs,
-  ...
-}:
-{
-  flake.modules.nixos.tailscale = moduleWithSystem (
-    { system, ... }:
+  flake.modules.nixos.tailscale =
+    { config, ... }:
     {
-      config,
-      lib,
-      ...
-    }:
-    {
-      services.tailscale.package = (import inputs.nixpkgs-tailscale { inherit system; }).tailscale;
       systemd.services = {
         tailscaled-autoconnect.after = [
           "agenix-install-secrets.service"
@@ -46,6 +36,5 @@
         extraUpFlags = [ "--advertise-tags=tag:nixos" ];
         disableTaildrop = true;
       };
-    }
-  );
+    };
 }
