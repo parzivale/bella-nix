@@ -1,3 +1,5 @@
+# Dormant: no host imports this module, so the walker/elephant flake inputs are
+# commented out in flake.nix. Uncomment them there before importing this.
 { inputs, ... }:
 {
   flake.modules.homeManager.walker =

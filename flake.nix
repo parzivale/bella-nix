@@ -23,15 +23,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    disktui = {
-      url = "github:parzivale/disktui";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    wezterm = {
-      url = "github:parzivale/wezterm?dir=nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Unused: programs/wezterm.nix uses the nixpkgs wezterm — the `package`
+    # override pointing at this fork is commented out there. Re-enable both
+    # together.
+    # wezterm = {
+    #   url = "github:parzivale/wezterm?dir=nix";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     agenix-rekey = {
       url = "github:parzivale/agenix-rekey";
@@ -82,24 +80,27 @@
       };
     };
 
-    elephant = {
-      url = "github:abenz1267/elephant";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    walker = {
-      url = "github:abenz1267/walker";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        elephant = {
-          follows = "elephant";
-          inputs = {
-            nixpkgs.follows = "nixpkgs";
-          };
-        };
-      };
-    };
+    # Unused: services/walker.nix isn't imported by any host (desktop uses
+    # fuzzel). Uncomment both — walker needs elephant to follow — to bring the
+    # launcher back.
+    # elephant = {
+    #   url = "github:abenz1267/elephant";
+    #   inputs = {
+    #     nixpkgs.follows = "nixpkgs";
+    #   };
+    # };
+    # walker = {
+    #   url = "github:abenz1267/walker";
+    #   inputs = {
+    #     nixpkgs.follows = "nixpkgs";
+    #     elephant = {
+    #       follows = "elephant";
+    #       inputs = {
+    #         nixpkgs.follows = "nixpkgs";
+    #       };
+    #     };
+    #   };
+    # };
 
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
