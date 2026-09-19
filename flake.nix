@@ -178,6 +178,11 @@
     let
       vars = import ./vars.nix;
 
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+
       flattenModules = tree: nixpkgs.lib.collect (x: nixpkgs.lib.isPath x) tree;
 
       load =
@@ -223,9 +228,12 @@
           activationTimeout = 180;
         };
 
-        checks = builtins.mapAttrs (
-          system: deployLib: deployLib.deployChecks self.deploy
-        ) inputs.deploy-rs.lib;
+        # Only the systems we actually build for: deploy-rs's `lib` covers every
+        # system it supports (darwin, i686, ...), and mapping over all of it
+        # emitted checks for platforms this flake has no hosts on.
+        checks = nixpkgs.lib.genAttrs systems (
+          system: inputs.deploy-rs.lib.${system}.deployChecks self.deploy
+        );
       };
 
       hosts = load ./src/hosts;
@@ -276,10 +284,7 @@
           );
         }) hosts);
 
-        systems = [
-          "x86_64-linux"
-          "aarch64-linux"
-        ];
+        inherit systems;
 
         flake = mkHosts (builtins.attrNames hosts);
 
