@@ -281,8 +281,54 @@
       }
       {
         imports = [
-          inputs.flake-parts.flakeModules.modules
           inputs.agenix-rekey.flakeModule
+
+          # `flake.modules`, declared here rather than taken from
+          # inputs.flake-parts.flakeModules.modules, for one reason: upstream's
+          # wrapper carries `_class` and `_file` but no `key` — its source has a
+          # literal "TODO: set key?". Without one, a module reached through two
+          # importers (lazygit, via both `cli` and `desktop`) is anonymous twice
+          # over, so the module system keys it by each parent, evaluates it
+          # twice and merges its list-valued definitions twice. Giving it a key
+          # derived from its own name collapses the two back into one.
+          #
+          # The key can't be added on top of upstream's declaration: it attaches
+          # `_class`/`_file` through the option's `apply`, and mergeOptionDecls
+          # refuses a second declaration that also sets `apply`.
+          (
+            { lib, moduleLocation, ... }:
+            let
+              addInfo =
+                class: name:
+                let
+                  ident = "${toString moduleLocation}#modules.${lib.strings.escapeNixIdentifier class}.${lib.strings.escapeNixIdentifier name}";
+                  # `generic` is the one class that must not be stamped onto the
+                  # module — its whole purpose is to stay usable from any class.
+                  # That is the only part of this wrapper it has to skip, which
+                  # is why upstream passes generic modules through untouched and
+                  # they lose the metadata as collateral. A key constrains
+                  # nothing, so it can carry one either way.
+                  class' = lib.optionalAttrs (class != "generic") { _class = class; };
+                in
+                module:
+                # A function, not a plain set, so it is taken as a full module
+                # even where submodule shorthand applies (flake-parts#326).
+                { ... }:
+                class'
+                // {
+                  _file = ident;
+                  key = ident;
+                  imports = [ module ];
+                };
+            in
+            {
+              options.flake.modules = lib.mkOption {
+                type = lib.types.lazyAttrsOf (lib.types.lazyAttrsOf lib.types.deferredModule);
+                description = "Groups of modules published by the flake, keyed by class.";
+                apply = lib.mapAttrs (class: lib.mapAttrs (addInfo class));
+              };
+            }
+          )
         ]
         ++ flattenModules modules
         ++ (nixpkgs.lib.mapAttrsToList (name: value: {
