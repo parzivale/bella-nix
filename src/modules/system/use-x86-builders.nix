@@ -8,6 +8,7 @@ _: {
       age.secrets.nix-builder-key.rekeyFile = ../../secrets/master/nix-builder/nix-builder-key.age;
 
       nix.distributedBuilds = true;
+      nix.settings.builders-use-substitutes = true;
       nix.buildMachines = [
         {
           protocol = "ssh-ng";
