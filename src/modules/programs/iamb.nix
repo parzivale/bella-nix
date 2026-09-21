@@ -11,12 +11,13 @@
       user = osConfig.systemConstants.username;
     in
     {
-      xdg.dataFile."applications/iamb.desktop".source = "${inputs.iamb}/iamb.desktop";
-      xdg.dataFile."icons/hicolor/scalable/apps/iamb.svg".source = "${inputs.iamb}/docs/iamb.svg";
+      xdg.dataFile."applications/iamb.desktop".source = "${pkgs.iamb}/share/applications/iamb.desktop";
+      xdg.dataFile."icons/hicolor/scalable/apps/iamb.svg".source =
+        "${pkgs.iamb}/share/icons/hicolor/scalable/apps/iamb.svg";
 
       programs.iamb = {
         enable = true;
-        package = inputs.iamb.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        package = pkgs.iamb;
         settings = {
           settings = {
             image_preview = {
@@ -74,8 +75,6 @@
       user = config.systemConstants.username;
     in
     {
-      nixpkgs.config.permittedInsecurePackages = [ "openssl-1.1.1w" ];
-
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.iamb ];
 
       preservation = config.helpers.mkPreserve user {

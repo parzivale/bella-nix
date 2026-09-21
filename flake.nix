@@ -151,11 +151,6 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
-    iamb = {
-      url = "github:ulyssa/iamb";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     jev-bot = {
       url = "github:parzivale/jev-bot";
       inputs.nixpkgs.follows = "nixpkgs";
