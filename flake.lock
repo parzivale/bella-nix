@@ -797,6 +797,26 @@
         "type": "github"
       }
     },
+    "jev-bot": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789779599,
+        "narHash": "sha256-fOEZc1MUbcel6D+zHj7VAv1cJuKljd6udHbDsZeHrTU=",
+        "owner": "parzivale",
+        "repo": "jev-bot",
+        "rev": "469396f8847de1cc9d6bd4f36e8e3c264803d0b6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "parzivale",
+        "repo": "jev-bot",
+        "type": "github"
+      }
+    },
     "niri-flake": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -1067,6 +1087,7 @@
         "haumea": "haumea_2",
         "home-manager": "home-manager_3",
         "iamb": "iamb",
+        "jev-bot": "jev-bot",
         "niri-flake": "niri-flake",
         "niri-unstable": "niri-unstable",
         "nix-flatpak": "nix-flatpak",

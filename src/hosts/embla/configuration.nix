@@ -21,6 +21,7 @@ in
     postgres
     monitoring
     hookshot
+    jev-bot
   ];
 
   system.stateVersion = "25.11";

@@ -156,6 +156,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    jev-bot = {
+      url = "github:parzivale/jev-bot";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     xdg-desktop-portal-termfilepickers = {
       url = "github:Guekka/xdg-desktop-portal-termfilepickers";
       inputs = {
@@ -183,13 +188,25 @@
         "aarch64-linux"
       ];
 
-      flattenModules = tree: nixpkgs.lib.collect (x: nixpkgs.lib.isPath x) tree;
+      # Every module file is loaded as a keyed stub around its path rather than as
+      # a bare path. `key` is what the module system dedupes and reports on, and a
+      # repo-relative name ("modules/programs/git.nix") reads better there than the
+      # store path a bare path keys itself by. The key must *not* be that path
+      # string: the module system keeps only the first module for a given key, so
+      # an identical key would shadow the very import it wraps.
+      wrapModule = src: path: {
+        key = "${baseNameOf src}/${nixpkgs.lib.removePrefix "${toString src}/" (toString path)}";
+        imports = [ path ];
+      };
+
+      flattenModules =
+        tree: nixpkgs.lib.collect (x: x ? key && x ? imports && builtins.isList x.imports) tree;
 
       load =
         src:
         haumea.lib.load {
           inherit src;
-          loader = [ (haumea.lib.matchers.nix haumea.lib.loaders.path) ];
+          loader = [ (haumea.lib.matchers.nix (_: wrapModule src)) ];
         };
 
       mkSystemForHost =
@@ -203,18 +220,14 @@
           ];
         };
 
-      mkDeployForHost =
-        hostName:
-        let
-          nixConf = self.nixosConfigurations;
-          getSystem = hostName: nixConf.${hostName}.pkgs.stdenv.hostPlatform.system;
-        in
-        {
-          hostname = hostName + "." + vars.tailscale_dns;
-          profiles.system.path =
-            inputs.deploy-rs.lib.${(getSystem hostName)}.activate.nixos
-              self.nixosConfigurations.${hostName};
-        };
+      hostSystem = hostName: self.nixosConfigurations.${hostName}.pkgs.stdenv.hostPlatform.system;
+
+      mkDeployForHost = hostName: {
+        hostname = hostName + "." + vars.tailscale_dns;
+        profiles.system.path =
+          inputs.deploy-rs.lib.${hostSystem hostName}.activate.nixos
+            self.nixosConfigurations.${hostName};
+      };
 
       mkHosts = hostNames: {
         nixosConfigurations = nixpkgs.lib.genAttrs hostNames mkSystemForHost;
@@ -232,7 +245,30 @@
         # system it supports (darwin, i686, ...), and mapping over all of it
         # emitted checks for platforms this flake has no hosts on.
         checks = nixpkgs.lib.genAttrs systems (
-          system: inputs.deploy-rs.lib.${system}.deployChecks self.deploy
+          system:
+          let
+            deployLib = inputs.deploy-rs.lib.${system};
+
+            # Both checks take the node's profile path as a build input, so an
+            # unfiltered `deploy` would make every system's checks drag in every
+            # other host's closure — building the aarch64 macbook and the desktop
+            # closure just to check embla.
+            nodesHere = nixpkgs.lib.filterAttrs (hostName: _: hostSystem hostName == system) self.deploy.nodes;
+
+            checksFor = nodes: deployLib.deployChecks (self.deploy // { inherit nodes; });
+          in
+          {
+            inherit (checksFor nodesHere) deploy-schema;
+          }
+          # One activation check per host, so a failure names the host and a
+          # rebuild of one host doesn't invalidate the others' checks.
+          // nixpkgs.lib.mapAttrs' (
+            hostName: node:
+            nixpkgs.lib.nameValuePair "deploy-activate-${hostName}"
+              (checksFor {
+                ${hostName} = node;
+              }).deploy-activate
+          ) nodesHere
         );
       };
 
@@ -279,9 +315,15 @@
               home-manager.sharedModules = [ ];
             }
           ]
-          ++ builtins.map (dep: inputs.flake-parts.lib.importApply dep { inherit inputs; }) (
-            flattenModules value
-          );
+          ++ builtins.map (
+            module:
+            module
+            // {
+              imports = builtins.map (
+                dep: inputs.flake-parts.lib.importApply dep { inherit inputs; }
+              ) module.imports;
+            }
+          ) (flattenModules value);
         }) hosts);
 
         inherit systems;
