@@ -1,18 +1,12 @@
-{
-  flake.modules.nixos.deployer =
-    {
-      config,
-      pkgs,
-      ...
-    }:
+let
+  # A machine deployments are driven from. The only thing that makes one is
+  # having the working copies, so that is all this says.
+  deployer =
+    { config, ... }:
     let
       user = config.constants.username;
     in
     {
-      nix.settings.system-features = [
-        "yubikey"
-      ];
-
       state.preserve.users.${user} = {
         directories = [
           {
@@ -22,4 +16,8 @@
         ];
       };
     };
+in
+{
+  flake.modules.nixos.deployer = deployer;
+  flake.modules.finix.deployer = deployer;
 }
