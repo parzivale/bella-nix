@@ -22,4 +22,5 @@
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.fuzzel ];
     };
+
 }

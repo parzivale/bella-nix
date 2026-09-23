@@ -58,4 +58,25 @@
         files = [ { file = ".claude.json"; } ];
       };
     };
+
+  flake.modules.finix.claude =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      imports = [ inputs.self.modules.finix.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.claude ];
+
+      state.preserve.users.${user} = {
+        directories = [
+          {
+            directory = ".claude";
+            mode = "0755";
+          }
+        ];
+        files = [ { file = ".claude.json"; } ];
+      };
+    };
 }

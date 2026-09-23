@@ -29,4 +29,24 @@
         ];
       };
     };
+
+  flake.modules.finix.github =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      imports = [ inputs.self.modules.finix.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.github ];
+
+      state.preserve.users.${user} = {
+        directories = [
+          {
+            directory = ".config/gh";
+            mode = "0700";
+          }
+        ];
+      };
+    };
 }
