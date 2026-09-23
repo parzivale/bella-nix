@@ -39,6 +39,14 @@
       services.openssh = {
         enable = true;
 
+        # Where NixOS looks by default, plus the user module's key file - it
+        # writes /etc/ssh/authorized_keys.d/<name> the way nixos does, and
+        # sshd has to be told to read it.
+        settings.AuthorizedKeysFile = [
+          ".ssh/authorized_keys"
+          "/etc/ssh/authorized_keys.d/%u"
+        ];
+
         # finix generates into /var/lib/sshd by default. Point it at the path the
         # nixos side uses, so a host key lives in the same place whichever class
         # evaluates the host - which keeps the preservation entry and the agenix

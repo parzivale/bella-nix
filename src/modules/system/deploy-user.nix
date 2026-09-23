@@ -27,4 +27,35 @@ _: {
         }
       ];
     };
+
+  flake.modules.finix.deploy-user =
+    { config, pkgs, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      # `providers.privileges` rather than `security.sudo`: finix has a contract
+      # for "let this user run that as root", implemented by either sudo or
+      # doas, and a host picks which.
+      providers.privileges.rules = [
+        {
+          command = "/nix/store/*/activate-rs";
+          args = [ "*" ];
+          users = [ user ];
+          requirePassword = false;
+        }
+        {
+          command = "${pkgs.coreutils}/bin/rm";
+          args = [ "^/tmp/deploy-rs-canary-[a-z0-9]{32}$" ];
+          users = [ user ];
+          requirePassword = false;
+        }
+      ];
+
+      # Both of those are written for the sudo backend. The contract passes
+      # `command` and `args` through verbatim, so a glob and a regex mean what
+      # they mean to sudoers — and nothing to doas, which matches literally. A
+      # finix host deploying with doas selected needs these rewritten, and will
+      # find out by the rule not matching rather than by being told.
+    };
 }
