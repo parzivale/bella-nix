@@ -30,7 +30,7 @@
       swayidle
       avahi
       printing
-      systemd-boot
+      boot
       kernel
       powertop
     ];

@@ -21,7 +21,7 @@ in
     gtnh
     atm10
     playit
-    systemd-boot
+    boot
     network
   ];
 

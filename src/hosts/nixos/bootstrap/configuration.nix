@@ -17,7 +17,7 @@ in
     openssh
     stylix
     avahi
-    systemd-boot
+    boot
   ];
 
   home-manager.users.${user} = {
