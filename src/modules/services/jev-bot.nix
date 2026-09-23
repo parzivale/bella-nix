@@ -3,7 +3,10 @@
   flake.modules.nixos.jev-bot =
     { config, ... }:
     {
-      imports = [ inputs.jev-bot.nixosModules.default ];
+      imports = [
+        inputs.jev-bot.nixosModules.default
+        inputs.self.modules.nixos.secrets
+      ];
 
       age.secrets = {
         jev-bot-discord-token.rekeyFile = ../../secrets/master/jev-bot/discord-token.age;

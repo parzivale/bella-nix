@@ -23,7 +23,10 @@
       };
     in
     {
-      imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
+      imports = [
+        inputs.self.modules.nixos.nix-minecraft
+        inputs.self.modules.nixos.secrets
+      ];
 
       services.minecraft-servers = {
         enable = true;
@@ -103,6 +106,6 @@
       # every nix-minecraft server on this host; declaring a nested mount at
       # /srv/minecraft/atm10 conflicts with it (can't unmount a parent while
       # a child mount is nested inside it).
-      preservation.preserveAt."/persistent".directories = [ "/srv/minecraft" ];
+      state.preserve.directories = [ "/srv/minecraft" ];
     };
 }

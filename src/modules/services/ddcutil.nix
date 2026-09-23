@@ -11,6 +11,11 @@
       ddcutil = "${pkgs.ddcutil}/bin/ddcutil";
     in
     {
+      imports = [
+        inputs.self.modules.nixos.user
+        inputs.self.modules.nixos.home-manager
+      ];
+
       hardware.i2c.enable = true;
 
       home-manager.users.${user} =

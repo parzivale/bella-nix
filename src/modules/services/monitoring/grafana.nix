@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.monitoring =
     { config, ... }:
@@ -8,6 +9,11 @@
       domain = config.systemConstants.domain;
     in
     {
+      imports = [
+        inputs.self.modules.nixos.secrets
+        inputs.self.modules.nixos.nginx
+      ];
+
       age.secrets.grafana-secret-key = {
         rekeyFile = ../../../secrets/master/grafana/secret-key.age;
         owner = "grafana";
@@ -121,7 +127,7 @@
         };
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/grafana";
           user = "grafana";

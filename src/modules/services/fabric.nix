@@ -3,7 +3,7 @@
   flake.modules.nixos.fabric =
     { pkgs, config, ... }:
     {
-      imports = [ inputs.nix-minecraft.nixosModules.minecraft-servers ];
+      imports = [ inputs.self.modules.nixos.nix-minecraft ];
 
       services.minecraft-servers = {
         enable = true;
@@ -47,8 +47,6 @@
         };
       };
 
-      preservation = {
-        preserveAt."/persistent".directories = [ "/srv/minecraft" ];
-      };
+      state.preserve.directories = [ "/srv/minecraft" ];
     };
 }

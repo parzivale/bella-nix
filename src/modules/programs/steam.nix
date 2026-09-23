@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.steam =
     {
@@ -9,6 +10,9 @@
       user = config.systemConstants.username;
     in
     {
+      # proton-cachyos below comes from chaotic-nyx, not nixpkgs.
+      imports = [ inputs.self.modules.nixos.chaotic ];
+
       programs.steam = {
         enable = true;
         package = pkgs.steam.override {
@@ -45,7 +49,7 @@
         };
       };
 
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [
           {
             directory = ".steam";

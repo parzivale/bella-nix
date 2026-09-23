@@ -33,7 +33,10 @@
       user = config.systemConstants.username;
     in
     {
-      imports = [ inputs.stylix.nixosModules.default ];
+      imports = [
+        inputs.stylix.nixosModules.default
+        inputs.self.modules.nixos.home-manager
+      ];
       programs.dconf.enable = true;
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.stylix ];

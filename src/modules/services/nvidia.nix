@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.nvidia =
     { config, ... }:
@@ -5,6 +6,8 @@
       user = config.systemConstants.username;
     in
     {
+      imports = [ inputs.self.modules.nixos.home-manager ];
+
       services.xserver.videoDrivers = [ "nvidia" ];
       hardware.nvidia = {
         modesetting.enable = true;

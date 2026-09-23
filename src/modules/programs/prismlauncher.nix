@@ -103,9 +103,11 @@
       ];
     in
     {
+      imports = [ inputs.self.modules.nixos.home-manager ];
+
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.prismlauncher ];
 
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [
           {
             directory = ".local/share/PrismLauncher";

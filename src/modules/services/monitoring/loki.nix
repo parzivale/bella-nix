@@ -38,7 +38,7 @@
         };
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/loki";
           user = "loki";

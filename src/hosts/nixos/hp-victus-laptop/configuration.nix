@@ -11,7 +11,12 @@ let
   user = config.systemConstants.username;
 in
 {
+  networking.hostName = "hp-victus-laptop";
+
   imports = with inputs.self.modules.nixos; [
+    nixos
+    secrets
+    home-manager
     cli
     deployer
     deployable

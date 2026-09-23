@@ -43,9 +43,11 @@
       user = config.systemConstants.username;
     in
     {
+      imports = [ inputs.self.modules.nixos.home-manager ];
+
       home-manager.sharedModules = [ inputs.zen-browser.homeModules.twilight ];
 
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [ { directory = ".config/zen"; } ];
       };
 

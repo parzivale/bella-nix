@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.matrix =
     { config, ... }:
@@ -6,6 +7,8 @@
       matrix_domain = config.systemConstants.subDomains.matrix;
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.mautrix-whatsapp-env = {
         rekeyFile = ../../../../secrets/master/mautrix/mautrix-whatsapp.age;
         owner = "mautrix-whatsapp";
@@ -47,7 +50,7 @@
         ];
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         { directory = "/var/lib/mautrix-whatsapp"; }
       ];
     };

@@ -13,7 +13,7 @@
         "yubikey"
       ];
 
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [
           {
             directory = "develop";

@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.xray-reality =
     {
@@ -9,6 +10,8 @@
       port = config.systemConstants.ports.xray.reality;
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.xray-reality-server.rekeyFile = ../../secrets/master/xray/reality-server.age;
 
       systemd.services.xray-reality = {

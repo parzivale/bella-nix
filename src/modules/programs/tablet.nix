@@ -10,7 +10,7 @@
         daemon.enable = true;
       };
 
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [
           {
             directory = ".config/OpenTableDriver";

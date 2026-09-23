@@ -1,7 +1,10 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.nginx =
     { config, ... }:
     {
+      imports = [ inputs.self.modules.nixos.reverse-proxy ];
+
       services.nginx = {
         enable = true;
         recommendedTlsSettings = true;

@@ -16,7 +16,9 @@
       user = config.systemConstants.username;
     in
     {
-      preservation = config.helpers.mkPreserve user {
+      imports = [ inputs.self.modules.nixos.home-manager ];
+
+      state.preserve.users.${user} = {
         directories = [ { directory = ".config/discordcanary"; } ];
       };
 

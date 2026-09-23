@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.matrix =
     { config, ... }:
@@ -10,6 +11,8 @@
       backend = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
     in
     {
+      imports = [ inputs.self.modules.nixos.nginx ];
+
       reverseProxy = {
         ${mas_domain} = {
           forceSSL = true;

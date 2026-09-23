@@ -7,7 +7,12 @@
       ...
     }:
     {
-      imports = [ inputs.gtnh-nix.nixosModules."2.8.4" ];
+      imports = [
+        inputs.gtnh-nix.nixosModules."2.8.4"
+        inputs.self.modules.nixos.secrets
+      ];
+
+      nixpkgs.overlays = [ inputs.gtnh-nix.overlays.default ];
 
       programs.gtnh = {
         enable = true;
@@ -40,6 +45,6 @@
         ];
       };
 
-      preservation.preserveAt."/persistent".directories = [ "/var/lib/gtnh" ];
+      state.preserve.directories = [ "/var/lib/gtnh" ];
     };
 }

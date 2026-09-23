@@ -36,7 +36,7 @@ _: {
         ];
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/prometheus2";
           user = "prometheus";

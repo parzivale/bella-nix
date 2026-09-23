@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.pocket-id =
     { config, ... }:
@@ -6,6 +7,11 @@
       pocket-id_port = config.systemConstants.ports.pocket-id;
     in
     {
+      imports = [
+        inputs.self.modules.nixos.secrets
+        inputs.self.modules.nixos.nginx
+      ];
+
       age.secrets.pocket-id-env = {
         rekeyFile = ../../secrets/master/pocket-id/pocket-id.age;
         owner = "pocket-id";
@@ -45,7 +51,7 @@
         };
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/pocket-id";
         }

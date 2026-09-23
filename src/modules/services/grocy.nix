@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.grocy =
     {
@@ -13,6 +14,8 @@
       pkg = pkgs.grocy;
     in
     {
+      imports = [ inputs.self.modules.nixos.nginx ];
+
       environment.etc."grocy/config.php".text = ''
         <?php
         Setting('CULTURE', 'en');
@@ -113,7 +116,7 @@
         };
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = dataDir;
           user = "grocy";

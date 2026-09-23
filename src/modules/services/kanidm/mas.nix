@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.kanidm =
     { config, ... }:
@@ -6,6 +7,8 @@
       mas_provider_id = "01KRHPHYTTHPJT2E1FCJZSZ4SV";
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.kanidm-mas-client-secret = {
         rekeyFile = ../../../secrets/master/kanidm/mas-client-secret.age;
         owner = "kanidm";

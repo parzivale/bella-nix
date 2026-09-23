@@ -9,6 +9,8 @@
   imports = [
     inputs.nixos-apple-silicon.nixosModules.default
   ];
+
+  nixpkgs.overlays = [ inputs.nixos-apple-silicon.overlays.default ];
   boot = {
     extraModprobeConfig = ''
       options hid_apple

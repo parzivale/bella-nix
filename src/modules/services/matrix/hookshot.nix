@@ -1,4 +1,5 @@
-_: {
+{ inputs, ... }:
+{
   flake.modules.nixos.hookshot =
     {
       config,
@@ -126,6 +127,8 @@ _: {
       '';
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.hookshot-passkey = {
         rekeyFile = ../../../secrets/master/hookshot/passkey.age;
         owner = "matrix-hookshot";
@@ -189,7 +192,7 @@ _: {
         groups.matrix-hookshot = { };
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         { directory = "/var/lib/matrix-hookshot"; }
       ];
     };

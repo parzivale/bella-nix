@@ -37,7 +37,10 @@
       user = config.systemConstants.username;
     in
     {
-      imports = [ inputs.self.modules.nixos.wine ];
+      imports = [
+        inputs.self.modules.nixos.wine
+        inputs.self.modules.nixos.home-manager
+      ];
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.battlenet ];
     };

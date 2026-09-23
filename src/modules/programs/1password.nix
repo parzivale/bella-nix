@@ -10,7 +10,7 @@
         enable = true;
         polkitPolicyOwners = [ user ];
       };
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [
           {
             directory = ".config/1Password";

@@ -1,8 +1,10 @@
-{ ... }:
+{ inputs, ... }:
 {
   flake.modules.nixos.tailscale =
     { config, ... }:
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       systemd.services = {
         tailscaled-autoconnect.after = [
           "agenix-install-secrets.service"
@@ -16,7 +18,7 @@
         nginx.wants = [ "tailscaled-autoconnect.service" ];
       };
 
-      preservation.preserveAt."/persistent" = {
+      state.preserve = {
         directories = [
           {
             directory = "/var/lib/tailscale";

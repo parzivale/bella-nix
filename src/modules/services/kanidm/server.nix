@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.kanidm =
     {
@@ -14,6 +15,11 @@
       certDir = "/var/lib/kanidm";
     in
     {
+      imports = [
+        inputs.self.modules.nixos.secrets
+        inputs.self.modules.nixos.nginx
+      ];
+
       age.secrets.kanidm-idm-admin-password = {
         rekeyFile = ../../../secrets/master/kanidm/idm-admin-password.age;
         owner = "kanidm";
@@ -70,7 +76,7 @@
         };
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/kanidm";
           user = "kanidm";

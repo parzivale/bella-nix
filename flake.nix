@@ -387,33 +387,7 @@
         ++ flattenModules modules
         ++ (nixpkgs.lib.mapAttrsToList (name: value: {
           flake.modules.nixos.${name}.imports = [
-            (import ./lib.nix)
-            inputs.self.modules.nixos.base
-            inputs.disko.nixosModules.disko
-            inputs.agenix.nixosModules.default
-            inputs.agenix-rekey.nixosModules.default
-            inputs.nix-flatpak.nixosModules.nix-flatpak
-            inputs.chaotic.nixosModules.default
-            {
-              nixpkgs.overlays = [
-                # niri-flake (as of rev 9ee3e13) still builds against libdisplay-info_0_2,
-                # which nixpkgs removed. niri's libdisplay-info-sys crate pins the pkg-config
-                # library to >=0.1.0, <0.3.0, so 0.3+ won't do — pull the real 0.2 package
-                # from a pinned pre-removal nixpkgs.
-                (final: prev: {
-                  libdisplay-info_0_2 =
-                    (import inputs.nixpkgs-libdisplay-info {
-                      inherit (prev.stdenv.hostPlatform) system;
-                    }).libdisplay-info_0_2;
-                })
-                inputs.niri-flake.overlays.niri
-                inputs.gtnh-nix.overlays.default
-                inputs.nixos-apple-silicon.overlays.default
-                inputs.nix-minecraft.overlay
-              ];
-              networking.hostName = "${name}";
-              home-manager.sharedModules = [ ];
-            }
+            inputs.self.modules.generic.base
           ]
           ++ builtins.map (
             module:
@@ -425,15 +399,15 @@
             }
           ) (flattenModules value);
         }) hosts.nixos)
-        # finix hosts get a much thinner wrapper: nothing above is a finix
-        # module. disko, agenix, chaotic, nix-flatpak and `base` are all written
-        # against nixpkgs' NixOS module set, and `lib.nix` aliases
-        # `services.nginx.virtualHosts`, so none of them evaluate here. finix
-        # supplies its own defaults through `nixosModules.default`, which
-        # `finixSystem` imports for us.
+        # Both classes get the same wrapper now: `base`, and whatever the host
+        # itself imports. Everything a NixOS host needs beyond that — the user,
+        # nix settings, resolved, disko, agenix — is a module it asks for by
+        # name, so a finix host is not handed a pile of nixpkgs-only modules it
+        # cannot evaluate. finix supplies its own defaults through
+        # `nixosModules.default`, which `mkFinixForHost` imports for us.
         ++ (nixpkgs.lib.mapAttrsToList (name: value: {
           flake.modules.finix.${name}.imports = [
-            { networking.hostName = "${name}"; }
+            inputs.self.modules.generic.base
           ]
           ++ builtins.map (
             module:
@@ -459,7 +433,13 @@
             ...
           }:
           {
-            agenix-rekey.nixosConfigurations = inputs.self.nixosConfigurations; # (not technically needed, as it is already the default)
+            # Defaults to all of `nixosConfigurations`, but finix hosts live in
+            # there too and agenix is a NixOS module they cannot evaluate —
+            # agenix-rekey refuses to run while any node lacks it. Hand it the
+            # nixos hosts only.
+            agenix-rekey.nixosConfigurations = builtins.removeAttrs inputs.self.nixosConfigurations (
+              builtins.attrNames hosts.finix
+            );
 
             formatter = pkgs.nixfmt-tree;
 

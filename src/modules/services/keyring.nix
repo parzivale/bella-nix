@@ -15,7 +15,7 @@
         greetd.enableGnomeKeyring = true;
       };
 
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [
           {
             directory = ".local/share/keyrings";

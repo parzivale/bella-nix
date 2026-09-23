@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.matrix =
     { config, ... }:
@@ -16,6 +17,8 @@
       };
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.mautrix-instagram-env = {
         rekeyFile = ../../../../secrets/master/mautrix/mautrix-instagram.age;
         owner = "mautrix-meta-instagram";
@@ -80,7 +83,7 @@
         ];
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         { directory = "/var/lib/mautrix-meta-instagram"; }
         { directory = "/var/lib/mautrix-meta-facebook"; }
       ];

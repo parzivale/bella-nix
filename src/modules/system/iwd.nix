@@ -18,7 +18,7 @@ _: {
       };
     };
 
-    preservation.preserveAt."/persistent".directories = [
+    state.preserve.directories = [
       "/var/lib/iwd"
     ];
   };

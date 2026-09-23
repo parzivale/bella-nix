@@ -11,7 +11,12 @@ let
   user = config.systemConstants.username;
 in
 {
+  networking.hostName = "Cerberus";
+
   imports = with inputs.self.modules.nixos; [
+    nixos
+    secrets
+    home-manager
     zram
     use-arm-builders
     deployer
@@ -26,6 +31,8 @@ in
     flightcore
     r8126
     modprobed-db
+    # linuxPackages_cachyos below
+    chaotic
   ];
 
   # chaotic-nyx's _processor_opt only knows NATIVE/ZEN4/GENERIC_Vn (mirrors

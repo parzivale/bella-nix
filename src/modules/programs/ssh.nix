@@ -54,6 +54,7 @@
         secrets
         openssh
         preservation
+        home-manager
       ];
 
       age.secrets.github-key = {
@@ -68,7 +69,7 @@
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.ssh ];
 
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         directories = [
           {
             directory = ".ssh";

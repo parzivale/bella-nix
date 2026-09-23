@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.matrix =
     {
@@ -13,6 +14,8 @@
       mas_web_port = config.systemConstants.ports.matrix.mas.web;
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.synapse-secret = {
         rekeyFile = ../../../secrets/master/synapse-secrets/synapse-secrets.age;
         owner = "matrix-synapse";
@@ -76,7 +79,7 @@
         ensureUsers = [ { name = "matrix-synapse"; } ];
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/matrix-synapse";
           user = "matrix-synapse";

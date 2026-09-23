@@ -49,6 +49,12 @@
       user = config.systemConstants.username;
     in
     {
+      imports = [
+        inputs.self.modules.nixos.home-manager
+        # `pkgs.niri` below comes from niri-flake's overlay, which niri.nix owns.
+        inputs.self.modules.nixos.niri
+      ];
+
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.swayidle ];
 
       systemd.user.services.swaylock = {

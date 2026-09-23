@@ -10,7 +10,12 @@ let
   user = config.systemConstants.username;
 in
 {
+  networking.hostName = "embla";
+
   imports = with inputs.self.modules.nixos; [
+    nixos
+    secrets
+    home-manager
     cli
     server
     # services

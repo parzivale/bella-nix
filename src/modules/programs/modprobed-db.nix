@@ -46,12 +46,14 @@
       user = config.systemConstants.username;
     in
     {
+      imports = [ inputs.self.modules.nixos.home-manager ];
+
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.modprobed-db ];
 
       # The db is the only real state here — the package, config, and units
       # are all reproducible from the store, so only the accumulated module
       # list needs to survive the tmpfs root wipe.
-      preservation = config.helpers.mkPreserve user {
+      state.preserve.users.${user} = {
         files = [ { file = ".config/modprobed.db"; } ];
       };
     };

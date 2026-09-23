@@ -3,7 +3,10 @@
   flake.modules.nixos.playit =
     { config, ... }:
     {
-      imports = [ inputs.playit-nixos-module.nixosModules.default ];
+      imports = [
+        inputs.playit-nixos-module.nixosModules.default
+        inputs.self.modules.nixos.secrets
+      ];
 
       age.secrets.playit-secret.rekeyFile = ../../secrets/master/playit/playit-secret.age;
 

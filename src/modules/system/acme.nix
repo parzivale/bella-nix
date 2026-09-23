@@ -22,7 +22,7 @@
 
       networking.firewall.allowedTCPPorts = [ 80 ];
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/acme";
         }

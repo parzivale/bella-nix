@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.xray-reality-client =
     {
@@ -6,6 +7,8 @@
       ...
     }:
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.xray-reality-client.rekeyFile = ../../secrets/master/xray/reality-client.age;
 
       systemd.services.xray-reality-client = {

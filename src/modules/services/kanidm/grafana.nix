@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.kanidm =
     { config, ... }:
@@ -5,6 +6,8 @@
       grafana_domain = config.systemConstants.subDomains.grafana;
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.kanidm-grafana-client-secret = {
         rekeyFile = ../../../secrets/master/kanidm/grafana-client-secret.age;
         owner = "kanidm";

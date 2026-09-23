@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.secrets =
     {
@@ -9,6 +10,12 @@
       user = config.systemConstants.username;
     in
     {
+      imports = [
+        inputs.self.modules.nixos.home-manager
+        inputs.agenix.nixosModules.default
+        inputs.agenix-rekey.nixosModules.default
+      ];
+
       home-manager.users.${user}.home = {
         packages = with pkgs; [
           age

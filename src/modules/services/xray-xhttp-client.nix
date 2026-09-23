@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.xray-xhttp-client =
     {
@@ -9,6 +10,8 @@
       vpn_domain = config.systemConstants.subDomains.vpn;
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.xray-xhttp-client.rekeyFile = ../../secrets/master/xray/xhttp-client.age;
 
       systemd.services.xray-xhttp-client = {

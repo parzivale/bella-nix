@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.matrix =
     {
@@ -115,6 +116,8 @@
       configArgs = concatMapStringsSep " " (x: "--config ${x}") ([ configFile ] ++ extraConfigFiles);
     in
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.mas-config = {
         rekeyFile = ../../../secrets/master/mas/mas-config.age;
         owner = "matrix-authentication-service";
@@ -168,7 +171,7 @@
         ];
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         { directory = "/var/lib/matrix-authentication-service"; }
       ];
     };

@@ -24,6 +24,8 @@
       gpuBoxes = lib.genList (i: "gpu${toString i}") gpuCount;
     in
     {
+      imports = [ inputs.self.modules.nixos.home-manager ];
+
       options.btop.gpu = {
         nvidia = lib.mkOption {
           type = lib.types.bool;

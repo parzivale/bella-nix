@@ -645,6 +645,8 @@
       user = config.systemConstants.username;
     in
     {
+      imports = [ inputs.self.modules.nixos.home-manager ];
+
       nix.settings = {
         extra-substituters = [
           "https://walker.cachix.org"

@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.postgres =
     {
@@ -7,6 +8,8 @@
       ...
     }:
     {
+      imports = [ inputs.self.modules.nixos.secrets ];
+
       age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/master/cloudflare-buckets/access_env.age;
       age.secrets.restic-postgres-password.rekeyFile = ../../secrets/master/restic/postgres-password.age;
 
@@ -45,7 +48,7 @@
         };
       };
 
-      preservation.preserveAt."/persistent".directories = [
+      state.preserve.directories = [
         {
           directory = "/var/lib/postgresql";
           user = "postgres";
