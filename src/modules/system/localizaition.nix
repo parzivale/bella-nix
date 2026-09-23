@@ -1,5 +1,8 @@
 {
-  flake.modules.nixos.localization = {
+  # `time.timeZone` and `i18n.*` are declared by both module sets, so this one
+  # is genuinely class-neutral: published once, imported by hosts of either
+  # class through their own import lists.
+  flake.modules.generic.localization = {
     time.timeZone = "Europe/Stockholm";
     i18n = {
       defaultLocale = "en_US.UTF-8";
