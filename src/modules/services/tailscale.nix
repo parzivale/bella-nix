@@ -1,31 +1,9 @@
 { inputs, ... }:
-{
-  flake.modules.nixos.tailscale =
+let
+  # The same node, joined the same way, on either class.
+  tailnet =
     { config, ... }:
     {
-      imports = [ inputs.self.modules.nixos.secrets ];
-
-      systemd.services = {
-        tailscaled-autoconnect.after = [
-          "agenix-install-secrets.service"
-          "network-online.target"
-        ];
-        tailscaled-autoconnect.requires = [
-          "agenix-install-secrets.service"
-          "network-online.target"
-        ];
-        nginx.after = [ "tailscaled-autoconnect.service" ];
-        nginx.wants = [ "tailscaled-autoconnect.service" ];
-      };
-
-      state.preserve = {
-        directories = [
-          {
-            directory = "/var/lib/tailscale";
-            mode = "0700";
-          }
-        ];
-      };
       age.secrets.tailscale_token.rekeyFile = ../../secrets/master/tailscale/tailscale_key.age;
 
       services.tailscale = {
@@ -36,7 +14,58 @@
           ephemeral = false;
         };
         extraUpFlags = [ "--advertise-tags=tag:nixos" ];
-        disableTaildrop = true;
       };
+
+      state.preserve.directories = [
+        {
+          directory = "/var/lib/tailscale";
+          mode = "0700";
+        }
+      ];
     };
+in
+{
+  flake.modules.nixos.tailscale = {
+    imports = [
+      tailnet
+      inputs.self.modules.nixos.secrets
+    ];
+
+    systemd.services = {
+      tailscaled-autoconnect.after = [
+        "agenix-install-secrets.service"
+        "network-online.target"
+      ];
+      tailscaled-autoconnect.requires = [
+        "agenix-install-secrets.service"
+        "network-online.target"
+      ];
+      nginx.after = [ "tailscaled-autoconnect.service" ];
+      nginx.wants = [ "tailscaled-autoconnect.service" ];
+    };
+
+    services.tailscale.disableTaildrop = true;
+  };
+
+  flake.modules.finix.tailscale = {
+    imports = [
+      tailnet
+      inputs.self.modules.finix.secrets
+      inputs.community-modules.nixosModules.tailscale
+    ];
+
+    providers.services.units = {
+      # `disableTaildrop` is a nixpkgs convenience for an environment variable
+      # the daemon reads, and a unit here takes an environment directly.
+      tailscaled.environment.TS_DISABLE_TAILDROP = "true";
+
+      # The community module already has this after `tailscaled`; the key has
+      # to be decrypted before it can be read, which the nixos side says as an
+      # ordering on agenix-install-secrets.service.
+      tailscale-up.requires = [ "agenix-install-secrets" ];
+    };
+
+    # Nothing corresponds to the nginx ordering: that host runs nginx behind
+    # the tailnet on nixos, and no finix host of mine serves anything yet.
+  };
 }
