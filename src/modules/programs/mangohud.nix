@@ -32,4 +32,15 @@
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mangohud ];
     };
+
+  flake.modules.finix.mangohud =
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.finix.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mangohud ];
+    };
 }
