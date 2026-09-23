@@ -240,6 +240,11 @@
             modules = [
               inputs.finix.nixosModules.default
               inputs.self.modules.finix.${hostName}
+
+              # Which nixpkgs a machine is evaluated against is a fact about
+              # this flake, not about the machine, so it is said once here.
+              # The host says what it is, with `nixpkgs.hostPlatform`.
+              { nixpkgs.source = inputs.nixpkgs; }
             ];
           };
         in
