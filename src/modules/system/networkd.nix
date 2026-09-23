@@ -20,6 +20,12 @@
     {
       imports = [ modules.dhcpcd ];
 
+      # Both clients hand their leases to resolvconf rather than writing
+      # /etc/resolv.conf themselves - and iwd only picks `resolvconf` as its
+      # `NameResolvingService` when this is on, so without it a wireless
+      # connection comes up with an address and no dns.
+      programs.resolvconf.enable = true;
+
       services.dhcpcd = {
         enable = true;
 
