@@ -261,24 +261,15 @@
 
       hostSystem = hostName: self.nixosConfigurations.${hostName}.pkgs.stdenv.hostPlatform.system;
 
+      # One deployment path for both classes. finix is activated by nixos' own
+      # activation script because it answers the two questions that script asks:
+      # `system.build.toplevel` and `boot.loader.systemd-boot.enable` both come
+      # from its nixos-compat module, the second added upstream for this.
       mkDeployForHost = hostName: {
         hostname = hostName + "." + vars.tailscale_dns;
         profiles.system.path =
           inputs.deploy-rs.lib.${hostSystem hostName}.activate.nixos
             self.nixosConfigurations.${hostName};
-      };
-
-      # finix runs finit as pid 1, so `activate.nixos` is wrong twice over: it
-      # reads `boot.loader.systemd-boot.enable`, an option finix does not
-      # declare, and it looks for the closure at `system.build.toplevel` where
-      # finix keeps it at `system.topLevel`. The switch script it installs takes
-      # the same switch|boot|test verbs, so drive that directly.
-      mkFinixDeployForHost = hostName: {
-        hostname = hostName + "." + vars.tailscale_dns;
-        profiles.system.path =
-          inputs.deploy-rs.lib.${hostSystem hostName}.activate.custom
-            self.nixosConfigurations.${hostName}.config.system.topLevel
-            "$PROFILE/bin/switch-to-configuration switch";
       };
 
       mkHosts =
@@ -291,8 +282,7 @@
             sshUser = vars.username;
             user = "root";
             interactiveSudo = false;
-            nodes =
-              nixpkgs.lib.genAttrs nixos mkDeployForHost // nixpkgs.lib.genAttrs finix mkFinixDeployForHost;
+            nodes = nixpkgs.lib.genAttrs (nixos ++ finix) mkDeployForHost;
             confirmTimeout = 120;
             activationTimeout = 180;
           };
