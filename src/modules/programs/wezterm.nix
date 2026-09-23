@@ -1,4 +1,21 @@
 { inputs, ... }:
+let
+  # Identical either way: the bind goes through `state.keybinds`, and the
+  # user's configuration is the same wherever it is evaluated.
+  wezterm =
+    homeManager:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ homeManager ];
+
+      state.keybinds."Mod+Return" = [ "wezterm" ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.wezterm ];
+    };
+in
 {
   flake.modules.homeManager.wezterm =
     {
@@ -72,17 +89,6 @@
       );
     };
 
-  flake.modules.nixos.wezterm =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      state.keybinds."Mod+Return" = [ "wezterm" ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.wezterm ];
-    };
-
+  flake.modules.nixos.wezterm = wezterm inputs.self.modules.nixos.home-manager;
+  flake.modules.finix.wezterm = wezterm inputs.self.modules.finix.home-manager;
 }
