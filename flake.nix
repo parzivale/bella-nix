@@ -282,6 +282,17 @@
             sshUser = vars.username;
             user = "root";
             interactiveSudo = false;
+
+            # Prefixed verbatim to every privileged command, with `user` glued
+            # on the end - so what runs is `sudo <wrapper> root <command>`.
+            # deploy-rs documents this setting as "must accept at least two
+            # arguments: user name to execute commands as and the rest is the
+            # command to execute", which is the wrapper's argument protocol.
+            # It is what gives sudoers a fixed path to name, and what gets the
+            # closure's signature checked before activate-rs runs. See
+            # `deploy-user`.
+            sudo = "sudo /run/current-system/sw/bin/deploy-activate";
+
             nodes = nixpkgs.lib.genAttrs (nixos ++ finix) mkDeployForHost;
             confirmTimeout = 120;
             activationTimeout = 180;
