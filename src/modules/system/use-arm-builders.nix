@@ -3,7 +3,7 @@ _: {
     { config, ... }:
     {
       programs.ssh.knownHosts."macbook".publicKey =
-        builtins.readFile ../../hosts/macbook/ssh_host_ed25519_key.pub;
+        builtins.readFile ../../hosts/nixos/macbook/ssh_host_ed25519_key.pub;
 
       age.secrets.nix-builder-key.rekeyFile = ../../secrets/master/nix-builder/nix-builder-key.age;
 

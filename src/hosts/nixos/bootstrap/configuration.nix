@@ -31,8 +31,8 @@ in
   # complient user shell
   users.users.nixos-anywhere = {
     openssh.authorizedKeys.keyFiles = [
-      ../../secrets/yubikey/yubikey_sshkey_usba.pub
-      ../../secrets/yubikey/yubikey_sshkey_usbc.pub
+      ../../../secrets/yubikey/yubikey_sshkey_usba.pub
+      ../../../secrets/yubikey/yubikey_sshkey_usbc.pub
     ];
     isNormalUser = true;
     hashedPassword = "$y$j9T$3SYXqLHQFhpwfTY8BHXmw.$cQGsYVD7CIWC22AJu1sX8qg4Po8Cyd00KzL9mAXa5F7";
@@ -43,15 +43,15 @@ in
 
   #this must be set no matter what
   age.rekey.masterIdentities = [
-    ../../secrets/yubikey/yubikey_identity_usbc.pub
-    ../../secrets/yubikey/yubikey_identity_usba.pub
+    ../../../secrets/yubikey/yubikey_identity_usbc.pub
+    ../../../secrets/yubikey/yubikey_identity_usba.pub
   ];
   age.rekey.storageMode = "local";
-  age.rekey.localStorageDir = ../../secrets/rekeyed/${config.networking.hostName};
+  age.rekey.localStorageDir = ../../../secrets/rekeyed/${config.networking.hostName};
 
   users.users.root.openssh.authorizedKeys.keyFiles = [
-    ../../secrets/yubikey/yubikey_sshkey_usba.pub
-    ../../secrets/yubikey/yubikey_sshkey_usbc.pub
+    ../../../secrets/yubikey/yubikey_sshkey_usba.pub
+    ../../../secrets/yubikey/yubikey_sshkey_usbc.pub
   ];
   services = {
     openssh.settings = {

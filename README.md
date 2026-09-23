@@ -6,11 +6,13 @@ NixOS configuration management using Nix flakes for declarative, reproducible in
 
 ```
 src/
-├─ hosts/              # Per-machine configurations
-│  ├─ bootstrap/       # Minimal config for bootstrapping new machines
-│  ├─ hp-victus-laptop/
-│  ├─ macbook/
-│  └─ minecraft-server/
+├─ hosts/              # Per-machine configurations, split by evaluator
+│  ├─ nixos/           # Evaluated by nixpkgs' nixosSystem
+│  │  ├─ bootstrap/    # Minimal config for bootstrapping new machines
+│  │  ├─ hp-victus-laptop/
+│  │  ├─ macbook/
+│  │  └─ minecraft-server/
+│  └─ finix/           # Evaluated by finix's finixSystem (finit as pid 1)
 ├─ modules/
 │  ├─ base/            # Core system defaults (user, home-manager, nix, boot)
 │  ├─ profiles/        # Composable feature bundles (cli, desktop, server, deploy)
@@ -22,7 +24,9 @@ src/
 
 ## Hosts
 
-Each host lives in `src/hosts/<hostname>/` and contains:
+Each host lives in `src/hosts/<evaluator>/<hostname>/` — `nixos/` for hosts built by
+nixpkgs' `nixosSystem`, `finix/` for hosts built by finix's `finixSystem`. Both land in
+`nixosConfigurations` and both get a deploy-rs node. A host directory contains:
 
 | File | Purpose |
 |------|---------|

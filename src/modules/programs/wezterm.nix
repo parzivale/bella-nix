@@ -10,8 +10,12 @@
     let
       user = osConfig.systemConstants.username;
       currentHost = osConfig.networking.hostName;
+      # Hosts are split by the module system that evaluates them, so the list
+      # is the union of both trees rather than one directory.
       allHosts = builtins.attrNames (
-        lib.filterAttrs (_: type: type == "directory") (builtins.readDir ../../hosts)
+        lib.filterAttrs (_: type: type == "directory") (
+          builtins.readDir ../../hosts/nixos // builtins.readDir ../../hosts/finix
+        )
       );
       remoteHosts = builtins.filter (name: name != currentHost && name != "bootstrap") allHosts;
     in

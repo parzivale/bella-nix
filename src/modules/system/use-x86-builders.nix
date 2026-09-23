@@ -3,7 +3,7 @@ _: {
     { config, ... }:
     {
       programs.ssh.knownHosts."hp-victus-laptop".publicKey =
-        builtins.readFile ../../hosts/hp-victus-laptop/ssh_host_ed25519_key.pub;
+        builtins.readFile ../../hosts/nixos/hp-victus-laptop/ssh_host_ed25519_key.pub;
 
       age.secrets.nix-builder-key.rekeyFile = ../../secrets/master/nix-builder/nix-builder-key.age;
 

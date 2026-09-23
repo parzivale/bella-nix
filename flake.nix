@@ -151,6 +151,10 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
+    # Declares no inputs of its own (it pins nixpkgs through lon for its
+    # formatter only), so there is nothing to make follow ours.
+    finix.url = "github:parzivale/finix/generic-services";
+
     jev-bot = {
       url = "github:parzivale/jev-bot";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -215,6 +219,36 @@
           ];
         };
 
+      # finix ships `finixSystem`, but it evaluates with `class = "nixos"`,
+      # which gives up the one check worth having once two module sets live in
+      # the same flake: nothing would stop a `modules.nixos` module being
+      # imported into a finix host, and it would fail later as a pile of missing
+      # options rather than at the import that caused it. Evaluate under
+      # `class = "finix"` instead — finix's own modules declare no class of
+      # their own, so they are content either way — and a mismatched import is
+      # rejected on the spot. This otherwise mirrors `finixSystem`: same default
+      # module, same `modules` specialArg, same pkgs/lib passthrough.
+      mkFinixForHost =
+        hostName:
+        let
+          eval = nixpkgs.lib.evalModules {
+            class = "finix";
+            specialArgs = {
+              modules = inputs.finix.nixosModules;
+              inherit vars hostName;
+            };
+            modules = [
+              inputs.finix.nixosModules.default
+              inputs.self.modules.finix.${hostName}
+            ];
+          };
+        in
+        eval
+        // {
+          inherit (eval._module.args) pkgs;
+          inherit (nixpkgs) lib;
+        };
+
       hostSystem = hostName: self.nixosConfigurations.${hostName}.pkgs.stdenv.hostPlatform.system;
 
       mkDeployForHost = hostName: {
@@ -224,50 +258,74 @@
             self.nixosConfigurations.${hostName};
       };
 
-      mkHosts = hostNames: {
-        nixosConfigurations = nixpkgs.lib.genAttrs hostNames mkSystemForHost;
-
-        deploy = {
-          sshUser = vars.username;
-          user = "root";
-          interactiveSudo = false;
-          nodes = nixpkgs.lib.genAttrs hostNames mkDeployForHost;
-          confirmTimeout = 120;
-          activationTimeout = 180;
-        };
-
-        # Only the systems we actually build for: deploy-rs's `lib` covers every
-        # system it supports (darwin, i686, ...), and mapping over all of it
-        # emitted checks for platforms this flake has no hosts on.
-        checks = nixpkgs.lib.genAttrs systems (
-          system:
-          let
-            deployLib = inputs.deploy-rs.lib.${system};
-
-            # Both checks take the node's profile path as a build input, so an
-            # unfiltered `deploy` would make every system's checks drag in every
-            # other host's closure — building the aarch64 macbook and the desktop
-            # closure just to check embla.
-            nodesHere = nixpkgs.lib.filterAttrs (hostName: _: hostSystem hostName == system) self.deploy.nodes;
-
-            checksFor = nodes: deployLib.deployChecks (self.deploy // { inherit nodes; });
-          in
-          {
-            inherit (checksFor nodesHere) deploy-schema;
-          }
-          # One activation check per host, so a failure names the host and a
-          # rebuild of one host doesn't invalidate the others' checks.
-          // nixpkgs.lib.mapAttrs' (
-            hostName: node:
-            nixpkgs.lib.nameValuePair "deploy-activate-${hostName}"
-              (checksFor {
-                ${hostName} = node;
-              }).deploy-activate
-          ) nodesHere
-        );
+      # finix runs finit as pid 1, so `activate.nixos` is wrong twice over: it
+      # reads `boot.loader.systemd-boot.enable`, an option finix does not
+      # declare, and it looks for the closure at `system.build.toplevel` where
+      # finix keeps it at `system.topLevel`. The switch script it installs takes
+      # the same switch|boot|test verbs, so drive that directly.
+      mkFinixDeployForHost = hostName: {
+        hostname = hostName + "." + vars.tailscale_dns;
+        profiles.system.path =
+          inputs.deploy-rs.lib.${hostSystem hostName}.activate.custom
+            self.nixosConfigurations.${hostName}.config.system.topLevel
+            "$PROFILE/bin/switch-to-configuration switch";
       };
 
-      hosts = load ./src/hosts;
+      mkHosts =
+        { nixos, finix }:
+        {
+          nixosConfigurations =
+            nixpkgs.lib.genAttrs nixos mkSystemForHost // nixpkgs.lib.genAttrs finix mkFinixForHost;
+
+          deploy = {
+            sshUser = vars.username;
+            user = "root";
+            interactiveSudo = false;
+            nodes =
+              nixpkgs.lib.genAttrs nixos mkDeployForHost // nixpkgs.lib.genAttrs finix mkFinixDeployForHost;
+            confirmTimeout = 120;
+            activationTimeout = 180;
+          };
+
+          # Only the systems we actually build for: deploy-rs's `lib` covers every
+          # system it supports (darwin, i686, ...), and mapping over all of it
+          # emitted checks for platforms this flake has no hosts on.
+          checks = nixpkgs.lib.genAttrs systems (
+            system:
+            let
+              deployLib = inputs.deploy-rs.lib.${system};
+
+              # Both checks take the node's profile path as a build input, so an
+              # unfiltered `deploy` would make every system's checks drag in every
+              # other host's closure — building the aarch64 macbook and the desktop
+              # closure just to check embla.
+              nodesHere = nixpkgs.lib.filterAttrs (hostName: _: hostSystem hostName == system) self.deploy.nodes;
+
+              checksFor = nodes: deployLib.deployChecks (self.deploy // { inherit nodes; });
+            in
+            {
+              inherit (checksFor nodesHere) deploy-schema;
+            }
+            # One activation check per host, so a failure names the host and a
+            # rebuild of one host doesn't invalidate the others' checks.
+            // nixpkgs.lib.mapAttrs' (
+              hostName: node:
+              nixpkgs.lib.nameValuePair "deploy-activate-${hostName}"
+                (checksFor {
+                  ${hostName} = node;
+                }).deploy-activate
+            ) nodesHere
+          );
+        };
+
+      # Hosts are split by the module system that evaluates them: everything
+      # under `nixos/` goes through nixpkgs' nixosSystem, everything under
+      # `finix/` through its own evalModules. Both sides land in
+      # `nixosConfigurations`, so deploy-rs and the checks treat them alike.
+      hosts = {
+        nixos = load ./src/hosts/nixos;
+        finix = load ./src/hosts/finix;
+      };
       modules = load ./src/modules;
     in
     flake-parts.lib.mkFlake
@@ -293,6 +351,7 @@
           (
             { lib, moduleLocation, ... }:
             let
+
               addInfo =
                 class: name:
                 let
@@ -365,11 +424,31 @@
               ) module.imports;
             }
           ) (flattenModules value);
-        }) hosts);
+        }) hosts.nixos)
+        # finix hosts get a much thinner wrapper: nothing above is a finix
+        # module. disko, agenix, chaotic, nix-flatpak and `base` are all written
+        # against nixpkgs' NixOS module set, and `lib.nix` aliases
+        # `services.nginx.virtualHosts`, so none of them evaluate here. finix
+        # supplies its own defaults through `nixosModules.default`, which
+        # `finixSystem` imports for us.
+        ++ (nixpkgs.lib.mapAttrsToList (name: value: {
+          flake.modules.finix.${name}.imports = [
+            { networking.hostName = "${name}"; }
+          ]
+          ++ builtins.map (
+            module:
+            module
+            // {
+              imports = builtins.map (
+                dep: inputs.flake-parts.lib.importApply dep { inherit inputs; }
+              ) module.imports;
+            }
+          ) (flattenModules value);
+        }) hosts.finix);
 
         inherit systems;
 
-        flake = mkHosts (builtins.attrNames hosts);
+        flake = mkHosts (builtins.mapAttrs (_: builtins.attrNames) hosts);
 
         perSystem =
           {

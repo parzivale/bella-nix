@@ -277,6 +277,22 @@
         "type": "github"
       }
     },
+    "finix": {
+      "locked": {
+        "lastModified": 1789700485,
+        "narHash": "sha256-D4kRTYRlz6ho7Sqi6W4L+ow/Shy+LoimVCklI+f2SRc=",
+        "owner": "parzivale",
+        "repo": "finix",
+        "rev": "c5155cda0bf7e9b2c86011e6e8ec46b049af750f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "parzivale",
+        "ref": "generic-services",
+        "repo": "finix",
+        "type": "github"
+      }
+    },
     "firefox-addons": {
       "inputs": {
         "nixpkgs": [
@@ -1003,6 +1019,7 @@
         "chaotic": "chaotic",
         "deploy-rs": "deploy-rs",
         "disko": "disko",
+        "finix": "finix",
         "firefox-addons": "firefox-addons",
         "flake-parts": "flake-parts_2",
         "gtnh-nix": "gtnh-nix",

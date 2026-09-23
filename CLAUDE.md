@@ -46,7 +46,7 @@ All modules expose `flake.modules.nixos.<name>` and are auto-loaded by haumea fr
 
 ### Host Configuration
 
-Hosts live in `src/hosts/<hostname>/` with:
+Hosts live in `src/hosts/<evaluator>/<hostname>/` (`nixos/` or `finix/`) with:
 - `configuration.nix` - Main config, imports modules from profiles/programs
 - `disk-configuration.nix` - Disko disk layout
 - `hardware-configuration.nix` - Hardware-specific settings
