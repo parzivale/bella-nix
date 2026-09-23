@@ -53,7 +53,6 @@
               }
             '';
         };
-        niri.settings.binds."Mod+Return".action.spawn = "wezterm";
       };
 
       xdg.desktopEntries = lib.listToAttrs (
@@ -80,6 +79,8 @@
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];
+
+      state.keybinds."Mod+Return" = [ "wezterm" ];
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.wezterm ];
     };

@@ -1,10 +1,6 @@
 { inputs, ... }:
 {
   flake.modules.homeManager.swaync = _: {
-    programs.niri.settings.binds."Mod+N".action.spawn = [
-      "swaync-client"
-      "-t"
-    ];
     services.swaync = {
       enable = true;
       settings = {
@@ -28,6 +24,11 @@
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];
+
+      state.keybinds."Mod+N" = [
+        "swaync-client"
+        "-t"
+      ];
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.swaync ];
     };

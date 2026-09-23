@@ -18,28 +18,24 @@
 
       hardware.i2c.enable = true;
 
-      home-manager.users.${user} =
-        { config, ... }:
-        {
-          home.packages = [ pkgs.ddcutil ];
+      home-manager.users.${user}.home.packages = [ pkgs.ddcutil ];
 
-          programs.niri.settings.binds = {
-            "XF86MonBrightnessUp".action.spawn = [
-              ddcutil
-              "setvcp"
-              "10"
-              "+"
-              "5"
-            ];
-            "XF86MonBrightnessDown".action.spawn = [
-              ddcutil
-              "setvcp"
-              "10"
-              "-"
-              "5"
-            ];
-          };
-        };
+      state.keybinds = {
+        "XF86MonBrightnessUp" = [
+          ddcutil
+          "setvcp"
+          "10"
+          "+"
+          "5"
+        ];
+        "XF86MonBrightnessDown" = [
+          ddcutil
+          "setvcp"
+          "10"
+          "-"
+          "5"
+        ];
+      };
 
       users.users.${user}.extraGroups = [
         "video"

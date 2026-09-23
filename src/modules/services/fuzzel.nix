@@ -3,9 +3,6 @@
   flake.modules.homeManager.fuzzel =
     { pkgs, ... }:
     {
-      programs.niri.settings.binds = {
-        "Mod+Space".action.spawn = [ "${pkgs.fuzzel}/bin/fuzzel" ];
-      };
       programs.fuzzel = {
         enable = true;
         settings.main.terminal = "${pkgs.wezterm}/bin/wezterm start --";
@@ -13,12 +10,14 @@
     };
 
   flake.modules.nixos.fuzzel =
-    { config, ... }:
+    { config, pkgs, ... }:
     let
       user = config.systemConstants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];
+
+      state.keybinds."Mod+Space" = [ "${pkgs.fuzzel}/bin/fuzzel" ];
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.fuzzel ];
     };

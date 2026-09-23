@@ -8,6 +8,7 @@
     imports = with inputs.self.modules.generic; [
       systemConstants
       preserve
+      keybinds
     ];
   };
 }

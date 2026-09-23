@@ -7,13 +7,6 @@
     {
       imports = [ inputs.walker.homeManagerModules.default ];
       programs = {
-        niri.settings.binds = {
-          "Mod+Space".action.spawn = [
-            "${pkgs.netcat}/bin/nc"
-            "-U"
-            "/run/user/1000/walker/walker.sock"
-          ];
-        };
         walker = {
           enable = true;
           runAsService = true;
@@ -640,12 +633,18 @@
     };
 
   flake.modules.nixos.walker =
-    { config, ... }:
+    { config, pkgs, ... }:
     let
       user = config.systemConstants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];
+
+      state.keybinds."Mod+Space" = [
+        "${pkgs.netcat}/bin/nc"
+        "-U"
+        "/run/user/1000/walker/walker.sock"
+      ];
 
       nix.settings = {
         extra-substituters = [
