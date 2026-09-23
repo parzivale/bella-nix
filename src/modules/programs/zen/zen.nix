@@ -1,4 +1,28 @@
 { inputs, ... }:
+let
+  # One body for both classes: the only thing that differed was
+  # `home-manager.sharedModules`, which the community module has no equivalent
+  # for - and with a single user there was nothing to share it with anyway, so
+  # the browser's own module is named in this user's imports on both.
+  zen =
+    homeManager:
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      imports = [ homeManager ];
+
+      home-manager.users.${user}.imports = [
+        inputs.zen-browser.homeModules.twilight
+        inputs.self.modules.homeManager.zen
+      ];
+
+      state.preserve.users.${user} = {
+        directories = [ { directory = ".config/zen"; } ];
+      };
+    };
+in
 {
   flake.modules.homeManager.zen =
     {
@@ -37,42 +61,6 @@
       };
     };
 
-  flake.modules.nixos.zen =
-    { config, ... }:
-    let
-      user = config.systemConstants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.sharedModules = [ inputs.zen-browser.homeModules.twilight ];
-
-      state.preserve.users.${user} = {
-        directories = [ { directory = ".config/zen"; } ];
-      };
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.zen ];
-    };
-
-  flake.modules.finix.zen =
-    { config, ... }:
-    let
-      user = config.systemConstants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [
-        # `home-manager.sharedModules` on the nixos side. The community module
-        # has no such option - it has `users` and nothing above it - so the
-        # browser's own home-manager module is named in this user's imports
-        # rather than every user's.
-        inputs.zen-browser.homeModules.twilight
-        inputs.self.modules.homeManager.zen
-      ];
-
-      state.preserve.users.${user} = {
-        directories = [ { directory = ".config/zen"; } ];
-      };
-    };
+  flake.modules.nixos.zen = zen inputs.self.modules.nixos.home-manager;
+  flake.modules.finix.zen = zen inputs.self.modules.finix.home-manager;
 }
