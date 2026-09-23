@@ -4,14 +4,14 @@ let
   # user's configuration is the same wherever it is evaluated.
   wezterm =
     homeManager:
-    { config, ... }:
+    { config, pkgs, ... }:
     let
       user = config.constants.username;
     in
     {
       imports = [ homeManager ];
 
-      state.keybinds."Mod+Return" = [ "wezterm" ];
+      state.keybinds."Mod+Return" = [ "${pkgs.wezterm}/bin/wezterm" ];
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.wezterm ];
     };
