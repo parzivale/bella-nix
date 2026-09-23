@@ -161,6 +161,22 @@
         "type": "github"
       }
     },
+    "community-modules": {
+      "locked": {
+        "lastModified": 1790176911,
+        "narHash": "sha256-LWWHYOBtsbpjp+ufI6fqomlBRRhgK/2d4D3UvS7FA3Y=",
+        "owner": "parzivale",
+        "repo": "community-modules",
+        "rev": "d7625baf0f729777cba2d2b494df2d3a3f61daf6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "parzivale",
+        "ref": "generic-services",
+        "repo": "community-modules",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1760924934,
@@ -1017,6 +1033,7 @@
         "agenix": "agenix",
         "agenix-rekey": "agenix-rekey",
         "chaotic": "chaotic",
+        "community-modules": "community-modules",
         "deploy-rs": "deploy-rs",
         "disko": "disko",
         "finix": "finix",

@@ -155,6 +155,11 @@
     # formatter only), so there is nothing to make follow ours.
     finix.url = "github:parzivale/finix/generic-services";
 
+    # Likewise, and on the branch where its modules declare their units through
+    # `providers.services` rather than finit directly - which is what makes them
+    # usable on a finix host of ours at all.
+    community-modules.url = "github:parzivale/community-modules/generic-services";
+
     jev-bot = {
       url = "github:parzivale/jev-bot";
       inputs.nixpkgs.follows = "nixpkgs";
