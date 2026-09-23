@@ -20,6 +20,15 @@
     {
       imports = [ modules.dhcpcd ];
 
-      services.dhcpcd.enable = true;
+      services.dhcpcd = {
+        enable = true;
+
+        # iwd configures wireless itself here - finix defaults its
+        # `EnableNetworkConfiguration` on, which is why the iwd module needs no
+        # settings - so dhcpcd must leave those interfaces alone or the two
+        # fight over the lease. This is the same guard the nixos side writes as
+        # a networkd rule matching wl*.
+        settings.denyinterfaces = [ "wl*" ];
+      };
     };
 }
