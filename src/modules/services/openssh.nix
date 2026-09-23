@@ -12,7 +12,7 @@
           PasswordAuthentication = false;
           KbdInteractiveAuthentication = false;
           PermitRootLogin = lib.mkDefault "no";
-          AllowUsers = [ config.systemConstants.username ];
+          AllowUsers = [ config.constants.username ];
         };
 
         generateHostKeys = true;
@@ -51,7 +51,7 @@
           PasswordAuthentication = false;
           KbdInteractiveAuthentication = false;
           PermitRootLogin = lib.mkDefault "no";
-          AllowUsers = [ config.systemConstants.username ];
+          AllowUsers = [ config.constants.username ];
         };
       };
 

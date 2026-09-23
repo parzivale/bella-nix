@@ -8,7 +8,7 @@
       ...
     }:
     let
-      user = osConfig.systemConstants.username;
+      user = osConfig.constants.username;
       currentHost = osConfig.networking.hostName;
       # Hosts are split by the module system that evaluates them, so the list
       # is the union of both trees rather than one directory.
@@ -75,7 +75,7 @@
   flake.modules.nixos.wezterm =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];

@@ -7,11 +7,11 @@
       ...
     }:
     let
-      kanidm_domain = config.systemConstants.subDomains.kanidm;
-      kanidm_port = config.systemConstants.ports.kanidm;
-      base_domain = config.systemConstants.domain;
-      username = config.systemConstants.username;
-      email = config.systemConstants.email;
+      kanidm_domain = config.constants.subDomains.kanidm;
+      kanidm_port = config.constants.ports.kanidm;
+      base_domain = config.constants.domain;
+      username = config.constants.username;
+      email = config.constants.email;
       certDir = "/var/lib/kanidm";
     in
     {
@@ -70,7 +70,7 @@
         enableACME = true;
         quic = true;
         locations."/" = {
-          proxyPass = "https://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString kanidm_port}";
+          proxyPass = "https://${config.networking.hostName}.${config.constants.tailscale_dns}:${toString kanidm_port}";
           extraConfig = "proxy_ssl_verify off;";
           proxyWebsockets = true;
         };

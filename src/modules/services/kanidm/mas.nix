@@ -3,7 +3,7 @@
   flake.modules.nixos.kanidm =
     { config, ... }:
     let
-      mas_domain = config.systemConstants.subDomains.mas;
+      mas_domain = config.constants.subDomains.mas;
       mas_provider_id = "01KRHPHYTTHPJT2E1FCJZSZ4SV";
     in
     {

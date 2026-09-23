@@ -2,7 +2,7 @@
   flake.modules.homeManager.zen =
     { pkgs, osConfig, ... }:
     let
-      user = osConfig.systemConstants.username;
+      user = osConfig.constants.username;
     in
     {
       programs.zen-browser.profiles.${user}.search = {

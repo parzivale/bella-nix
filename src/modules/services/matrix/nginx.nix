@@ -3,12 +3,12 @@
   flake.modules.nixos.matrix =
     { config, ... }:
     let
-      domain = config.systemConstants.domain;
-      mas_domain = config.systemConstants.subDomains.mas;
-      matrix_domain = config.systemConstants.subDomains.matrix;
-      mas_web_port = config.systemConstants.ports.matrix.mas.web;
-      matrix_main_port = config.systemConstants.ports.matrix.main;
-      backend = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
+      domain = config.constants.domain;
+      mas_domain = config.constants.subDomains.mas;
+      matrix_domain = config.constants.subDomains.matrix;
+      mas_web_port = config.constants.ports.matrix.mas.web;
+      matrix_main_port = config.constants.ports.matrix.main;
+      backend = "${config.networking.hostName}.${config.constants.tailscale_dns}";
     in
     {
       imports = [ inputs.self.modules.nixos.nginx ];

@@ -3,8 +3,8 @@
   flake.modules.nixos.matrix =
     { config, ... }:
     let
-      domain = config.systemConstants.domain;
-      matrix_domain = config.systemConstants.subDomains.matrix;
+      domain = config.constants.domain;
+      matrix_domain = config.constants.subDomains.matrix;
     in
     {
       imports = [ inputs.self.modules.nixos.secrets ];

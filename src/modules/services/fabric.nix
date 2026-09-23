@@ -23,7 +23,7 @@
 
           serverProperties = {
             white-list = true;
-            server-port = config.systemConstants.ports.minecraft.fabric;
+            server-port = config.constants.ports.minecraft.fabric;
             difficulty = "normal";
             gamemode = "survival";
             max-players = 10;

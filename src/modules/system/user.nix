@@ -6,7 +6,7 @@
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       # Declaritivly manage users
@@ -29,7 +29,7 @@
               "gamemode"
               "wireshark"
             ];
-            uid = config.systemConstants.uid;
+            uid = config.constants.uid;
             shell = pkgs.nushell;
           };
         };

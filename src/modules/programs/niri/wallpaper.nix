@@ -2,7 +2,7 @@
   flake.modules.homeManager.niri =
     { pkgs, osConfig, ... }:
     let
-      image = osConfig.systemConstants.bg_img;
+      image = osConfig.constants.bg_img;
       blurred-image = pkgs.runCommand "blurred-wallpaper.png" { } ''
         ${pkgs.imagemagick}/bin/magick "${image}" -blur 0x8 $out
       '';

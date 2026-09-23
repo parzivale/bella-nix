@@ -2,7 +2,7 @@ _: {
   flake.modules.nixos.monitoring =
     { config, ... }:
     let
-      prometheus_main_port = config.systemConstants.ports.prometheus.main;
+      prometheus_main_port = config.constants.ports.prometheus.main;
     in
     {
       services.prometheus = {

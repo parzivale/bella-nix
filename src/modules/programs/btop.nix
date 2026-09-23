@@ -12,7 +12,7 @@ let
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
       cfg = config.btop.gpu;
 
       # btop numbers its GPU boxes by detection order, not by vendor, so the box

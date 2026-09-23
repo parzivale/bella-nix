@@ -5,7 +5,7 @@ let
   keyrings =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       state.preserve.users.${user} = {

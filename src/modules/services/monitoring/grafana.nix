@@ -3,10 +3,10 @@
   flake.modules.nixos.monitoring =
     { config, ... }:
     let
-      grafana_domain = config.systemConstants.subDomains.grafana;
-      kanidm_domain = config.systemConstants.subDomains.kanidm;
-      grafana_port = config.systemConstants.ports.grafana;
-      domain = config.systemConstants.domain;
+      grafana_domain = config.constants.subDomains.grafana;
+      kanidm_domain = config.constants.subDomains.kanidm;
+      grafana_port = config.constants.ports.grafana;
+      domain = config.constants.domain;
     in
     {
       imports = [
@@ -104,7 +104,7 @@
                       uid = "matrix-hookshot-webhook";
                       type = "webhook";
                       settings = {
-                        url = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString config.systemConstants.ports.hookshot.webhook}/webhook/grafana-alerts";
+                        url = "http://${config.networking.hostName}.${config.constants.tailscale_dns}:${toString config.constants.ports.hookshot.webhook}/webhook/grafana-alerts";
                         httpMethod = "POST";
                         message = ''{{ template "matrix-alert" . }}'';
                       };
@@ -122,7 +122,7 @@
         enableACME = true;
         quic = true;
         locations."/" = {
-          proxyPass = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString grafana_port}";
+          proxyPass = "http://${config.networking.hostName}.${config.constants.tailscale_dns}:${toString grafana_port}";
           proxyWebsockets = true;
         };
       };

@@ -7,8 +7,8 @@
       ...
     }:
     let
-      domain = osConfig.systemConstants.domain;
-      user = osConfig.systemConstants.username;
+      domain = osConfig.constants.domain;
+      user = osConfig.constants.username;
     in
     {
       xdg.dataFile."applications/iamb.desktop".source = "${pkgs.iamb}/share/applications/iamb.desktop";
@@ -72,7 +72,7 @@
   flake.modules.nixos.iamb =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];
@@ -87,7 +87,7 @@
   flake.modules.finix.iamb =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.finix.home-manager ];

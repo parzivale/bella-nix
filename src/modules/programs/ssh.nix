@@ -47,7 +47,7 @@
   flake.modules.nixos.ssh =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = with inputs.self.modules.nixos; [
@@ -82,7 +82,7 @@
   flake.modules.finix.ssh =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = with inputs.self.modules.finix; [

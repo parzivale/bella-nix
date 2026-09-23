@@ -7,7 +7,7 @@
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       # proton-cachyos below comes from chaotic-nyx, not nixpkgs.

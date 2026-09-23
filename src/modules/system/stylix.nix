@@ -3,7 +3,7 @@
   flake.modules.homeManager.stylix =
     { osConfig, ... }:
     let
-      user = osConfig.systemConstants.username;
+      user = osConfig.constants.username;
     in
     {
       stylix.targets.zen-browser.profileNames = [ user ];
@@ -30,7 +30,7 @@
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [
@@ -43,7 +43,7 @@
 
       stylix = {
         enable = true;
-        image = config.systemConstants.bg_img;
+        image = config.constants.bg_img;
         base16Scheme = ./themes/catppuccin-macchiato.yaml;
         icons = {
           package = pkgs.papirus-icon-theme;

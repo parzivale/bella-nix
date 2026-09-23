@@ -7,11 +7,11 @@
       ...
     }:
     let
-      domain = config.systemConstants.domain;
-      matrix_domain = config.systemConstants.subDomains.matrix;
-      mas_domain = config.systemConstants.subDomains.mas;
-      matrix_main_port = config.systemConstants.ports.matrix.main;
-      mas_web_port = config.systemConstants.ports.matrix.mas.web;
+      domain = config.constants.domain;
+      matrix_domain = config.constants.subDomains.matrix;
+      mas_domain = config.constants.subDomains.mas;
+      matrix_main_port = config.constants.ports.matrix.main;
+      mas_web_port = config.constants.ports.matrix.mas.web;
     in
     {
       imports = [ inputs.self.modules.nixos.secrets ];

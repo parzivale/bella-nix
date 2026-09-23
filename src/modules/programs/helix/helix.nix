@@ -63,7 +63,7 @@
   flake.modules.nixos.helix =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];
@@ -74,7 +74,7 @@
   flake.modules.finix.helix =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.finix.home-manager ];

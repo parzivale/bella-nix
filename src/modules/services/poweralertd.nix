@@ -26,7 +26,7 @@
   flake.modules.nixos.poweralertd =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];

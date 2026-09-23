@@ -7,7 +7,7 @@
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
       ddcutil = "${pkgs.ddcutil}/bin/ddcutil";
     in
     {

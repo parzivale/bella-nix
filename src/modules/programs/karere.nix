@@ -9,7 +9,7 @@
   flake.modules.nixos.karere =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];

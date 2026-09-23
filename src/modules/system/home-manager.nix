@@ -6,7 +6,7 @@ let
   home =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       home-manager.users.${user} = {

@@ -2,7 +2,7 @@ _: {
   flake.modules.nixos.deploy-user =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       security.sudo.extraRules = [

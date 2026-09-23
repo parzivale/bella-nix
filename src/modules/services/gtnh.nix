@@ -19,8 +19,8 @@
         mods.GregTech.Pollution_cfg.pollution."Activate Pollution" = false;
         minecraft = {
           server-properties = {
-            server-port = config.systemConstants.ports.minecraft.gtnh.game;
-            rcon-port = config.systemConstants.ports.minecraft.gtnh.rcon;
+            server-port = config.constants.ports.minecraft.gtnh.game;
+            rcon-port = config.constants.ports.minecraft.gtnh.rcon;
             max-tick-time = -1;
           };
           instance-options = {

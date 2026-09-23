@@ -2,10 +2,10 @@
   flake.modules.nixos.alloy =
     { config, ... }:
     let
-      tailscaleDomain = config.systemConstants.tailscale_dns;
-      monitoringHost = config.systemConstants.monitoringHost;
-      loki_port = config.systemConstants.ports.loki;
-      prometheus_port = config.systemConstants.ports.prometheus.main;
+      tailscaleDomain = config.constants.tailscale_dns;
+      monitoringHost = config.constants.monitoringHost;
+      loki_port = config.constants.ports.loki;
+      prometheus_port = config.constants.ports.prometheus.main;
       hostname = config.networking.hostName;
     in
     {

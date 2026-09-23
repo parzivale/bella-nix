@@ -3,8 +3,8 @@
   flake.modules.nixos.pocket-id =
     { config, ... }:
     let
-      pocket-id_domain = config.systemConstants.subDomains.pocket-id;
-      pocket-id_port = config.systemConstants.ports.pocket-id;
+      pocket-id_domain = config.constants.subDomains.pocket-id;
+      pocket-id_port = config.constants.ports.pocket-id;
     in
     {
       imports = [
@@ -46,7 +46,7 @@
         enableACME = true;
         quic = true;
         locations."/" = {
-          proxyPass = "http://${config.networking.hostName}.${config.systemConstants.tailscale_dns}:${toString pocket-id_port}";
+          proxyPass = "http://${config.networking.hostName}.${config.constants.tailscale_dns}:${toString pocket-id_port}";
           proxyWebsockets = true;
         };
       };

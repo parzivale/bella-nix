@@ -2,7 +2,7 @@
   flake.modules.nixos.monitoring =
     { config, ... }:
     let
-      loki_port = config.systemConstants.ports.loki;
+      loki_port = config.constants.ports.loki;
     in
     {
       services.loki = {

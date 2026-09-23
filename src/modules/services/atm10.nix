@@ -52,7 +52,7 @@
 
           serverProperties = {
             white-list = true;
-            server-port = config.systemConstants.ports.minecraft.atm10;
+            server-port = config.constants.ports.minecraft.atm10;
             difficulty = "normal";
             gamemode = "survival";
             max-players = 10;
@@ -84,7 +84,7 @@
         };
       };
 
-      networking.firewall.allowedTCPPorts = [ config.systemConstants.ports.minecraft.atm10 ];
+      networking.firewall.allowedTCPPorts = [ config.constants.ports.minecraft.atm10 ];
 
       age.secrets.cloudflare-buckets.rekeyFile = ../../secrets/master/cloudflare-buckets/access_env.age;
       age.secrets.restic-atm10-password.rekeyFile = ../../secrets/master/restic/atm10-password.age;

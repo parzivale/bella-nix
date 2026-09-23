@@ -81,7 +81,7 @@ Hosts live in `src/hosts/<evaluator>/<hostname>/` (`nixos/` or `finix/`) with:
 
 - `flake.nix` - Flake definition, inputs, module loading logic
 - `vars.nix` - Global variables (username, email, tailscale domain)
-- `src/modules/base/constants.nix` - Exposes `systemConstants` option set
+- `src/modules/base/constants.nix` - Exposes the `constants` option set (from `vars.nix`)
 
 ### External Inputs
 

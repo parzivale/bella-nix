@@ -2,7 +2,7 @@
   flake.modules.nixos._1password =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       programs._1password.enable = true;

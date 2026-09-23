@@ -6,7 +6,7 @@
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       nix.settings.system-features = [

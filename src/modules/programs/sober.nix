@@ -3,7 +3,7 @@
   flake.modules.nixos.sober =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];

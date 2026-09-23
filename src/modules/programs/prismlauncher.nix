@@ -72,7 +72,7 @@
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
 
       cefLibs = with pkgs; [
         libgbm
@@ -128,7 +128,7 @@
       ...
     }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
 
       cefLibs = with pkgs; [
         libgbm

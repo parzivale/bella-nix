@@ -6,7 +6,7 @@
   # missing-attribute error rather than a failure on the first finix host.
   flake.modules.generic.base = {
     imports = with inputs.self.modules.generic; [
-      systemConstants
+      constants
       preserve
       keybinds
     ];

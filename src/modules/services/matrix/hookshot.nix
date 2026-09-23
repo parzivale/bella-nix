@@ -36,12 +36,12 @@
           runHook postBuild
         '';
       });
-      domain = config.systemConstants.domain;
-      matrix_domain = config.systemConstants.subDomains.matrix;
-      matrix_main_port = config.systemConstants.ports.matrix.main;
-      appservice_port = config.systemConstants.ports.hookshot.appservice;
-      webhook_port = config.systemConstants.ports.hookshot.webhook;
-      tailscale_host = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
+      domain = config.constants.domain;
+      matrix_domain = config.constants.subDomains.matrix;
+      matrix_main_port = config.constants.ports.matrix.main;
+      appservice_port = config.constants.ports.hookshot.appservice;
+      webhook_port = config.constants.ports.hookshot.webhook;
+      tailscale_host = "${config.networking.hostName}.${config.constants.tailscale_dns}";
 
       registrationPath = "/var/lib/matrix-hookshot/registration.yaml";
 

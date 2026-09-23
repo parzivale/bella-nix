@@ -7,7 +7,7 @@
       ...
     }:
     let
-      port = config.systemConstants.ports.xray.reality;
+      port = config.constants.ports.xray.reality;
     in
     {
       imports = [ inputs.self.modules.nixos.secrets ];

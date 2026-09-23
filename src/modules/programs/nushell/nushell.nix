@@ -49,7 +49,7 @@
   flake.modules.nixos.nushell =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.nixos.home-manager ];
@@ -60,7 +60,7 @@
   flake.modules.finix.nushell =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ inputs.self.modules.finix.home-manager ];

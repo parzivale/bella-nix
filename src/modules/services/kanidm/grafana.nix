@@ -3,7 +3,7 @@
   flake.modules.nixos.kanidm =
     { config, ... }:
     let
-      grafana_domain = config.systemConstants.subDomains.grafana;
+      grafana_domain = config.constants.subDomains.grafana;
     in
     {
       imports = [ inputs.self.modules.nixos.secrets ];

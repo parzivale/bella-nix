@@ -8,7 +8,7 @@ let
     homeManager:
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [ homeManager ];
@@ -31,7 +31,7 @@ in
       ...
     }:
     let
-      user = osConfig.systemConstants.username;
+      user = osConfig.constants.username;
       system = pkgs.stdenv.hostPlatform.system;
     in
     {

@@ -34,7 +34,7 @@
   flake.modules.nixos.battlenet =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [

@@ -16,12 +16,12 @@
         isList
         concatMapStringsSep
         ;
-      domain = config.systemConstants.domain;
-      mas_domain = config.systemConstants.subDomains.mas;
-      kanidm_domain = config.systemConstants.subDomains.kanidm;
-      mas_web_port = config.systemConstants.ports.matrix.mas.web;
-      mas_internal_port = config.systemConstants.ports.matrix.mas.internal;
-      matrix_main_port = config.systemConstants.ports.matrix.main;
+      domain = config.constants.domain;
+      mas_domain = config.constants.subDomains.mas;
+      kanidm_domain = config.constants.subDomains.kanidm;
+      mas_web_port = config.constants.ports.matrix.mas.web;
+      mas_internal_port = config.constants.ports.matrix.mas.internal;
+      matrix_main_port = config.constants.ports.matrix.main;
       mas = pkgs.matrix-authentication-service;
 
       format = pkgs.formats.yaml { };

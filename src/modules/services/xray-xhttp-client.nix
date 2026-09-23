@@ -7,7 +7,7 @@
       ...
     }:
     let
-      vpn_domain = config.systemConstants.subDomains.vpn;
+      vpn_domain = config.constants.subDomains.vpn;
     in
     {
       imports = [ inputs.self.modules.nixos.secrets ];

@@ -46,7 +46,7 @@
   flake.modules.nixos.swayidle =
     { config, pkgs, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       imports = [

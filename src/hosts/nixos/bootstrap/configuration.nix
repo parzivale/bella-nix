@@ -5,7 +5,7 @@
   ...
 }:
 let
-  user = config.systemConstants.username;
+  user = config.constants.username;
 in
 {
   networking.hostName = "bootstrap";

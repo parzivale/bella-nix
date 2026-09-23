@@ -1,12 +1,12 @@
 {
-  flake.modules.generic.systemConstants =
+  flake.modules.generic.constants =
     { lib, ... }:
     {
-      options.systemConstants = lib.mkOption {
+      options.constants = lib.mkOption {
         type = lib.types.attrsOf lib.types.unspecified;
         default = { };
       };
 
-      config.systemConstants = import ../../../vars.nix;
+      config.constants = import ../../../vars.nix;
     };
 }

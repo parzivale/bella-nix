@@ -2,7 +2,7 @@
   flake.modules.nixos.tablet =
     { config, ... }:
     let
-      user = config.systemConstants.username;
+      user = config.constants.username;
     in
     {
       hardware.opentabletdriver = {

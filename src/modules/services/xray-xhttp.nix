@@ -7,8 +7,8 @@
       ...
     }:
     let
-      port = config.systemConstants.ports.xray.xhttp;
-      vpn_domain = config.systemConstants.subDomains.vpn;
+      port = config.constants.ports.xray.xhttp;
+      vpn_domain = config.constants.subDomains.vpn;
     in
     {
       imports = [

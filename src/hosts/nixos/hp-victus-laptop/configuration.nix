@@ -8,7 +8,7 @@
 let
   path = ./ssh_host_ed25519_key.pub;
   key = if builtins.pathExists path then builtins.readFile path else "";
-  user = config.systemConstants.username;
+  user = config.constants.username;
 in
 {
   networking.hostName = "hp-victus-laptop";

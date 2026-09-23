@@ -2,7 +2,7 @@
   flake.modules.nixos.acme =
     { config, ... }:
     let
-      email = config.systemConstants.email;
+      email = config.constants.email;
     in
     {
       security.acme = {

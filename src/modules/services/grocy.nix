@@ -7,9 +7,9 @@
       ...
     }:
     let
-      grocy_domain = config.systemConstants.subDomains.grocy;
-      tailscale_host = "${config.networking.hostName}.${config.systemConstants.tailscale_dns}";
-      grocy_port = config.systemConstants.ports.grocy;
+      grocy_domain = config.constants.subDomains.grocy;
+      tailscale_host = "${config.networking.hostName}.${config.constants.tailscale_dns}";
+      grocy_port = config.constants.ports.grocy;
       dataDir = "/var/lib/grocy";
       pkg = pkgs.grocy;
     in
