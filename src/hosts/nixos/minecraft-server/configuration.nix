@@ -22,7 +22,7 @@ in
     atm10
     playit
     systemd-boot
-    networkd
+    network
   ];
 
   system.stateVersion = "25.11";

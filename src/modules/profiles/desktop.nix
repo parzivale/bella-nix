@@ -25,7 +25,7 @@
       keyring
       pipewire
       bluetooth
-      networkd
+      network
       mako
       swayidle
       avahi

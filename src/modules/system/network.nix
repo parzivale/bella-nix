@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.networkd = {
+  flake.modules.nixos.network = {
     networking.useDHCP = false;
     networking.dhcpcd.enable = false;
 
@@ -15,7 +15,7 @@
   # intent - DHCP on the wired and wireless interfaces, nothing else - asked of
   # the client finix does have. iwd takes its own wireless interfaces back in
   # the iwd module, which is where that belongs.
-  flake.modules.finix.networkd =
+  flake.modules.finix.network =
     { modules, ... }:
     {
       imports = [ modules.dhcpcd ];

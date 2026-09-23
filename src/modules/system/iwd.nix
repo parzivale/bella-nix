@@ -46,7 +46,7 @@ _: {
       # The networkd rule on the nixos side has moved rather than disappeared:
       # iwd configures wireless itself on both classes, so the dhcp client has
       # to be kept off those interfaces. That guard lives with the client, in
-      # the networkd module.
+      # the network module.
 
       state.preserve.directories = [
         "/var/lib/iwd"
