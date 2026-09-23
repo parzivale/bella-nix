@@ -29,7 +29,7 @@ _: {
     };
 
   flake.modules.finix.deploy-user =
-    { config, pkgs, ... }:
+    { config, ... }:
     let
       user = config.constants.username;
     in
@@ -45,7 +45,12 @@ _: {
           requirePassword = false;
         }
         {
-          command = "${pkgs.coreutils}/bin/rm";
+          # The path deploy-rs actually invokes: it sends bare `rm`, which
+          # resolves through PATH to the system profile - not to a coreutils
+          # store path. A rule naming the store path never matches, the
+          # confirmation never arrives, and every deploy rolls back on the
+          # magic-rollback timeout.
+          command = "/run/current-system/sw/bin/rm";
           args = [ "^/tmp/deploy-rs-canary-[a-z0-9]{32}$" ];
           users = [ user ];
           requirePassword = false;
