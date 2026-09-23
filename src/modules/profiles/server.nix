@@ -3,16 +3,13 @@
 { self, ... }:
 {
   flake.modules.nixos.server = {
-    imports = [
-      # class-neutral, so it lives under `generic` rather than `nixos`
-      self.modules.generic.localization
-    ]
-    ++ (with self.modules.nixos; [
+    imports = with self.modules.nixos; [
       stylix
       alloy
       deployable
+      localization
       zram
       kernel
-    ]);
+    ];
   };
 }

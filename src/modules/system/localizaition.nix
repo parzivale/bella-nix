@@ -1,8 +1,9 @@
-{
-  # `time.timeZone` and `i18n.*` are declared by both module sets, so this one
-  # is genuinely class-neutral: published once, imported by hosts of either
-  # class through their own import lists.
-  flake.modules.generic.localization = {
+let
+  # Both module sets declare `time.timeZone` and `i18n.*`, so the same
+  # definition serves either class - published under both rather than as one
+  # `generic` module, so each carries its class and the import lists stay
+  # uniform.
+  localization = {
     time.timeZone = "Europe/Stockholm";
     i18n = {
       defaultLocale = "en_US.UTF-8";
@@ -19,4 +20,8 @@
       };
     };
   };
+in
+{
+  flake.modules.nixos.localization = localization;
+  flake.modules.finix.localization = localization;
 }

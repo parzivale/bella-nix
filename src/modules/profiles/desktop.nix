@@ -1,11 +1,8 @@
 { self, ... }:
 {
   flake.modules.nixos.desktop = {
-    imports = [
-      # class-neutral, so it lives under `generic` rather than `nixos`
-      self.modules.generic.localization
-    ]
-    ++ (with self.modules.nixos; [
+    imports = with self.modules.nixos; [
+      localization
       stylix
       # CLI aps
       iamb
@@ -36,6 +33,6 @@
       systemd-boot
       kernel
       powertop
-    ]);
+    ];
   };
 }
