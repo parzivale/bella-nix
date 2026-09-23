@@ -26,4 +26,24 @@
         ];
       };
     };
+
+  flake.modules.finix.lazygit =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      imports = [ inputs.self.modules.finix.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.lazygit ];
+
+      state.preserve.users.${user} = {
+        directories = [
+          {
+            directory = ".local/state/lazygit";
+            mode = "0755";
+          }
+        ];
+      };
+    };
 }

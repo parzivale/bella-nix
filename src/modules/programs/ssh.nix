@@ -78,4 +78,39 @@
         ];
       };
     };
+
+  flake.modules.finix.ssh =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      imports = with inputs.self.modules.finix; [
+        secrets
+        openssh
+        preservation
+        home-manager
+      ];
+
+      age.secrets.github-key = {
+        rekeyFile = ../../secrets/master/github/github-key.age;
+        owner = user;
+      };
+
+      age.secrets.tangled-key = {
+        rekeyFile = ../../secrets/master/tangled/tangled-key.age;
+        owner = user;
+      };
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.ssh ];
+
+      state.preserve.users.${user} = {
+        directories = [
+          {
+            directory = ".ssh";
+            mode = "0700";
+          }
+        ];
+      };
+    };
 }

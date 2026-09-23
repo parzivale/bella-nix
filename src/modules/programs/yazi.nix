@@ -38,4 +38,15 @@
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.yazi ];
     };
+
+  flake.modules.finix.yazi =
+    { config, ... }:
+    let
+      user = config.systemConstants.username;
+    in
+    {
+      imports = [ inputs.self.modules.finix.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.yazi ];
+    };
 }

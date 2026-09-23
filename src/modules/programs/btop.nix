@@ -1,10 +1,10 @@
 { inputs, ... }:
-{
-  flake.modules.homeManager.btop = _: {
-    programs.btop.enable = true;
-  };
-
-  flake.modules.nixos.btop =
+let
+  # The options and the configuration are the same whichever class evaluates
+  # this; only the home-manager module underneath differs, so it is the
+  # argument.
+  btop =
+    homeManager:
     {
       config,
       lib,
@@ -24,7 +24,7 @@
       gpuBoxes = lib.genList (i: "gpu${toString i}") gpuCount;
     in
     {
-      imports = [ inputs.self.modules.nixos.home-manager ];
+      imports = [ homeManager ];
 
       options.btop.gpu = {
         nvidia = lib.mkOption {
@@ -72,4 +72,12 @@
         };
       };
     };
+in
+{
+  flake.modules.homeManager.btop = _: {
+    programs.btop.enable = true;
+  };
+
+  flake.modules.nixos.btop = btop inputs.self.modules.nixos.home-manager;
+  flake.modules.finix.btop = btop inputs.self.modules.finix.home-manager;
 }
