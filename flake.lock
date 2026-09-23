@@ -163,11 +163,11 @@
     },
     "community-modules": {
       "locked": {
-        "lastModified": 1790176911,
-        "narHash": "sha256-LWWHYOBtsbpjp+ufI6fqomlBRRhgK/2d4D3UvS7FA3Y=",
+        "lastModified": 1790180252,
+        "narHash": "sha256-oljreOy9Fl1rudGko0S90vBFJOOW4I6RlB1V1vWFJ2s=",
         "owner": "parzivale",
         "repo": "community-modules",
-        "rev": "d7625baf0f729777cba2d2b494df2d3a3f61daf6",
+        "rev": "3cb5791e249ba0ae63eca970d0919a9e4e9ab374",
         "type": "github"
       },
       "original": {
