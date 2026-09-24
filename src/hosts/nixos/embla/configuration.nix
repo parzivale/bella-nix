@@ -13,7 +13,7 @@ in
   networking.hostName = "embla";
 
   imports = with inputs.self.modules.nixos; [
-    nixos
+    system
     secrets
     home-manager
     cli

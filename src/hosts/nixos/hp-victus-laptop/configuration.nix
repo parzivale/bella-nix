@@ -14,7 +14,7 @@ in
   networking.hostName = "hp-victus-laptop";
 
   imports = with inputs.self.modules.nixos; [
-    nixos
+    system
     secrets
     home-manager
     cli

@@ -14,7 +14,7 @@ in
   networking.hostName = "macbook";
 
   imports = with inputs.self.modules.nixos; [
-    nixos
+    system
     secrets
     home-manager
     cli

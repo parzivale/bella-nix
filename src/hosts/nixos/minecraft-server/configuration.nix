@@ -13,7 +13,7 @@ in
   networking.hostName = "minecraft-server";
 
   imports = with inputs.self.modules.nixos; [
-    nixos
+    system
     secrets
     home-manager
     cli

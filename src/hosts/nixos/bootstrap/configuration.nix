@@ -11,7 +11,7 @@ in
   networking.hostName = "bootstrap";
 
   imports = with inputs.self.modules.nixos; [
-    nixos
+    system
     secrets
     home-manager
     openssh
