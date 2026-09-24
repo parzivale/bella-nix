@@ -444,14 +444,16 @@
             ...
           }:
           {
-            # Defaults to all of `nixosConfigurations`, but finix hosts live in
-            # there too and agenix is a NixOS module they cannot evaluate —
-            # agenix-rekey refuses to run while any node lacks it. Hand it the
-            # nixos hosts only.
-            agenix-rekey.nixosConfigurations = builtins.removeAttrs inputs.self.nixosConfigurations (
-              builtins.attrNames hosts.finix
-            );
-
+            # Defaults to all of `nixosConfigurations`, and agenix-rekey refuses to
+            # run while any node lacks the agenix module - so the ones without it
+            # have to come out. Which is not the same as "the finix ones": a finix
+            # host importing `secrets` has `age.rekey` like any other, and excluding
+            # it by class meant Cerberus quietly had no secrets rekeyed for it the
+            # moment it moved. What is actually being asked is whether the node has
+            # the module, so that is what this asks.
+            agenix-rekey.nixosConfigurations = lib.filterAttrs (
+              _: node: node.config ? age
+            ) inputs.self.nixosConfigurations;
             formatter = pkgs.nixfmt-tree;
 
             devShells = {
