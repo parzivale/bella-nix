@@ -44,14 +44,15 @@
         directories = [ { directory = ".config/obs-studio"; } ];
       };
 
-      # The portal and the gnome backend, but not the choice between backends:
-      # finix's `xdg.portal` takes `portals` and nothing else, so there is no
-      # `config.common` to say which implementation serves ScreenCast. With one
-      # backend installed the question does not arise; it will the moment a
-      # second one is.
+      # niri implements the Mutter ScreenCast DBus interface itself, so the gnome
+      # backend is what makes it available to obs as a source - the gtk backend has
+      # no ScreenCast implementation. Which is now sayable: finix's `xdg.portal`
+      # took `portals` and nothing else until `config` was added for exactly this,
+      # the moment a second backend arrived.
       xdg.portal = {
         enable = true;
         portals = [ pkgs.xdg-desktop-portal-gnome ];
+        config.common."org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
       };
     };
 }

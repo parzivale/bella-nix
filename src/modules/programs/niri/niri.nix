@@ -119,6 +119,14 @@ in
     }:
     let
       user = config.constants.username;
+
+      # `withSystemd` off, which is not about linking: niri's systemd feature puts
+      # anything it spawns - `spawn-at-startup`, the `spawn` action - into a
+      # transient unit, so that an OOM kill takes the process rather than the whole
+      # session. Creating one means asking a systemd manager, and there is none
+      # here. Without the feature niri spawns the process itself, which is the
+      # behaviour to want when nothing is going to answer.
+      niri = pkgs.niri-unstable.override { withSystemd = false; };
     in
     {
       imports = [
@@ -139,7 +147,7 @@ in
 
       programs.niri = {
         enable = true;
-        package = pkgs.niri-unstable;
+        package = niri;
       };
 
       services.greetd = {
@@ -149,7 +157,7 @@ in
           # with systemd or dinit", and finit is neither. This is the invocation
           # finix's own niri module writes into its wayland-sessions entry, said
           # here because greetd takes a command rather than a session name.
-          command = "${pkgs.dbus}/bin/dbus-run-session -- ${pkgs.niri-unstable}/bin/niri --session";
+          command = "${pkgs.dbus}/bin/dbus-run-session -- ${niri}/bin/niri --session";
           inherit user;
         };
       };
@@ -176,11 +184,17 @@ in
         ];
 
         # The other half of what that injection does. The home module validates the
-        # generated KDL by running this niri against it, so a package that is not the
-        # one being run validates against the wrong grammar - which it did: it
+        # generated KDL by running this niri against it, so a package that is not
+        # the one being run validates against the wrong grammar - which it did: it
         # defaulted to niri 25.08 and rejected `debug { disable-direct-scanout }`,
         # a key that release does not have.
-        programs.niri.package = pkgs.niri-unstable;
+        programs.niri.package = niri;
+
+        # Where `state.startup` is implemented. Under systemd each of these would
+        # be a user service ordered after `graphical-session.target`; here the
+        # compositor is what creates the session, so the compositor is what starts
+        # them. See the contract for what that costs.
+        programs.niri.settings.spawn-at-startup = map (argv: { inherit argv; }) config.state.startup;
       };
     };
 }

@@ -3,6 +3,14 @@
   inputs,
   ...
 }:
+let
+  terminal = pkgs: [
+    "${pkgs.wezterm}/bin/wezterm"
+    "start"
+    "--always-new-process"
+    "--"
+  ];
+in
 {
   flake.modules.nixos.xdg-desktop-portal-termfilepickers = moduleWithSystem (
     { inputs', ... }:
@@ -15,18 +23,55 @@
       services.xdg-desktop-portal-termfilepickers = {
         enable = true;
         package = inputs'.xdg-desktop-portal-termfilepickers.packages.default;
-        config.terminal_command = [
-          "${pkgs.wezterm}/bin/wezterm"
-          "start"
-          "--always-new-process"
-          "--"
-        ];
+        config.terminal_command = terminal pkgs;
       };
 
       xdg.portal = {
         enable = true;
         config.common.default = [ "gtk" ];
       };
+    }
+  );
+
+  # The upstream module is not imported: its whole body is one
+  # `systemd.user.services` unit plus the two portal settings below, and the unit
+  # is the part that does not carry over.
+  #
+  # A portal is normally D-Bus activated, which would have made this a matter of
+  # installing the package - but this one ships only its `.portal` file, naming
+  # `org.freedesktop.impl.portal.desktop.termfilepickers`, and no D-Bus service
+  # file to activate that name. So something has to start the process, and here
+  # that is the session.
+  flake.modules.finix.xdg-desktop-portal-termfilepickers = moduleWithSystem (
+    { inputs', ... }:
+    { pkgs, ... }:
+    let
+      package = inputs'.xdg-desktop-portal-termfilepickers.packages.default;
+
+      config = (pkgs.formats.toml { }).generate "termfilepickers.toml" {
+        terminal_command = terminal pkgs;
+      };
+    in
+    {
+      xdg.portal = {
+        enable = true;
+        portals = [ package ];
+        config.common = {
+          default = [ "gtk" ];
+          "org.freedesktop.impl.portal.FileChooser" = [ "termfilepickers" ];
+        };
+      };
+
+      # The `--config-path` the upstream module passes on the command line,
+      # written here for the same reason the command is: there is no module left to
+      # do either.
+      state.startup = [
+        [
+          "${package}/bin/xdg-desktop-portal-termfilepickers"
+          "--config-path"
+          "${config}"
+        ]
+      ];
     }
   );
 }
