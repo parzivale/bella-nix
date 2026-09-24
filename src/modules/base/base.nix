@@ -9,7 +9,6 @@
       constants
       preserve
       keybinds
-      startup
     ];
   };
 }

@@ -121,7 +121,7 @@ in
       user = config.constants.username;
 
       # `withSystemd` off, which is not about linking: niri's systemd feature puts
-      # anything it spawns - `spawn-at-startup`, the `spawn` action - into a
+      # anything it spawns - the `spawn` action, `spawn-at-startup` - into a
       # transient unit, so that an OOM kill takes the process rather than the whole
       # session. Creating one means asking a systemd manager, and there is none
       # here. Without the feature niri spawns the process itself, which is the
@@ -141,6 +141,10 @@ in
         inputs.self.modules.finix.udev
         inputs.self.modules.finix.home-manager
         inputs.self.modules.finix.user
+        # For `session.command` below. The session's daemons are units rather than
+        # things niri spawns, so what niri owes them is a bus whose address they can
+        # find - which is what that script arranges.
+        inputs.self.modules.finix.graphical-session
       ];
 
       nixpkgs.overlays = overlays;
@@ -154,10 +158,8 @@ in
         enable = true;
         settings.default_session = {
           # Not `niri-session`: niri-flake says of that script that it "only works
-          # with systemd or dinit", and finit is neither. This is the invocation
-          # finix's own niri module writes into its wayland-sessions entry, said
-          # here because greetd takes a command rather than a session name.
-          command = "${pkgs.dbus}/bin/dbus-run-session -- ${niri}/bin/niri --session";
+          # with systemd or dinit", and finit is neither.
+          command = "${config.session.command} ${niri}/bin/niri --session";
           inherit user;
         };
       };
@@ -189,12 +191,6 @@ in
         # defaulted to niri 25.08 and rejected `debug { disable-direct-scanout }`,
         # a key that release does not have.
         programs.niri.package = niri;
-
-        # Where `state.startup` is implemented. Under systemd each of these would
-        # be a user service ordered after `graphical-session.target`; here the
-        # compositor is what creates the session, so the compositor is what starts
-        # them. See the contract for what that costs.
-        programs.niri.settings.spawn-at-startup = map (argv: { inherit argv; }) config.state.startup;
       };
     };
 }

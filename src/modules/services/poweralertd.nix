@@ -37,14 +37,23 @@
   # No home-manager here: the unit above is the whole of that module, and a unit
   # is the part that does not carry over. poweralertd reads upower over the system
   # bus and notifies over the session bus, so all it needs is to be running inside
-  # the session.
-  #
-  # The nixos unit orders itself after mako. Nothing orders these, so a battery
-  # warning in the first moments of a session can be sent before there is a
-  # notification daemon to receive it - it is dropped, not queued.
+  # the session - and to be told that a notification daemon is there to receive
+  # what it sends, which the nixos unit says with `After = mako.service` and this
+  # says with `requires`.
   flake.modules.finix.poweralertd =
     { pkgs, ... }:
     {
-      state.startup = [ [ "${pkgs.poweralertd}/bin/poweralertd" ] ];
+      imports = [
+        inputs.self.modules.finix.graphical-session
+        # Named in `requires` below, so the unit has to exist - the same coupling
+        # the nixos unit already has with `After = mako.service`.
+        inputs.self.modules.finix.mako
+      ];
+
+      session.services.poweralertd = {
+        description = "UPower-powered power alerter";
+        command = [ "${pkgs.poweralertd}/bin/poweralertd" ];
+        requires = [ "mako" ];
+      };
     };
 }

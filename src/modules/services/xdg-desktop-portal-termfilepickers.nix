@@ -40,8 +40,7 @@ in
   # A portal is normally D-Bus activated, which would have made this a matter of
   # installing the package - but this one ships only its `.portal` file, naming
   # `org.freedesktop.impl.portal.desktop.termfilepickers`, and no D-Bus service
-  # file to activate that name. So something has to start the process, and here
-  # that is the session.
+  # file to activate that name. So something has to start the process.
   flake.modules.finix.xdg-desktop-portal-termfilepickers = moduleWithSystem (
     { inputs', ... }:
     { pkgs, ... }:
@@ -53,6 +52,8 @@ in
       };
     in
     {
+      imports = [ inputs.self.modules.finix.graphical-session ];
+
       xdg.portal = {
         enable = true;
         portals = [ package ];
@@ -62,16 +63,17 @@ in
         };
       };
 
-      # The `--config-path` the upstream module passes on the command line,
-      # written here for the same reason the command is: there is no module left to
-      # do either.
-      state.startup = [
-        [
+      session.services.xdg-desktop-portal-termfilepickers = {
+        description = "terminal file chooser portal";
+        # `--config-path` is what the upstream unit passes, and the file is written
+        # here for the same reason the command is: there is no module left to do
+        # either.
+        command = [
           "${package}/bin/xdg-desktop-portal-termfilepickers"
           "--config-path"
           "${config}"
-        ]
-      ];
+        ];
+      };
     }
   );
 }
