@@ -6,12 +6,18 @@ let
 
   # Identity, spelled the same in both module sets. Everything else about this
   # account differs, so it is spelled per class below.
+  #
+  # A group that exists because a module created it is that module's to grant.
+  # `wireshark` was listed here, which put bella in it on all seven hosts while
+  # only macbook creates it - a membership in a group that does not exist, left
+  # for userborn to decide what to do with. `wireshark` now comes from
+  # `wireshark`. `gamemode` is the same mistake, still here: `steam` creates it
+  # and only Cerberus imports steam.
   account = {
     isNormalUser = true;
     extraGroups = [
       "wheel"
       "gamemode"
-      "wireshark"
     ];
   };
 
