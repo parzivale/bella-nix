@@ -21,11 +21,7 @@ in
   };
 
   flake.modules.finix.boot =
-    {
-      lib,
-      modules,
-      ...
-    }:
+    { modules, ... }:
     {
       imports = [
         modules.limine
@@ -35,26 +31,22 @@ in
         modules.nix-daemon
       ];
 
-      # What limine reads to decide between registering a boot entry and installing
-      # to the removable path. True, so it registers one with efibootmgr - which is
-      # what systemd-boot does on the nixos side, and what makes the firmware find
-      # the loader rather than leaving it to boot order.
-      #
-      # A default rather than a setting, because it is a fact about the machine and
-      # not about the loader: a host whose firmware cannot be written to says false
-      # and gets the removable install. An Apple Silicon machine is that host -
-      # U-Boot looks for the removable path and nothing else - though it has larger
-      # problems than this one, `nixos-apple-silicon` being a nixos module tree that
-      # writes grub, systemd-boot and limine option paths finix does not have.
-      boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
-
       programs.limine = {
         enable = true;
 
         maxGenerations = generations;
 
-        # `efiSupport` is not set: it defaults from `hostPlatform.isEfi`, which is
-        # true here. Nor is `efiInstallAsRemovable`, which follows the option above.
+        # Neither `efiSupport` nor `efiInstallAsRemovable` is set, and the second is
+        # the interesting one: it follows `boot.loader.efi.canTouchEfiVariables`,
+        # false here as it is on nixos, so limine installs to the removable path.
+        #
+        # Which is the right path, not a fallback. nixos has been passing
+        # `--no-variables` to bootctl on these machines for as long as they have
+        # existed, so no boot entry was ever written and the removable loader is
+        # what the firmware finds. limine lands in the same place, meaning either
+        # class can be deployed to the machine and it boots - and nothing writes
+        # NVRAM, which is the one bootloader operation with a history of bricking
+        # boards.
       };
     };
 }
