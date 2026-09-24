@@ -31,6 +31,18 @@
           modules.sysklogd
         ];
 
+      # What logind is on the other side, and needed for more than it sounds. A
+      # compositor takes the display and the input devices through libseat, which
+      # finds them through this; greetd's pam stack chooses `pam_elogind` once it is
+      # on, and that is what creates /run/user/<uid>. Without it there is no runtime
+      # directory at all - so no XDG_RUNTIME_DIR, nowhere for niri to put its wayland
+      # socket, and nothing for the session units to wait for.
+      #
+      # Its module is in finix's always-loaded set, so this is only a switch. seatd
+      # would serve the seat half alone; elogind serves both halves and is the
+      # nearer thing to what the nixos hosts already have.
+      services.elogind.enable = true;
+
       # A way in that is not the compositor. systemd hands a nixos host `getty@tty1`
       # without being asked; finix does not, and a machine whose only login is
       # greetd is one you cannot reach when the session fails to start - which is
