@@ -31,6 +31,13 @@
           modules.sysklogd
         ];
 
+      # `security.polkit` on the other side, where it is true on every host of mine.
+      # Without it nothing can ask to do something as somebody else: 1Password's
+      # policy file has no daemon to read it, and udisks and friends have no way to
+      # authorise a mount. The agent that answers those questions is a session
+      # service - see `niri`.
+      services.polkit.enable = true;
+
       # What logind is on the other side, and needed for more than it sounds. A
       # compositor takes the display and the input devices through libseat, which
       # finds them through this; greetd's pam stack chooses `pam_elogind` once it is

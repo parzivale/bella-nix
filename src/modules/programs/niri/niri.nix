@@ -114,6 +114,7 @@ in
     {
       config,
       pkgs,
+      lib,
       modules,
       ...
     }:
@@ -172,7 +173,20 @@ in
         };
       };
 
-      # Two things have no finix counterpart and are dropped rather than faked:
+      # The polkit agent, which niri-flake's nixos module supplies as
+      # `niri-flake-polkit` and which nothing supplies here. Without one a polkit
+      # question has nobody to ask, so the 1Password unlock and any authorised mount
+      # fail rather than prompting.
+      #
+      # community-modules has a soteria module and this does not use it: that one
+      # emits a system unit, and an agent which shows a dialog has to be inside the
+      # session and on its bus. So the package, started the way the session's other
+      # daemons are.
+      state.session.services.polkit-agent = {
+        description = "polkit authentication agent";
+        command = [ (lib.getExe pkgs.soteria) ];
+      };
+
       #
       #   `services.dbus.implementation = "broker"` — finix's dbus module runs
       #   `${package}/bin/dbus-daemon`, a path dbus-broker does not have, so
