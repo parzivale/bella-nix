@@ -21,7 +21,11 @@ in
   };
 
   flake.modules.finix.boot =
-    { modules, ... }:
+    {
+      lib,
+      modules,
+      ...
+    }:
     {
       imports = [
         modules.limine
@@ -31,19 +35,26 @@ in
         modules.nix-daemon
       ];
 
+      # What limine reads to decide between registering a boot entry and installing
+      # to the removable path. True, so it registers one with efibootmgr - which is
+      # what systemd-boot does on the nixos side, and what makes the firmware find
+      # the loader rather than leaving it to boot order.
+      #
+      # A default rather than a setting, because it is a fact about the machine and
+      # not about the loader: a host whose firmware cannot be written to says false
+      # and gets the removable install. An Apple Silicon machine is that host -
+      # U-Boot looks for the removable path and nothing else - though it has larger
+      # problems than this one, `nixos-apple-silicon` being a nixos module tree that
+      # writes grub, systemd-boot and limine option paths finix does not have.
+      boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
+
       programs.limine = {
         enable = true;
 
-        # `configurationLimit` over there. Both mean "how many generations stay in
-        # the menu", and both are about the ESP not filling up.
         maxGenerations = generations;
 
         # `efiSupport` is not set: it defaults from `hostPlatform.isEfi`, which is
-        # true for both machines. `efiInstallAsRemovable` follows
-        # `boot.loader.efi.canTouchEfiVariables`, false on both, so limine installs
-        # to the fallback path the firmware looks at when no entry names it -
-        # which is also how the macbook's chain finds a loader, U-Boot looking for
-        # exactly that.
+        # true here. Nor is `efiInstallAsRemovable`, which follows the option above.
       };
     };
 }
