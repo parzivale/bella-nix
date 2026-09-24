@@ -65,10 +65,6 @@ in
   # gaming rig: don't let powertop's auto-tune (ASPM/USB/SATA power saving) fight for latency
   powerManagement.powertop.enable = lib.mkForce false;
 
-  # Not powertop's to suspend either: the same latency argument as the line above,
-  # aimed at the devices rather than at the tuner.
-  boot.kernelParams = [ "usbcore.autosuspend=-1" ];
-
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
 }
