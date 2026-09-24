@@ -13,7 +13,7 @@ in
 {
   networking.hostName = "Cerberus";
 
-  imports = with inputs.self.modules.nixos; [
+  imports = with inputs.self.modules.finix; [
     system
     secrets
     home-manager
@@ -35,6 +35,10 @@ in
     chaotic
   ];
 
+  # What pid 1 is. The nixos Cerberus has no equivalent line because the answer
+  # there is never in question.
+  finit.enable = true;
+
   # chaotic-nyx's _processor_opt only knows NATIVE/ZEN4/GENERIC_Vn (mirrors
   # arch/x86/Kconfig.cpu, which has no MZEN5 choice yet). But -march is just
   # a KBUILD_CFLAGS entry appended after the Kconfig-driven one in
@@ -49,22 +53,31 @@ in
     }
   );
 
+  # `size` has no counterpart: nixos creates the swapfile when told how big, and
+  # finix only mounts one that is already there. Which it is - /persistent
+  # survives the tmpfs root, so the 40G file the nixos Cerberus made is still on
+  # the disk this boots from.
+  #
+  # The priority is what matters and does carry over: zram takes 5 by default, so
+  # 1 here keeps the compressed tier ahead of the disk.
   swapDevices = [
     {
       device = "/persistent/swapfile";
-      size = 40960;
       priority = 1;
     }
   ];
 
-  system.stateVersion = "25.11";
+  # `system.stateVersion` has no counterpart: finix has no such option, there
+  # being no decade of nixos option renames behind it to opt out of. The
+  # home-manager one stays, being home-manager's own.
   home-manager.users.${user}.home.stateVersion = "25.11";
 
   btop.gpu.amd = true;
 
-  # gaming rig: don't let powertop's auto-tune (ASPM/USB/SATA power saving) fight for latency
-  powerManagement.powertop.enable = lib.mkForce false;
+  # gaming rig: don't let powertop's auto-tune (ASPM/USB/SATA power saving) fight
+  # for latency. `powerManagement.powertop` over there; finix keeps it under
+  # `services` with tlp and thermald.
+  services.powertop.enable = lib.mkForce false;
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
-
 }
