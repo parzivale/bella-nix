@@ -126,7 +126,15 @@ in
       # session. Creating one means asking a systemd manager, and there is none
       # here. Without the feature niri spawns the process itself, which is the
       # behaviour to want when nothing is going to answer.
-      niri = pkgs.niri-unstable.override { withSystemd = false; };
+      #
+      # niri-flake's postFixup unconditionally `substituteInPlace`s
+      # $out/lib/systemd/user/niri.service, but postInstall only creates that
+      # file when withSystemd is on - so with it off (and withDinit off, the
+      # default) the build crashes patching a file that was never installed.
+      # We don't want that unit anyway with no systemd here, so drop postFixup.
+      niri = (pkgs.niri-unstable.override { withSystemd = false; }).overrideAttrs (_: {
+        postFixup = "";
+      });
     in
     {
       imports = [
