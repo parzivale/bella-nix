@@ -65,29 +65,9 @@ in
   # gaming rig: don't let powertop's auto-tune (ASPM/USB/SATA power saving) fight for latency
   powerManagement.powertop.enable = lib.mkForce false;
 
-  # This box has hard-locked repeatedly (silent freeze, no kernel/journal
-  # log survives it, requiring a manual power cycle). These make a future
-  # hang actually detectable and recoverable instead of invisible:
-  #  - nmi_watchdog + the two panic sysctls turn a soft/hard lockup into an
-  #    actual kernel panic instead of a silent unresponsive freeze
-  #  - kernel.panic reboots automatically N seconds after any panic
-  #  - the systemd watchdog pets /dev/watchdog and forces a hardware reboot
-  #    if userspace itself stops responding (catches freezes below the
-  #    panic path too, e.g. a fully wedged GPU driver)
-  boot.kernelParams = [
-    "usbcore.autosuspend=-1"
-    "nmi_watchdog=1"
-  ];
-  boot.kernel.sysctl = {
-    "kernel.hardlockup_panic" = 1;
-    "kernel.softlockup_panic" = 1;
-    "kernel.panic_on_oops" = 1;
-    "kernel.panic" = 10;
-  };
-  systemd.settings.Manager = {
-    RuntimeWatchdogSec = "20s";
-    RebootWatchdogSec = "30s";
-  };
+  # Not powertop's to suspend either: the same latency argument as the line above,
+  # aimed at the devices rather than at the tuner.
+  boot.kernelParams = [ "usbcore.autosuspend=-1" ];
 
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
