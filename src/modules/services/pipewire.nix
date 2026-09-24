@@ -21,9 +21,28 @@
   # finix's wireplumber imports finix's pipewire, so this side takes community's
   # pair and neither of finix's.
   flake.modules.finix.pipewire =
-    { config, pkgs, ... }:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
     let
       runtimeDir = "/run/user/${toString config.constants.uid}";
+
+      # The mixer topology, when a machine has said what its is - an Apple Silicon one does,
+      # through `nixos-apple-silicon`, naming alsa-ucm-conf-asahi. pipewire and wireplumber
+      # read it themselves, so it belongs on their units rather than anywhere broader: finix
+      # renders `environment.variables` into /etc/profile.d, which a login shell sources and a
+      # unit never does, and sourcing that from a service wrapper would hand every session
+      # daemon every system variable to fix one.
+      #
+      # This is also what nixos-apple-silicon does on nixos - it sets the variable on the
+      # pipewire and wireplumber units as well as in `environment.variables`, which is the
+      # evidence that the general one does not reach a service.
+      environment = lib.optionalAttrs (config.environment.variables ? ALSA_CONFIG_UCM2) {
+        inherit (config.environment.variables) ALSA_CONFIG_UCM2;
+      };
     in
     {
       imports = [
@@ -54,12 +73,14 @@
           description = "multimedia service";
           command = [ "${config.programs.pipewire.package}/bin/pipewire" ];
           readiness.waitFor.socket.path = "${runtimeDir}/pipewire-0";
+          inherit environment;
         };
 
         wireplumber = {
           description = "pipewire session manager";
           command = [ "${pkgs.wireplumber}/bin/wireplumber" ];
           requires = [ "pipewire" ];
+          inherit environment;
         };
 
         pipewire-pulse = {
