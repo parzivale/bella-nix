@@ -128,16 +128,14 @@ in
         # that half is `xdg.configFile`, which the home-manager port supports.
         modules.niri
         modules.greetd
+        # libinput enumerates input devices through udev, so a compositor
+        # without it has no keyboard. finix leaves it off by default.
+        inputs.self.modules.finix.udev
         inputs.self.modules.finix.home-manager
         inputs.self.modules.finix.user
       ];
 
       nixpkgs.overlays = overlays;
-
-      # eudev, which finix leaves off by default - its module is in the always-loaded
-      # set, so there is nothing to import, only to turn on. libinput enumerates
-      # input devices through it, so a compositor without one has no keyboard.
-      services.udev.enable = true;
 
       programs.niri = {
         enable = true;

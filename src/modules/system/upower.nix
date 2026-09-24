@@ -1,4 +1,4 @@
-_:
+{ inputs, ... }:
 let
   # What upower actually reads. Both classes write this same set - nixos through
   # a named option per key, finix through a freeform `settings` in the file's
@@ -35,7 +35,12 @@ in
   flake.modules.finix.upower =
     { modules, ... }:
     {
-      imports = [ modules.upower ];
+      imports = [
+        modules.upower
+        # finix leaves device management off; this module's rules go nowhere
+        # without it. No nixos counterpart - see `udev`.
+        inputs.self.modules.finix.udev
+      ];
 
       services.upower = {
         enable = true;

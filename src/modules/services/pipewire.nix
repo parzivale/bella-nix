@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.pipewire = {
     services.pipewire = {
@@ -13,7 +14,12 @@
   flake.modules.finix.pipewire =
     { modules, ... }:
     {
-      imports = [ modules.pipewire ];
+      imports = [
+        modules.pipewire
+        # finix leaves device management off; this module's rules go nowhere
+        # without it. No nixos counterpart - see `udev`.
+        inputs.self.modules.finix.udev
+      ];
 
       # One namespace over - finix puts pipewire under `programs` - and only
       # the system half. finix's module lays down packages, udev rules, the
