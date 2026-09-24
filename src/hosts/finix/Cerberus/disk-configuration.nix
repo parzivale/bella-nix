@@ -17,7 +17,19 @@
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
+                # `X-mount.mkdir` because the root is a tmpfs and /boot is not
+                # `neededForBoot`: the initrd does not mount it, so `mount -a` does,
+                # after the switch - onto a root where nothing has created the
+                # directory. systemd generates a mount unit that mkdirs first and
+                # nixos never had to say this; `mount -a` does not, and fails with
+                # the mount point not existing.
+                #
+                # util-linux' own option, not a systemd one, and the idiom finix
+                # already uses for /run/wrappers.
+                mountOptions = [
+                  "umask=0077"
+                  "X-mount.mkdir"
+                ];
               };
             };
             persistent = {
