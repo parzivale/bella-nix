@@ -10,8 +10,13 @@
       user = config.constants.username;
     in
     {
-      # proton-cachyos below comes from chaotic-nyx, not nixpkgs.
-      imports = [ inputs.self.modules.nixos.chaotic ];
+      imports = [
+        # proton-cachyos below comes from chaotic-nyx, not nixpkgs.
+        inputs.self.modules.nixos.chaotic
+        # `programs.gamemode` creates the gamemode group, so this is where
+        # membership in it belongs.
+        inputs.self.modules.nixos.user
+      ];
 
       programs.steam = {
         enable = true;
@@ -49,6 +54,8 @@
         };
       };
 
+      users.users.${user}.extraGroups = [ "gamemode" ];
+
       state.preserve.users.${user} = {
         directories = [
           {
@@ -71,6 +78,7 @@
     {
       imports = [
         inputs.self.modules.finix.chaotic
+        inputs.self.modules.finix.user
         inputs.community-modules.nixosModules.steam
         inputs.finix.nixosModules.gamemode
       ];
@@ -114,6 +122,8 @@
           };
         };
       };
+
+      users.users.${user}.extraGroups = [ "gamemode" ];
 
       state.preserve.users.${user} = {
         directories = [

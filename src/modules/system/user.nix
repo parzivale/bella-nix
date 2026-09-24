@@ -7,18 +7,14 @@ let
   # Identity, spelled the same in both module sets. Everything else about this
   # account differs, so it is spelled per class below.
   #
-  # A group that exists because a module created it is that module's to grant.
-  # `wireshark` was listed here, which put bella in it on all seven hosts while
-  # only macbook creates it - a membership in a group that does not exist, left
-  # for userborn to decide what to do with. `wireshark` now comes from
-  # `wireshark`. `gamemode` is the same mistake, still here: `steam` creates it
-  # and only Cerberus imports steam.
+  # `wheel` is the only group here, because it is the only one that is a fact
+  # about who this account is rather than about which modules a host imports. A
+  # group that exists because a module created it is that module's to grant -
+  # `wireshark` and `gamemode` were both listed here and are now granted by
+  # `wireshark` and `steam`, the modules that create them.
   account = {
     isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "gamemode"
-    ];
+    extraGroups = [ "wheel" ];
   };
 
   hashedPassword = "$y$j9T$3SYXqLHQFhpwfTY8BHXmw.$cQGsYVD7CIWC22AJu1sX8qg4Po8Cyd00KzL9mAXa5F7";
