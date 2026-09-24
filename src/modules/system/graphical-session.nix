@@ -54,11 +54,19 @@
         exec "$@"
       '';
 
-      # A session exists once both of those are there. Waiting for the socket
-      # alone would not do: the address file is written by the session's own
-      # shell, and a daemon reading it a moment early reads nothing.
+      # A session exists once both of those are there. Waiting for the socket alone
+      # would not do: the address file is written by the session's own shell, and a
+      # daemon reading it a moment early reads nothing.
+      #
+      # The deadline is enforced here rather than with the unit's `startTimeout`,
+      # which finit cannot bound - it warns as much. Unbounded, a machine that never
+      # reaches a session would leave this waiting forever and everything requiring
+      # it stalled behind. Failing instead means the daemons do not start and the
+      # log says why.
       waitForSession = pkgs.writeShellScript "wait-for-session" ''
         set -eu
+
+        deadline=$(( $(${pkgs.coreutils}/bin/date +%s) + 120 ))
 
         while :; do
           if [ -e ${busAddressFile} ] &&
@@ -66,6 +74,12 @@
               | ${pkgs.gnugrep}/bin/grep -q .; then
             exit 0
           fi
+
+          if [ "$(${pkgs.coreutils}/bin/date +%s)" -ge "$deadline" ]; then
+            echo "no graphical session after 120s: ${runtimeDir} has no wayland socket and no recorded bus address" >&2
+            exit 1
+          fi
+
           ${pkgs.coreutils}/bin/sleep 0.2
         done
       '';
@@ -137,9 +151,6 @@
 
             type.oneshot.command = toString waitForSession;
 
-            # Long enough to cover a slow first boot, short enough that a session
-            # which never arrives is reported rather than waited on forever.
-            startTimeout = 120;
           };
         }
         // lib.mapAttrs (_: service: {
