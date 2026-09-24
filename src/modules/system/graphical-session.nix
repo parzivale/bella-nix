@@ -85,7 +85,7 @@
       '';
     in
     {
-      options.session = {
+      options.state.session = {
         command = lib.mkOption {
           type = lib.types.package;
           readOnly = true;
@@ -104,68 +104,9 @@
           '';
         };
 
-        services = lib.mkOption {
-          default = { };
-          description = ''
-            Daemons that belong to the graphical session, each becoming a unit which
-            runs as the user once the session is up.
-          '';
-          type = lib.types.attrsOf (
-            lib.types.submodule {
-              options = {
-                description = lib.mkOption {
-                  type = lib.types.str;
-                  description = "A short human-readable description of this daemon.";
-                };
-
-                command = lib.mkOption {
-                  type = with lib.types; listOf str;
-                  description = ''
-                    The program and its arguments. An argument vector rather than a shell
-                    string, so a path with a space in it is one argument.
-                  '';
-                };
-
-                requires = lib.mkOption {
-                  type = with lib.types; listOf str;
-                  default = [ ];
-                  description = ''
-                    Further units this one waits for, on top of the session itself. This
-                    is where "after the notification daemon" is said.
-                  '';
-                };
-
-                readiness = lib.mkOption {
-                  type = lib.types.anything;
-                  default = [ { fork = { }; } ];
-                  description = ''
-                    How this daemon reports that it is up, passed through to the unit. The
-                    default is the contract's: ready once the process is spawned.
-
-                    Worth setting for anything another unit waits on. `waitFor.socket`
-                    connects rather than checking that a path exists, which is the difference
-                    between ordering and a `sleep`.
-                  '';
-                };
-
-                environment = lib.mkOption {
-                  type = with lib.types; attrsOf str;
-                  default = { };
-                  description = ''
-                    Environment variables for this daemon, on top of the session's own.
-
-                    The session wrapper supplies where the display and the bus are; this is
-                    for what a particular daemon needs beyond that - `ALSA_CONFIG_UCM2`
-                    naming a machine's mixer topology, say.
-                  '';
-                };
-              };
-            }
-          );
-        };
       };
 
-      config = lib.mkIf (config.session.services != { }) {
+      config = lib.mkIf (config.state.session.services != { }) {
         providers.services.units = {
           # A oneshot rather than a long-running unit: it finishes, and a finished
           # oneshot is what the units requiring it wait for.
@@ -191,7 +132,7 @@
             command = "${sessionEnv} ${lib.escapeShellArgs service.command}";
             inherit (service) readiness;
           };
-        }) config.session.services;
+        }) config.state.session.services;
       };
     };
 }

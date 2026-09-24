@@ -137,7 +137,7 @@
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.swayidle ];
 
-      session.services.swayidle = {
+      state.session.services.swayidle = {
         description = "idle manager";
 
         command = [

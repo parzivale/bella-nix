@@ -141,7 +141,7 @@ in
         inputs.self.modules.finix.udev
         inputs.self.modules.finix.home-manager
         inputs.self.modules.finix.user
-        # For `session.command` below. The session's daemons are units rather than
+        # For `state.session.command` below. The session's daemons are units rather than
         # things niri spawns, so what niri owes them is a bus whose address they can
         # find - which is what that script arranges.
         inputs.self.modules.finix.graphical-session
@@ -159,7 +159,7 @@ in
         settings.default_session = {
           # Not `niri-session`: niri-flake says of that script that it "only works
           # with systemd or dinit", and finit is neither.
-          command = "${config.session.command} ${niri}/bin/niri --session";
+          command = "${config.state.session.command} ${niri}/bin/niri --session";
           inherit user;
         };
       };

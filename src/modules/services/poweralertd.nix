@@ -50,7 +50,7 @@
         inputs.self.modules.finix.mako
       ];
 
-      session.services.poweralertd = {
+      state.session.services.poweralertd = {
         description = "UPower-powered power alerter";
         command = [ "${pkgs.poweralertd}/bin/poweralertd" ];
         requires = [ "mako" ];

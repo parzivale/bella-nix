@@ -47,7 +47,7 @@ in
       # the daemon is supervised as part of the session instead.
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mako ];
 
-      session.services.mako = {
+      state.session.services.mako = {
         description = "notification daemon";
         command = [ "${pkgs.mako}/bin/mako" ];
       };

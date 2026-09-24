@@ -98,7 +98,7 @@
         '';
     in
     {
-      session.services = {
+      state.session.services = {
         awww = {
           description = "wallpaper daemon";
           command = [

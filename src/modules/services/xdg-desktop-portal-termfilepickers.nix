@@ -63,7 +63,7 @@ in
         };
       };
 
-      session.services.xdg-desktop-portal-termfilepickers = {
+      state.session.services.xdg-desktop-portal-termfilepickers = {
         description = "terminal file chooser portal";
         # `--config-path` is what the upstream unit passes, and the file is written
         # here for the same reason the command is: there is no module left to do

@@ -68,7 +68,7 @@
       # that exists from `bind` and is not yet listening. So wireplumber and
       # pipewire-pulse start when pipewire will actually answer them rather than
       # when it has probably got going.
-      session.services = {
+      state.session.services = {
         pipewire = {
           description = "multimedia service";
           command = [ "${config.programs.pipewire.package}/bin/pipewire" ];

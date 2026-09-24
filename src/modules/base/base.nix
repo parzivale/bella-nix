@@ -9,6 +9,7 @@
       constants
       preserve
       keybinds
+      session
     ];
   };
 }
