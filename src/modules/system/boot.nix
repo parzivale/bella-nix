@@ -1,4 +1,10 @@
-_: {
+_:
+let
+  # Kept in the menu, and the same number either way: both loaders are keeping
+  # generations off a full ESP.
+  generations = 20;
+in
+{
   # How the machine boots - and the one module where the two classes are not two
   # spellings of one thing. nixos boots through systemd-boot; finix's only
   # `providers.bootloader` implementation is limine, a different loader with its
@@ -10,7 +16,7 @@ _: {
   flake.modules.nixos.boot = {
     boot.loader.systemd-boot = {
       enable = true;
-      configurationLimit = 20;
+      configurationLimit = generations;
     };
   };
 
@@ -30,7 +36,7 @@ _: {
 
         # `configurationLimit` over there. Both mean "how many generations stay in
         # the menu", and both are about the ESP not filling up.
-        maxGenerations = 20;
+        maxGenerations = generations;
 
         # `efiSupport` is not set: it defaults from `hostPlatform.isEfi`, which is
         # true for both machines. `efiInstallAsRemovable` follows
