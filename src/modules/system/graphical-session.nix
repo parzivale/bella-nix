@@ -134,6 +134,31 @@
                     is where "after the notification daemon" is said.
                   '';
                 };
+
+                readiness = lib.mkOption {
+                  type = lib.types.anything;
+                  default = [ { fork = { }; } ];
+                  description = ''
+                    How this daemon reports that it is up, passed through to the unit. The
+                    default is the contract's: ready once the process is spawned.
+
+                    Worth setting for anything another unit waits on. `waitFor.socket`
+                    connects rather than checking that a path exists, which is the difference
+                    between ordering and a `sleep`.
+                  '';
+                };
+
+                environment = lib.mkOption {
+                  type = with lib.types; attrsOf str;
+                  default = { };
+                  description = ''
+                    Environment variables for this daemon, on top of the session's own.
+
+                    The session wrapper supplies where the display and the bus are; this is
+                    for what a particular daemon needs beyond that - `ALSA_CONFIG_UCM2`
+                    naming a machine's mixer topology, say.
+                  '';
+                };
               };
             }
           );
@@ -160,7 +185,12 @@
 
           inherit user;
 
-          type.service.command = "${sessionEnv} ${lib.escapeShellArgs service.command}";
+          inherit (service) environment;
+
+          type.service = {
+            command = "${sessionEnv} ${lib.escapeShellArgs service.command}";
+            inherit (service) readiness;
+          };
         }) config.session.services;
       };
     };
