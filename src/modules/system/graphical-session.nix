@@ -40,6 +40,22 @@
       sessionEnv = pkgs.writeShellScript "session-env" ''
         set -eu
 
+        # `environment.variables`, which finix renders here and /etc/profile sources for a
+        # login shell. A unit is not a login shell, so without this a session daemon
+        # supervised by the system sees none of it - where the same daemon spawned by the
+        # compositor would inherit the lot. ALSA_CONFIG_UCM2 is the case that made it matter:
+        # it names a machine's mixer topology, and pipewire reading it or not is the
+        # difference between the speakers being driven correctly and not.
+        #
+        # Sourced first, so that what follows wins: those three are facts about this session
+        # and this file is a fact about the system. `set +u` because the script is written for
+        # a shell that has not been told to object to unset variables.
+        if [ -r /etc/profile.d/session-vars.sh ]; then
+          set +u
+          . /etc/profile.d/session-vars.sh
+          set -u
+        fi
+
         export XDG_RUNTIME_DIR=${runtimeDir}
 
         WAYLAND_DISPLAY=$(
