@@ -84,6 +84,32 @@ in
   # will not join by itself. Enable this for that boot.
   providers.services.units.tailscale-up.enable = false;
 
+  # The three daemons which drive hardware qemu does not have. Off in the VM, because each one
+  # otherwise exits and is restarted ten times before finit gives up - which spams the console
+  # and keeps the machine from reaching `running`.
+  #
+  # None of them is misconfigured; they are each correct to refuse:
+  #
+  #   speakersafetyd  matches on the device-tree compatible, `linux,dummy-virt` under qemu, and
+  #                   has no speaker profile for it. It ships one per Apple board - j413 and j493
+  #                   among them - so the real machine matches. Refusing to drive amps it has no
+  #                   protection curve for is the only safe answer.
+  #   tiny-dfr        panics on a missing file: there is no /dev/dri at all in the VM, so there
+  #                   is no Touch Bar display to open.
+  #   greetd          has nothing to start a graphical session on, for the same reason.
+  #
+  # Which means this says nothing about whether they work on the machine - only that a VM is not
+  # where that gets tested.
+  virtualisation.vmVariant.providers.services.units = {
+    speakersafetyd.enable = false;
+    tiny-dfr.enable = false;
+    greetd.enable = false;
+
+    # and the session discovery that greetd feeds: it waits for a compositor to publish
+    # WAYLAND_DISPLAY and a bus address, which nothing is going to do here.
+    graphical-session.enable = false;
+  };
+
   # `security.polkit.enablePkexecWrapper` has no counterpart: finix's polkit module installs
   # the setuid pkexec wrapper whenever polkit is enabled, so there is nothing to turn on.
 
