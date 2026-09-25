@@ -1,7 +1,7 @@
 { inputs, ... }:
 let
   hostName = "macbook";
-  hostKey = ../../hosts/nixos/macbook/ssh_host_ed25519_key.pub;
+  hostKey = ../../hosts/finix/macbook/ssh_host_ed25519_key.pub;
 
   # What the builder is, said once. `nix.buildMachines` on nixos and
   # `services.nix-daemon.buildMachines` on finix take the same submodule - the
