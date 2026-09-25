@@ -65,6 +65,15 @@ in
       tailscale-up.requires = [ "agenix-install-secrets" ];
     };
 
+    # Not in a virtual machine. `tailscale up` needs the auth key, which is a secret, and a VM
+    # has none - see the note in `secrets`. With the agenix unit gone this one would be left
+    # requiring something which will never be ready, which is a branch of the graph that waits
+    # for ever rather than one that fails.
+    #
+    # The daemon still runs. What does not happen is joining the tailnet, which a throwaway
+    # machine has no business doing under this host's identity anyway.
+    virtualisation.vmVariant.providers.services.units.tailscale-up.enable = false;
+
     # Nothing corresponds to the nginx ordering: that host runs nginx behind
     # the tailnet on nixos, and no finix host of mine serves anything yet.
   };
