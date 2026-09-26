@@ -42,6 +42,28 @@
   # Declared on the host rather than beside either service, because Cerberus has wireplumber and
   # no speakersafetyd, and a unit required by name that does not exist is a branch of the graph
   # that waits for ever.
+
+  # uinput, which the Touch Bar daemon cannot work without.
+  #
+  # tiny-dfr draws the bar and emits the function keys pressed on it, and it emits them by
+  # creating a virtual input device - which means opening /dev/uinput. CONFIG_INPUT_UINPUT is a
+  # module in this kernel and nothing loaded it, so the device node did not exist and the open
+  # failed:
+  #
+  #   panicked at src/main.rs:791:91:
+  #   Err value: Os { code: 2, kind: NotFound, message: "No such file or directory" }
+  #
+  # which accounts for all of it at once: no keys, because there was no device to send them
+  # from; nothing drawn, because the panic comes before the first frame; and a backlight sitting
+  # at zero, because nothing was there to raise it. It was diagnosed as a brightness problem
+  # twice and as a missing font once, from the outside, because the panic itself went nowhere
+  # until unit output reached the log.
+  #
+  # `hardware.uinput` is finix's own module and was simply never enabled - the same shape as the
+  # fontconfig, dconf and privileges gaps: the nixos half turns it on, the finix half leaves a
+  # default meaning "absent", and nothing says so.
+  hardware.uinput.enable = true;
+
   providers.services.units.wireplumber.requires = [ "speakersafetyd" ];
 
   nixpkgs.overlays = [ inputs.nixos-apple-silicon.overlays.default ];
