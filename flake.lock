@@ -295,11 +295,11 @@
     },
     "finix": {
       "locked": {
-        "lastModified": 1790453956,
-        "narHash": "sha256-AjyBzFYJ+REzmw7ziWaYbpzQZt83TMl9TNgagrru2OE=",
+        "lastModified": 1790466714,
+        "narHash": "sha256-Q7diG4FyioSQNlZc9qM5isJE8R14Q+2aG5qbGMAkdi0=",
         "owner": "parzivale",
         "repo": "finix",
-        "rev": "288b5f9b2d38b1f5052da81a8e28922801bf353e",
+        "rev": "ee0198fca4045809c57e759afe64c6ac66c499b0",
         "type": "github"
       },
       "original": {
