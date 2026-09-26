@@ -163,11 +163,11 @@
     },
     "community-modules": {
       "locked": {
-        "lastModified": 1790377107,
-        "narHash": "sha256-gjLlGzGqEhAVXVlzMG9oE0SxItRZzyJ22SNYeOHiTPE=",
+        "lastModified": 1790413007,
+        "narHash": "sha256-fT11cykikTm7V9SUnlgbuYcrfWSTWqy40hRDoyxu4KA=",
         "owner": "parzivale",
         "repo": "community-modules",
-        "rev": "f77d26bb0cd5aeaf150512f05f411b35960b39e3",
+        "rev": "0c22c015c4fc59df7c7a8d5e9c1dcf9089162885",
         "type": "github"
       },
       "original": {
@@ -295,11 +295,11 @@
     },
     "finix": {
       "locked": {
-        "lastModified": 1790410711,
-        "narHash": "sha256-oFLc/U7VbvWMmzqyB23JL2pnAUEuosuy6Fb9/jfIIHA=",
+        "lastModified": 1790412967,
+        "narHash": "sha256-U9RkfNPob8VX1ol0n+LrxlnA1cz2kkSGfY43gqAiJHI=",
         "owner": "parzivale",
         "repo": "finix",
-        "rev": "8add5eabab89a03e77b9c1b870c56da9eebf85a7",
+        "rev": "fad6e269cd5ec5805bfe6266ec1ece6250148b1b",
         "type": "github"
       },
       "original": {
