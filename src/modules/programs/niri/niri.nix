@@ -219,6 +219,17 @@ in
       state.session.services.polkit-agent = {
         description = "polkit authentication agent";
         command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ];
+
+        # The one daemon here that has to be *in* the session rather than just have its
+        # environment: it asks logind which session it is authenticating for, and a unit the
+        # system supervisor started is in the supervisor's cgroup, so the answer was none -
+        #
+        #   polkit-gnome-1-WARNING: Unable to determine the session we are in:
+        #   No session for pid 6744
+        #
+        # which is why it exited 1 ten times and finit stopped restarting it, and why no polkit
+        # prompt has appeared on this machine at all.
+        joinSession = true;
       };
 
       #

@@ -48,6 +48,30 @@
                   '';
                 };
 
+                joinSession = lib.mkOption {
+                  type = lib.types.bool;
+                  default = false;
+                  description = ''
+                    Whether this daemon must be a member of the login session, rather than
+                    merely having its environment.
+
+                    Most session daemons need only the compositor's socket and the session bus,
+                    which the wrapper provides. A few ask logind which session they are in -
+                    an authentication agent has to, because the thing it authenticates is a
+                    session - and that question is answered by the process's cgroup, not by any
+                    variable. A daemon the supervisor started at boot is in the supervisor's
+                    cgroup and logind says it belongs to no session at all:
+
+                      polkit-gnome-1-WARNING: Unable to determine the session we are in:
+                      No session for pid 6744
+
+                    With this set, the unit starts as root, moves itself into the session's
+                    cgroup, and only then drops to the user - so it and everything it forks are
+                    members. The cost is that the unit briefly runs privileged, which is why it
+                    is opt-in and why the default is to do the ordinary thing.
+                  '';
+                };
+
                 readiness = lib.mkOption {
                   type = lib.types.anything;
                   default = [ { fork = { }; } ];
