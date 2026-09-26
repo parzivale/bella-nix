@@ -150,7 +150,9 @@
       # - the package arrives through home-manager - so the service is declared where the locker
       # is configured. Its text is `login`'s, which is what finix's own hyprlock module does for
       # the same reason: unlocking a session is the same question as starting one.
-      security.pam.services.swaylock.text = config.security.pam.services.login.text;
+      security.pam.services.swaylock = {
+        text = config.security.pam.services.login.text;
+      };
 
       state.session.services.swayidle = {
         description = "idle manager";
