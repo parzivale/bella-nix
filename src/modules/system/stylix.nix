@@ -146,6 +146,49 @@ in
       # way to ask the machine the question. The first attempt at diagnosing this read
       # `fc-list | wc -l` as "zero fonts" when it meant "no such command".
       fonts.fontconfig.enable = true;
+      # And the fonts themselves, system-wide.
+      #
+      # Enabling fontconfig above gave applications a configuration to read; it did not give the
+      # system any fonts. stylix's home half puts its choices in `home.packages`, which is
+      # bella's profile and nobody else's - so `fonts.packages` was empty and anything running as
+      # root had exactly no font available. `fc-list` as root returned 0.
+      #
+      # What that breaks is not obvious from the outside. tiny-dfr renders the Touch Bar, runs as
+      # root, and needs a font to draw with; with none it panics on the file it cannot open:
+      #
+      #   panicked at src/main.rs:791:91:
+      #   Err value: Os { code: 2, kind: NotFound, message: "No such file or directory" }
+      #
+      # which says nothing about fonts at all, and left a Touch Bar that was connected, enabled,
+      # backlit by a daemon that kept restarting, and blank. It was diagnosed as a brightness
+      # problem twice before the unit's own output was visible.
+      #
+      # The same packages the home half picks, so the system renders in the theme rather than in
+      # whatever fontconfig falls back to.
+      fonts.packages =
+        let
+          fonts = config.home-manager.users.${user}.stylix.fonts;
+        in
+        map (k: fonts.${k}.package) [
+          "serif"
+          "sansSerif"
+          "monospace"
+          "emoji"
+        ];
+
+      # And which of them to prefer, so the system renders in the theme rather than in whatever
+      # fontconfig reaches for first. The home half sets these for bella through stylix's own
+      # fontconfig target; `fc-match sans` as root still answered DejaVu without them.
+      fonts.fontconfig.defaultFonts =
+        let
+          fonts = config.home-manager.users.${user}.stylix.fonts;
+        in
+        {
+          serif = [ fonts.serif.name ];
+          sansSerif = [ fonts.sansSerif.name ];
+          monospace = [ fonts.monospace.name ];
+          emoji = [ fonts.emoji.name ];
+        };
 
       home-manager.users.${user} =
         {
