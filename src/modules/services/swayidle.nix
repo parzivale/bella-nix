@@ -137,6 +137,21 @@
 
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.swayidle ];
 
+      # A pam service for the locker, without which it can never let anyone back in.
+      #
+      # swaylock authenticates against a service named for itself, and with none declared pam
+      # falls through to `other` - which on this system is `pam_warn` then `pam_deny`, an
+      # unconditional refusal. So the screen locks after the idle timeout and no password is
+      # accepted, ever, from anybody. Nothing appears in the auth log either, because pam_deny
+      # answers before pam_unix is ever asked to check a password, so it does not look like a
+      # rejected password so much as a broken keyboard.
+      #
+      # `programs.swaylock.enable` does this on the other side. There is no swaylock module here
+      # - the package arrives through home-manager - so the service is declared where the locker
+      # is configured. Its text is `login`'s, which is what finix's own hyprlock module does for
+      # the same reason: unlocking a session is the same question as starting one.
+      security.pam.services.swaylock.text = config.security.pam.services.login.text;
+
       state.session.services.swayidle = {
         description = "idle manager";
 
