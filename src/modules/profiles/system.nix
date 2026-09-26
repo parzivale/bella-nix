@@ -28,8 +28,18 @@
         ++ [
           modules.fcron
           modules.getty
+          modules.sudo
           modules.sysklogd
         ];
+
+      # The privileges contract needs a backend chosen, and without one it is not that escalation
+      # asks for a password - it is that there is none at all. `providers.privileges.backend` was
+      # "none" on both of these hosts, which also meant the rule `deploy-user` declares against
+      # this contract had nothing implementing it and did nothing at all.
+      #
+      # sudo over doas, which the same contract supports and which is the smaller surface, for
+      # the ordinary reason: it is what is already in my hands.
+      programs.sudo.enable = true;
 
       # `security.polkit` on the other side, where it is true on every host of mine.
       # Without it nothing can ask to do something as somebody else: 1Password's
