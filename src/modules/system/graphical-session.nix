@@ -57,57 +57,6 @@
       # A session exists once both of those are there. Waiting for the socket alone
       # would not do: the address file is written by the session's own shell, and a
       # daemon reading it a moment early reads nothing.
-      # Joining the login session, for the daemons that have to be in it rather than merely
-      # have its environment - see `joinSession`.
-      #
-      # logind answers "which session is this pid in" by reading the process's cgroup: an
-      # active session is a cgroup named for its id, and every process in it is a member.
-      # Nothing about that is inheritable after the fact through a variable, which is why a
-      # daemon the system supervisor started at boot is in the supervisor's cgroup and belongs
-      # to no session.
-      #
-      # So this runs as root, writes its own pid into the session's cgroup - which moves this
-      # process and everything it goes on to exec or fork - and only then drops to the user.
-      #
-      # The session is discovered rather than passed in, because the unit is started by the
-      # supervisor and not by the session. That is the weak point of doing it this way: with
-      # one user it is unambiguous, and with two active sessions for the same user it would be
-      # a guess. Firing this from inside the session, which is where the trigger belongs, is
-      # what removes the guess - the caller knows which session it is.
-      sessionPlace = pkgs.writeShellScript "session-place" ''
-        set -eu
-
-        sid=
-        for f in /run/systemd/sessions/*; do
-          case "$f" in
-            *.ref) continue ;;
-          esac
-
-          if ${pkgs.gnugrep}/bin/grep -qx 'UID=${toString config.constants.uid}' "$f" &&
-            ${pkgs.gnugrep}/bin/grep -qx 'ACTIVE=1' "$f"; then
-            sid=$(${pkgs.coreutils}/bin/basename "$f")
-            break
-          fi
-        done
-
-        if [ -z "$sid" ]; then
-          echo "session-place: no active session for uid ${toString config.constants.uid}" >&2
-          exit 1
-        fi
-
-        if ! [ -w "/sys/fs/cgroup/$sid/cgroup.procs" ]; then
-          echo "session-place: /sys/fs/cgroup/$sid/cgroup.procs is not writable" >&2
-          exit 1
-        fi
-
-        echo $$ > "/sys/fs/cgroup/$sid/cgroup.procs"
-
-        exec ${pkgs.util-linux}/bin/setpriv \
-          --reuid=${toString config.constants.uid} \
-          --regid=${toString config.users.groups.${config.users.users.${user}.group}.gid} \
-          --init-groups \
-          -- ${sessionEnv} "$@"
-      '';
 
       #
       # The deadline is enforced here rather than with the unit's `startTimeout`,
@@ -176,16 +125,12 @@
 
           requires = [ "graphical-session" ] ++ service.requires;
 
-          # A `joinSession` daemon starts privileged and drops itself, so the supervisor must
-          # not drop it first - it cannot write the session's cgroup as the user.
-          user = if service.joinSession then null else user;
+          inherit user;
 
           inherit (service) environment;
 
           type.service = {
-            command = "${
-              if service.joinSession then sessionPlace else sessionEnv
-            } ${lib.escapeShellArgs service.command}";
+            command = "${sessionEnv} ${lib.escapeShellArgs service.command}";
             inherit (service) readiness;
           };
         }) config.state.session.services;
