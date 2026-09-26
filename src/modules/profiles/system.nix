@@ -48,6 +48,32 @@
       # service - see `niri`.
       services.polkit.enable = true;
 
+      # And the polkit everything else links, not just the daemon's.
+      #
+      # finix already overrides `services.polkit.package` to the elogind build - its own note
+      # says the override is needed for `loginctl poweroff` - but that option reaches the daemon
+      # and nothing else. An authentication agent links libpolkit itself, and `pkgs.polkit_gnome`
+      # depends on plain `pkgs.polkit`, whose `useSystemd` defaults to true on Linux. So the
+      # agent was built `-Dsession_tracking=logind` and asked systemd's `sd_pid_get_session`,
+      # which looks for a cgroup path like /user.slice/user-1000.slice/session-1.scope. elogind's
+      # sessions are flat - /1 - so the answer was always
+      #
+      #   polkit-gnome-1-WARNING: Unable to determine the session we are in: No session for pid
+      #
+      # for every process on the machine, whatever its cgroup. Which is why no polkit prompt has
+      # ever appeared here, and why moving the agent into the session's cgroup changed nothing:
+      # the cgroup was never the problem, the library reading it was the wrong one.
+      #
+      # Overridden here rather than in finix's polkit module because that module reads
+      # `pkgs.polkit` while declaring its own options - an overlay from there would be an
+      # evaluation that does not terminate. It is unconditional because both of these hosts use
+      # elogind; a machine that did not would want the systemd build and would say so.
+      nixpkgs.overlays = [
+        (_: prev: {
+          polkit = prev.polkit.override { useSystemd = false; };
+        })
+      ];
+
       # What logind is on the other side, and needed for more than it sounds. A
       # compositor takes the display and the input devices through libseat, which
       # finds them through this; greetd's pam stack chooses `pam_elogind` once it is
