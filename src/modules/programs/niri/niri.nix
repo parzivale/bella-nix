@@ -218,18 +218,30 @@ in
       # daemons are.
       state.session.services.polkit-agent = {
         description = "polkit authentication agent";
-        command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ];
 
-        # The one daemon here that has to be *in* the session rather than just have its
-        # environment: it asks logind which session it is authenticating for, and a unit the
-        # system supervisor started is in the supervisor's cgroup, so the answer was none -
+        # The agent built against the polkit the daemon uses, not against `pkgs.polkit`.
         #
-        #   polkit-gnome-1-WARNING: Unable to determine the session we are in:
-        #   No session for pid 6744
+        # finix overrides `services.polkit.package` to the elogind build - its own note says
+        # `loginctl poweroff` needs it - but that option reaches the daemon and nothing else. An
+        # agent links libpolkit itself, and `pkgs.polkit_gnome` takes plain `pkgs.polkit`, whose
+        # `useSystemd` defaults to true on Linux. So it was built `-Dsession_tracking=logind` and
+        # asked systemd's `sd_pid_get_session`, which looks for a cgroup path like
+        # /user.slice/user-1000.slice/session-1.scope; elogind's are flat, /1, so every process
+        # on the machine got
         #
-        # which is why it exited 1 ten times and finit stopped restarting it, and why no polkit
-        # prompt has appeared on this machine at all.
-        joinSession = true;
+        #   polkit-gnome-1-WARNING: Unable to determine the session we are in: No session for pid
+        #
+        # and no polkit prompt has ever appeared here. The same call compiled against each build:
+        # `pkgs.polkit` answers "No session for pid", the elogind one answers "unix-session:1".
+        #
+        # Overriding this one package rather than `pkgs.polkit` globally, which is the same fix
+        # and rebuilds everything that links polkit - udisks, the portals, colord, most of the
+        # gtk-adjacent world - to correct an agent.
+        command = [
+          "${
+            pkgs.polkit_gnome.override { polkit = config.services.polkit.package; }
+          }/libexec/polkit-gnome-authentication-agent-1"
+        ];
       };
 
       #
