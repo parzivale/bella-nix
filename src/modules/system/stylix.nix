@@ -125,7 +125,27 @@ in
       #
       # /share/dbus-1 is already in `environment.pathsToLink`, so the package being in the system
       # profile is all that is needed.
-      environment.systemPackages = [ pkgs.dconf ];
+      environment.systemPackages = [
+        pkgs.dconf
+        pkgs.fontconfig
+      ];
+
+      # And fontconfig itself, which nothing had turned on: `fonts.fontconfig.enable` was false
+      # on both finix hosts and true on every nixos one, where it defaults that way.
+      #
+      # So there was no /etc/fonts/fonts.conf and no /etc/fonts/conf.d at all, and with no system
+      # configuration to load fontconfig falls back to a compiled-in default which knows about no
+      # font directories and does not read the user's conf.d either. Which is how every font can
+      # be present and none of them usable: the home half below sets home-manager's own
+      # `fonts.fontconfig.enable`, which writes ~/.config/fontconfig/conf.d/10-hm-fonts.conf
+      # naming the directory the 32 faces are in - and nothing ever read the file. Half of this
+      # was fixed there and the other half was never noticed, for the same reason as always: it
+      # fails by doing nothing.
+      #
+      # The fontconfig binaries go in with it, because without fc-match and fc-list there is no
+      # way to ask the machine the question. The first attempt at diagnosing this read
+      # `fc-list | wc -l` as "zero fonts" when it meant "no such command".
+      fonts.fontconfig.enable = true;
 
       home-manager.users.${user} =
         {
