@@ -52,6 +52,13 @@
               how = "symlink";
               configureParent = true;
               inInitrd = true;
+
+              # preservation defaults a file to 0644, and its tmpfiles `f` rule applies that to
+              # the file whether or not it created it - so the default does not merely miss a
+              # private key's mode, it overwrites a correct one on every boot. sshd then refuses
+              # to load it ("Permissions 0644 ... are too open") and exits with no host keys at
+              # all, which is how this was found.
+              mode = "0600";
             }
             {
               file = "/etc/ssh/ssh_host_ed25519_key.pub";
@@ -64,6 +71,10 @@
               how = "symlink";
               inInitrd = true;
               configureParent = true;
+
+              # 0600 for the same reason as the host key above: systemd creates the seed that
+              # way and a readable one is worth less than no seed at all.
+              mode = "0600";
             }
           ]
           ++ config.state.preserve.files;

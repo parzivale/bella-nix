@@ -175,8 +175,26 @@ in
 
       # The polkit agent, which niri-flake's nixos module supplies as
       # `niri-flake-polkit` and which nothing supplies here. Without one a polkit
-      # question has nobody to ask, so the 1Password unlock and any authorised mount
-      # fail rather than prompting.
+      # question has nobody to ask: 1Password's three actions are all `auth_self`,
+      # so unlocking with system authentication, authorising the `op` CLI and
+      # authorising its ssh agent each fail outright rather than prompting. `pkexec`
+      # is the other caller, since finix installs its setuid wrapper whenever polkit
+      # is on.
+      #
+      # polkit-gnome rather than soteria, which this used and which never once ran.
+      # soteria reimplements the agent protocol and hardcodes the helper's path:
+      #
+      #   Error: Helper located at /usr/lib/polkit-1/polkit-agent-helper-1 and socket
+      #   located at /run/polkit/agent-helper.socket do not exist.
+      #
+      # Neither path exists here - the helper is a setuid wrapper at
+      # /run/wrappers/bin/polkit-agent-helper-1 - so it exited 1 before contacting
+      # polkit at all, on this machine as much as in a VM. polkit-gnome goes through
+      # libpolkit-agent-1, which nixpkgs patches to call exactly that wrapper, so it
+      # needs nothing said here to find it.
+      #
+      # `libexec` rather than `lib.getExe`: the agent is not on the package's PATH
+      # and the package declares no main program.
       #
       # community-modules has a soteria module and this does not use it: that one
       # emits a system unit, and an agent which shows a dialog has to be inside the
@@ -184,7 +202,7 @@ in
       # daemons are.
       state.session.services.polkit-agent = {
         description = "polkit authentication agent";
-        command = [ (lib.getExe pkgs.soteria) ];
+        command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ];
       };
 
       #

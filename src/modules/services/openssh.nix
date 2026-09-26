@@ -65,8 +65,17 @@
 
       # No `generateHostKeys`/`hostKeys` here: finix generates the key in its own
       # unit, and `hostKeyPath` above is the whole of saying where.
+      #
+      # An attrset rather than the bare path, for the mode. preservation defaults a file to
+      # 0644 and its tmpfiles `f` rule applies that mode to the file whether or not it created
+      # it - so a bare path here does not merely leave a private key's mode unsaid, it forces it
+      # world readable on every boot. sshd refuses such a key outright ("Permissions 0644 ...
+      # are too open") and exits having loaded none, which is what this was doing.
       state.preserve.files = [
-        "/etc/ssh/ssh_host_ed25519_key"
+        {
+          file = "/etc/ssh/ssh_host_ed25519_key";
+          mode = "0600";
+        }
       ];
     };
 }
