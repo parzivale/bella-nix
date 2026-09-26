@@ -173,6 +173,22 @@ in
         };
       };
 
+      # greetd waits for the user's home to be set up.
+      #
+      # Without this they start together - `hm-activate-bella` and `greetd` in the same second,
+      # `greetd-started` immediately after - so the compositor reads its configuration while
+      # home-manager is still linking it, finds nothing, and falls back to the built-in default
+      # config. Whose terminal keybind names a terminal this machine does not install, so the
+      # session comes up with no configuration and no way to open a shell in it. On a laptop
+      # whose function keys are drawn by a daemon that also is not running yet, that is the whole
+      # machine.
+      #
+      # `requires` is the only ordering the contract has, so this is a hard edge: if activation
+      # fails, no session starts at all. That is the right way round - a session with none of the
+      # user's configuration is not a working machine either - but it does mean sshd is the way
+      # back in, which is why it does not depend on any of this.
+      providers.services.units.greetd.requires = [ "hm-activate-${user}" ];
+
       # The polkit agent, which niri-flake's nixos module supplies as
       # `niri-flake-polkit` and which nothing supplies here. Without one a polkit
       # question has nobody to ask: 1Password's three actions are all `auth_self`,

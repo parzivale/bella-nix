@@ -100,7 +100,7 @@ in
   # `programs.chromium` on to write a policy file for a browser nothing here
   # installs. `console` is restored below.
   flake.modules.finix.stylix =
-    { config, ... }:
+    { config, pkgs, ... }:
     let
       user = config.constants.username;
       colors = config.home-manager.users.${user}.lib.stylix.colors;
@@ -110,6 +110,22 @@ in
         inputs.self.modules.finix.home-manager
         inputs.self.modules.finix.user
       ];
+
+      # What `programs.dconf.enable` does on the other side, which there is no module for here:
+      # put dconf where a session bus can find its service file. home-manager's activation has a
+      # `dconfSettings` step that loads the settings stylix generates, and with no
+      # ca.desrt.dconf.service on XDG_DATA_DIRS the bus it spawns cannot start the service:
+      #
+      #   error: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown:
+      #     The name ca.desrt.dconf was not provided by any .service files
+      #
+      # which fails activation - after it has linked the home files, so the damage is not that
+      # the configuration is missing but that the unit never reports success, and anything
+      # ordered behind it waits for a success that is not coming.
+      #
+      # /share/dbus-1 is already in `environment.pathsToLink`, so the package being in the system
+      # profile is all that is needed.
+      environment.systemPackages = [ pkgs.dconf ];
 
       home-manager.users.${user} =
         {
