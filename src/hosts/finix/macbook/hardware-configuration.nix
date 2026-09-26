@@ -23,6 +23,27 @@
     modules.tiny-dfr
   ];
 
+  # wireplumber waits for the speaker protection.
+  #
+  # Both start in the same second, and both want the card's control elements. speakersafetyd
+  # locks the ones it protects - `snd_ctl_elem_lock` on each VSENSE and ISENSE switch - and
+  # wireplumber enumerates the card and takes them first often enough to matter. When it wins,
+  # speakersafetyd panics on the first speaker it tries to claim:
+  #
+  #   Could not lock elem Left Front VSENSE Switch.
+  #   ALSA function 'snd_ctl_elem_lock' failed with error 'Device or resource busy (16)'
+  #
+  # finit restarts it two seconds later and the second attempt wins, so this healed itself and
+  # looked like nothing - but the amps are unprotected for those two seconds of every boot, and
+  # a race lost ten times running is a boot with no protection at all. The ordering that fixes
+  # it is also the honest one: these controls are meant to be locked before anything else on the
+  # system touches the card.
+  #
+  # Declared on the host rather than beside either service, because Cerberus has wireplumber and
+  # no speakersafetyd, and a unit required by name that does not exist is a branch of the graph
+  # that waits for ever.
+  providers.services.units.wireplumber.requires = [ "speakersafetyd" ];
+
   nixpkgs.overlays = [ inputs.nixos-apple-silicon.overlays.default ];
 
   hardware.facter.reportPath = ./facter.json;
