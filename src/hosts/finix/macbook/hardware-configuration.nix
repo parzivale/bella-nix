@@ -98,6 +98,14 @@
 
     settings = {
       MediaLayerDefault = true;
+
+      # The Touch Bar tracks the panel's brightness rather than sitting at a fixed level:
+      # `update_backlight` puts apple-panel-bl's brightness through a square-root curve scaled
+      # by `ActiveBrightness`, so dimming the screen dims the bar with it.
+      #
+      # On by default, said here because it is a choice.
+      AdaptiveBrightness = true;
+
       MediaLayerKeys = [
         {
           Icon = "brightness_low";

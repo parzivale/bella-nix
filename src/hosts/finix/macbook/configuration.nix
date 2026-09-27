@@ -161,6 +161,9 @@ in
           keyboard.xkb.layout = "es";
         };
         binds = {
+          # The panel, which is brightnessctl's first choice with no `-d` - apple-panel-bl, the
+          # only device of class `backlight` that is not the Touch Bar's own. Independent of the
+          # bar now that tiny-dfr is not reading it; see `AdaptiveBrightness` on the host.
           "XF86MonBrightnessUp".action.spawn = [
             "brightnessctl"
             "set"
@@ -171,17 +174,26 @@ in
             "set"
             "5%-"
           ];
+
+          # `kbd_backlight`, not `apple::kbd_backlight`, which is what this said and which does
+          # not exist on this machine:
+          #
+          #   Device 'apple::kbd_backlight' not found.
+          #
+          # brightnessctl exits non-zero, niri spawns it and does not report the status, so both
+          # keys have been doing nothing at all. The device is a LED rather than a backlight -
+          # /sys/class/leds/kbd_backlight, max 255 - and `-d` takes the bare name.
           "XF86KbdBrightnessUp".action.spawn = [
             "brightnessctl"
             "-d"
-            "apple::kbd_backlight"
+            "kbd_backlight"
             "set"
             "5%+"
           ];
           "XF86KbdBrightnessDown".action.spawn = [
             "brightnessctl"
             "-d"
-            "apple::kbd_backlight"
+            "kbd_backlight"
             "set"
             "5%-"
           ];
