@@ -18,6 +18,26 @@ in
   flake.modules.homeManager.niri =
     { config, pkgs, ... }:
     {
+      # niri's stylix target, which lives in niri-flake rather than in stylix - so it is not one
+      # of stylix's own targets and cannot be enabled from there. niri-flake's nixos module wires
+      # it in, conditionally:
+      #
+      #   (lib.optionalAttrs (options ? home-manager) {
+      #     home-manager.sharedModules = [ ... ]
+      #       ++ lib.optionals (options ? stylix) [ self.homeModules.stylix ];
+      #   })
+      #
+      # Neither condition holds in a finix evaluation, so the target was absent and niri used
+      # niri-flake's own defaults - theme "default" at size 24, no border colour - while every
+      # gtk application read Nordzy-cursors at 32 out of settings.ini. A cursor of the right shape
+      # and the wrong size, and window borders that had quietly lost their accent.
+      #
+      # Named here rather than beside the other stylix imports, because it writes
+      # `programs.niri.settings`: it belongs with the module that makes those options exist, not
+      # with the one that supplies the colours. On nixos the same module arrives through
+      # `sharedModules` as well, and importing a module twice is importing it once.
+      imports = [ inputs.niri-flake.homeModules.stylix ];
+
       programs.niri = {
         settings = {
           xwayland-satellite = {

@@ -202,26 +202,6 @@ in
             # There is nothing here doing that, so it is named.
             inputs.stylix.homeModules.stylix
             inputs.self.modules.homeManager.stylix
-
-            # niri's stylix target, which lives in niri-flake rather than in stylix - so it is
-            # not among stylix's 109 targets and cannot be enabled from there. niri-flake's nixos
-            # module adds it, conditionally:
-            #
-            #   (lib.optionalAttrs (options ? home-manager) {
-            #     home-manager.sharedModules = [ ... ]
-            #       ++ lib.optionals (options ? stylix) [ self.homeModules.stylix ];
-            #   })
-            #
-            # Neither condition holds here, for the reason above: there is no nixos module in this
-            # evaluation to do the adding. So the target was simply absent, and niri took
-            # niri-flake's own defaults - theme "default" at size 24, no border colour - while
-            # every gtk application read the theme and size stylix wrote to settings.ini. Which
-            # presents as a cursor that is the right shape and the wrong size, and window borders
-            # that lost their accent colour.
-            #
-            # It sets `cursor`, `layout.focus-ring.enable` and `layout.border` from the palette,
-            # all with `mkDefault`, so anything this repo says about them still wins.
-            inputs.niri-flake.homeModules.stylix
           ];
 
           # Both of the settings below are on by default under nixos and off here,
