@@ -100,6 +100,24 @@ in
   #
   # Which means this says nothing about whether they work on the machine - only that a VM is not
   # where that gets tested.
+  # The initramfs-as-root mode, as a boot entry to pick rather than the one you get.
+  #
+  # `boot.initrd.pivot = false` means there is no stage one and no switch_root: the kernel's
+  # rootfs is the root, /init mounts what the store is on, and finit is PID 1 from the first
+  # instruction. It boots in a VM, and a VM proves less than it looks - every filesystem there is
+  # tmpfs or overlay, needing no driver, no device node and no waiting, where this machine's store
+  # is btrfs on /dev/nvme0n1p5 behind nvme-apple, pcie-apple, apple-dart and apple-sart.
+  #
+  # So: a specialisation. limine reads `org.nixos.specialisation.v1` and gives each one its own
+  # entry with its own initrd and its own init=, and leaves the default pointing at the ordinary
+  # generation - so a boot that does not work costs a reboot and picking the other entry, not a
+  # recovery.
+  #
+  # If it fails, it says so before rebooting: /init retries the mounts for 30s and then names what
+  # is still unmounted, which is nearly always a module missing from
+  # `boot.initrd.availableKernelModules`.
+  specialisation.initramfs-root.boot.initrd.pivot = false;
+
   virtualisation.vmVariant.providers.services.units = {
     speakersafetyd.enable = false;
     tiny-dfr.enable = false;
