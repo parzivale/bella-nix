@@ -123,31 +123,21 @@ in
 
       runtimeDir = "/run/user/${toString config.constants.uid}";
 
-      # What the session publishes about itself, and how the launcher knows it is up.
+      # A script rather than an inline command, because greetd's config cannot hold one.
       #
-      # niri's socket name is not knowable here: it takes whatever `wayland-N` is free through
-      # smithay's `new_auto` and has no flag to force one. So it is discovered - once, by the
-      # launcher, before it starts the user tree - rather than rediscovered by each daemon as it
-      # was when every one of them ran under a wrapper that did this again.
+      # It does not parse TOML - `inish`, its own parser, walks `s.lines()` and requires every
+      # line that is not a section header to contain an `=`. A multi-line value is therefore
+      # unrepresentable however it is quoted: the generator wrote a valid TOML `'''` literal and
+      # greetd read `command = '''`, then hit the next line and said
       #
-      # It cannot be published by niri either: the launcher is niri's parent, and a child cannot
-      # put a variable into the environment it was given. That is the thing inheritance does not
-      # do, and what `systemctl --user import-environment` exists to work around. This is that,
-      # as a command run by whoever is in a position to export the result.
+      #   greetd[2424]: expected equals sign on line, but found none
       #
-      # Failing while there is no socket is what makes it the readiness check as well. The
-      # literal runtime directory rather than `$XDG_RUNTIME_DIR`, which greetd is not obliged to
-      # have set by the time this runs.
+      # which is where the session ended. finit restarted it ten times and the machine sat at a
+      # getty with no compositor and no way in but the tty.
       #
-      # `*.*` excluded rather than `*.lock`, which is what the wrapper this replaces matched and
-      # which is wrong: clients put their own sockets in the same directory and name them after
-      # the display, so a runtime directory holds `wayland-1-awww-daemon.sock` beside
-      # `wayland-1`. Both match `wayland-*`, neither ends in `.lock`, and `sort | head -1` then
-      # picks whichever sorts first - correct only for as long as the compositor happens to hold
-      # the lowest number. With niri on `wayland-2` and a client socket left from `wayland-1`, the
-      # answer was `wayland-1-awww-daemon.overview.sock`. A display name never contains a dot and
-      # every one of those does.
-      sessionEnv = ''
+      # A store path is one word, so the whole command stays on one line. `session-launch` runs it
+      # through `bash -c`, which executes a path as happily as it evaluates a string.
+      sessionEnv = pkgs.writeShellScript "niri-session-env" ''
         socket=$(
           cd ${runtimeDir} 2>/dev/null &&
             ${pkgs.findutils}/bin/find . -maxdepth 1 -name 'wayland-*' -not -name '*.*' \
