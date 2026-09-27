@@ -157,27 +157,48 @@
       providers.services.users.${config.constants.username}.units.swayidle = {
         description = "idle manager";
 
-        # `escapeShellArgs`, because several of these arguments are themselves commands with
-        # arguments and have to arrive as one word each. The contract takes a command line where
-        # the old session submodule took an argv, so the quoting is done here rather than there.
-        type.service.command = lib.escapeShellArgs [
-          "${pkgs.swayidle}/bin/swayidle"
-          "-w"
-          "timeout"
-          "180"
-          "${lock}"
-          "timeout"
-          "300"
-          "${niri} msg action power-off-monitors"
-          "resume"
-          "${niri} msg action power-on-monitors"
-          "before-sleep"
-          "${lock}"
-          "lock"
-          "${lock}"
-          "after-resume"
-          "${after_resume}"
-        ];
+        # A script, so the unit's command is one word.
+        #
+        # Several of these arguments are themselves commands with arguments - `niri msg action
+        # power-off-monitors` has to reach swayidle as a single argv entry - and the contract's
+        # `command` is a string which each implementation splits by its own rules. Those rules
+        # are not a shell's: dinit splits on whitespace and honours double quotes and
+        # backslashes, so `escapeShellArgs` - which quotes with apostrophes - produced tokens
+        # beginning with a literal `'`, and swayidle was handed `msg` as if it were an event:
+        #
+        #   swayidle: [Line 884] Unsupported command 'msg'
+        #
+        # exit 255, ten restarts, no idle management. Which finit had parsed the way that was
+        # meant, so it only broke on moving to a per-user dinit - and it broke silently, because
+        # a user tree had no log until one was given to it.
+        #
+        # Quoting for whichever implementation is running is not the module's job to guess, and
+        # a store path has no whitespace in it to guess about. `exec` so that the process the
+        # supervisor is watching is swayidle itself.
+        type.service.command = toString (
+          pkgs.writeShellScript "swayidle-session" ''
+            exec ${
+              lib.escapeShellArgs [
+                "${pkgs.swayidle}/bin/swayidle"
+                "-w"
+                "timeout"
+                "180"
+                "${lock}"
+                "timeout"
+                "300"
+                "${niri} msg action power-off-monitors"
+                "resume"
+                "${niri} msg action power-on-monitors"
+                "before-sleep"
+                "${lock}"
+                "lock"
+                "${lock}"
+                "after-resume"
+                "${after_resume}"
+              ]
+            }
+          ''
+        );
       };
     };
 }
