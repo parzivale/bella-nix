@@ -145,6 +145,26 @@ in
       # The fontconfig binaries go in with it, because without fc-match and fc-list there is no
       # way to ask the machine the question. The first attempt at diagnosing this read
       # `fc-list | wc -l` as "zero fonts" when it meant "no such command".
+      # The fallback families, which nothing was providing.
+      #
+      # True on every nixos host here - niri-flake's nixos module sets it `mkDefault true`, from
+      # the same block that supplies niri's stylix target and the swaylock pam service - and false
+      # on this side, so the system font set was the four packages stylix names and nothing else.
+      # Those four cover the themed text and the nerd glyphs; dejavu, freefont, gyre, liberation,
+      # unifont and noto all arrive with this, which is the long tail an interface reaches for.
+      #
+      # Set because it is missing relative to every other host here, not as a fix for a particular
+      # glyph. One known to be missing is U+23F5, the small triangle in claude-code's mode
+      # indicator:
+      #
+      #   fc-list ':charset=23f5'  ->  0 faces
+      #   fc-match ':charset=23f5' ->  Atkinson Hyperlegible Next
+      #
+      # Nothing on the machine can draw it, and fc-match naming a family regardless is what makes
+      # that look like a font being ignored. Whether anything this option installs covers it is
+      # not established - per-package coverage needs a test harness that has not been built.
+      fonts.enableDefaultPackages = true;
+
       fonts.fontconfig.enable = true;
       # And the fonts themselves, system-wide.
       #
