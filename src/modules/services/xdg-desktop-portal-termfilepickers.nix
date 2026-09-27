@@ -43,11 +43,16 @@ in
   # file to activate that name. So something has to start the process.
   flake.modules.finix.xdg-desktop-portal-termfilepickers = moduleWithSystem (
     { inputs', ... }:
-    { pkgs, ... }:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
     let
       package = inputs'.xdg-desktop-portal-termfilepickers.packages.default;
 
-      config = (pkgs.formats.toml { }).generate "termfilepickers.toml" {
+      settings = (pkgs.formats.toml { }).generate "termfilepickers.toml" {
         terminal_command = terminal pkgs;
 
         # The three the upstream nixos module defaults and this hand-written config did not.
@@ -65,7 +70,7 @@ in
       };
     in
     {
-      imports = [ inputs.self.modules.finix.graphical-session ];
+      imports = [ inputs.self.modules.finix.user-services ];
 
       xdg.portal = {
         enable = true;
@@ -76,15 +81,16 @@ in
         };
       };
 
-      state.session.services.xdg-desktop-portal-termfilepickers = {
+      providers.services.users.${config.constants.username}.units.xdg-desktop-portal-termfilepickers = {
         description = "terminal file chooser portal";
+
         # `--config-path` is what the upstream unit passes, and the file is written
         # here for the same reason the command is: there is no module left to do
         # either.
-        command = [
+        type.service.command = lib.escapeShellArgs [
           "${package}/bin/xdg-desktop-portal-termfilepickers"
           "--config-path"
-          "${config}"
+          "${settings}"
         ];
       };
     }

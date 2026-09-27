@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.homeManager.poweralertd =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       systemd.user.services.poweralertd = {
         Unit = {
@@ -41,18 +41,22 @@
   # what it sends, which the nixos unit says with `After = mako.service` and this
   # says with `requires`.
   flake.modules.finix.poweralertd =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       imports = [
-        inputs.self.modules.finix.graphical-session
+        inputs.self.modules.finix.user-services
         # Named in `requires` below, so the unit has to exist - the same coupling
         # the nixos unit already has with `After = mako.service`.
         inputs.self.modules.finix.mako
       ];
 
-      state.session.services.poweralertd = {
+      providers.services.users.${config.constants.username}.units.poweralertd = {
         description = "UPower-powered power alerter";
-        command = [ "${pkgs.poweralertd}/bin/poweralertd" ];
+        type.service.command = "${pkgs.poweralertd}/bin/poweralertd";
+
+        # mako, which is in this same tree, so the edge stays inside it. Nothing here names a
+        # system unit any more - a user's supervisor cannot see one, and the contract refuses
+        # the edge rather than letting it wait for ever.
         requires = [ "mako" ];
       };
     };

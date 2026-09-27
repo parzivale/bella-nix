@@ -47,7 +47,7 @@
     {
       imports = [
         inputs.community-modules.nixosModules.pipewire
-        inputs.self.modules.finix.graphical-session
+        inputs.self.modules.finix.user-services
         # finix leaves device management off; the rules this lays down go nowhere
         # without it. No nixos counterpart - see `udev`.
         inputs.self.modules.finix.udev
@@ -68,26 +68,37 @@
       # that exists from `bind` and is not yet listening. So wireplumber and
       # pipewire-pulse start when pipewire will actually answer them rather than
       # when it has probably got going.
-      state.session.services = {
+      #
+      # None of the three waits for the compositor, and that is a change. They used to, because
+      # the module they were declared through gated everything it emitted on a wayland socket
+      # appearing - so audio could not start until a compositor had, and a machine that never
+      # reached one had no sound server either. Nothing here needs a display: `XDG_RUNTIME_DIR`
+      # is where the sockets go and that is fixed, so being in the session at all is the whole
+      # requirement, and being in this tree is that.
+      providers.services.users.${config.constants.username}.units = {
         pipewire = {
           description = "multimedia service";
-          command = [ "${config.programs.pipewire.package}/bin/pipewire" ];
-          readiness.waitFor.socket.path = "${runtimeDir}/pipewire-0";
+          type.service = {
+            command = "${config.programs.pipewire.package}/bin/pipewire";
+            readiness.waitFor.socket.path = "${runtimeDir}/pipewire-0";
+          };
           inherit environment;
         };
 
         wireplumber = {
           description = "pipewire session manager";
-          command = [ "${pkgs.wireplumber}/bin/wireplumber" ];
+          type.service.command = "${pkgs.wireplumber}/bin/wireplumber";
           requires = [ "pipewire" ];
           inherit environment;
         };
 
         pipewire-pulse = {
           description = "pulseaudio server on pipewire";
-          command = [ "${config.programs.pipewire.package}/bin/pipewire-pulse" ];
+          type.service = {
+            command = "${config.programs.pipewire.package}/bin/pipewire-pulse";
+            readiness.waitFor.socket.path = "${runtimeDir}/pulse/native";
+          };
           requires = [ "pipewire" ];
-          readiness.waitFor.socket.path = "${runtimeDir}/pulse/native";
         };
       };
     };

@@ -104,11 +104,11 @@ in
     speakersafetyd.enable = false;
     tiny-dfr.enable = false;
     greetd.enable = false;
-
-    # and the session discovery that greetd feeds: it waits for a compositor to publish
-    # WAYLAND_DISPLAY and a bus address, which nothing is going to do here.
-    graphical-session.enable = false;
   };
+
+  # The session's own daemons need nothing said here. They are not system units any more: they
+  # belong to a tree a session starts, and a VM with no greetd starts no session, so nothing in
+  # that tree runs and there is nothing to disable.
 
   # `security.polkit.enablePkexecWrapper` has no counterpart: finix's polkit module installs
   # the setuid pkexec wrapper whenever polkit is enabled, so there is nothing to turn on.

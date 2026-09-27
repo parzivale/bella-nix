@@ -121,6 +121,45 @@ in
     let
       user = config.constants.username;
 
+      runtimeDir = "/run/user/${toString config.constants.uid}";
+
+      # What the session publishes about itself, and how the launcher knows it is up.
+      #
+      # niri's socket name is not knowable here: it takes whatever `wayland-N` is free through
+      # smithay's `new_auto` and has no flag to force one. So it is discovered - once, by the
+      # launcher, before it starts the user tree - rather than rediscovered by each daemon as it
+      # was when every one of them ran under a wrapper that did this again.
+      #
+      # It cannot be published by niri either: the launcher is niri's parent, and a child cannot
+      # put a variable into the environment it was given. That is the thing inheritance does not
+      # do, and what `systemctl --user import-environment` exists to work around. This is that,
+      # as a command run by whoever is in a position to export the result.
+      #
+      # Failing while there is no socket is what makes it the readiness check as well. The
+      # literal runtime directory rather than `$XDG_RUNTIME_DIR`, which greetd is not obliged to
+      # have set by the time this runs.
+      #
+      # `*.*` excluded rather than `*.lock`, which is what the wrapper this replaces matched and
+      # which is wrong: clients put their own sockets in the same directory and name them after
+      # the display, so a runtime directory holds `wayland-1-awww-daemon.sock` beside
+      # `wayland-1`. Both match `wayland-*`, neither ends in `.lock`, and `sort | head -1` then
+      # picks whichever sorts first - correct only for as long as the compositor happens to hold
+      # the lowest number. With niri on `wayland-2` and a client socket left from `wayland-1`, the
+      # answer was `wayland-1-awww-daemon.overview.sock`. A display name never contains a dot and
+      # every one of those does.
+      sessionEnv = ''
+        socket=$(
+          cd ${runtimeDir} 2>/dev/null &&
+            ${pkgs.findutils}/bin/find . -maxdepth 1 -name 'wayland-*' -not -name '*.*' \
+              -printf '%f\n' | ${pkgs.coreutils}/bin/sort | ${pkgs.coreutils}/bin/head -1
+        )
+
+        [ -n "$socket" ] || exit 1
+
+        echo "WAYLAND_DISPLAY=$socket"
+        echo "XDG_RUNTIME_DIR=${runtimeDir}"
+      '';
+
       # `withSystemd` off, which is not about linking: niri's systemd feature puts
       # anything it spawns - the `spawn` action, `spawn-at-startup` - into a
       # transient unit, so that an OOM kill takes the process rather than the whole
@@ -150,10 +189,10 @@ in
         inputs.self.modules.finix.udev
         inputs.self.modules.finix.home-manager
         inputs.self.modules.finix.user
-        # For `state.session.command` below. The session's daemons are units rather than
-        # things niri spawns, so what niri owes them is a bus whose address they can
-        # find - which is what that script arranges.
-        inputs.self.modules.finix.graphical-session
+        # The user's service tree and what starts it. `services.greetd` below runs the
+        # contract's launcher rather than the compositor directly, so this is where the
+        # session's daemons come from.
+        inputs.self.modules.finix.user-services
       ];
 
       nixpkgs.overlays = overlays;
@@ -168,7 +207,30 @@ in
         settings.default_session = {
           # Not `niri-session`: niri-flake says of that script that it "only works
           # with systemd or dinit", and finit is neither.
-          command = "${config.state.session.command} ${niri}/bin/niri --session";
+          #
+          # `dbus-run-session` outermost, so the launcher and everything it starts share one
+          # session bus: it mints an address per session and tells only its children, which is
+          # exactly the inheritance this relies on. It used to be followed by a shell that
+          # recorded that address in a file for system units to read, because they were not its
+          # children and had no other way to learn it. They are its children now.
+          #
+          # `--session-env` is the compositor-specific half, and the only one. niri takes
+          # whatever `wayland-N` is free through smithay's `new_auto` and has no flag to force
+          # one, so the name cannot be known here - it is discovered once, by the launcher, and
+          # exported into the tree. Failing until the socket exists is also what says the
+          # session is up, which is why it is one command and not two.
+          command = lib.escapeShellArgs [
+            "${pkgs.dbus}/bin/dbus-run-session"
+            "--"
+            "${config.providers.services.user.sessionLauncher}"
+            "--user"
+            user
+            "--session-env"
+            sessionEnv
+            "--"
+            "${niri}/bin/niri"
+            "--session"
+          ];
           inherit user;
         };
       };
@@ -216,7 +278,7 @@ in
       # emits a system unit, and an agent which shows a dialog has to be inside the
       # session and on its bus. So the package, started the way the session's other
       # daemons are.
-      state.session.services.polkit-agent = {
+      providers.services.users.${user}.units.polkit-agent = {
         description = "polkit authentication agent";
 
         # The agent built against the polkit the daemon uses, not against `pkgs.polkit`.
@@ -237,11 +299,9 @@ in
         # Overriding this one package rather than `pkgs.polkit` globally, which is the same fix
         # and rebuilds everything that links polkit - udisks, the portals, colord, most of the
         # gtk-adjacent world - to correct an agent.
-        command = [
-          "${
-            pkgs.polkit_gnome.override { polkit = config.services.polkit.package; }
-          }/libexec/polkit-gnome-authentication-agent-1"
-        ];
+        type.service.command = "${
+          pkgs.polkit_gnome.override { polkit = config.services.polkit.package; }
+        }/libexec/polkit-gnome-authentication-agent-1";
       };
 
       #

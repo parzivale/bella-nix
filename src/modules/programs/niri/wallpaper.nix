@@ -98,25 +98,21 @@
         '';
     in
     {
-      state.session.services = {
+      providers.services.users.${config.constants.username}.units = {
         awww = {
           description = "wallpaper daemon";
-          command = [
-            (toString (daemon {
-              name = "background";
-              wallpaper = image;
-            }))
-          ];
+          type.service.command = toString (daemon {
+            name = "background";
+            wallpaper = image;
+          });
         };
 
         awww-overview = {
           description = "wallpaper daemon for the overview backdrop";
-          command = [
-            (toString (daemon {
-              name = "overview";
-              wallpaper = blurred-image;
-            }))
-          ];
+          type.service.command = toString (daemon {
+            name = "overview";
+            wallpaper = blurred-image;
+          });
         };
       };
     };

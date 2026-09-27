@@ -23,25 +23,24 @@
     modules.tiny-dfr
   ];
 
-  # wireplumber waits for the speaker protection.
+  # wireplumber waiting for the speaker protection used to be said here, by name.
   #
-  # Both start in the same second, and both want the card's control elements. speakersafetyd
-  # locks the ones it protects - `snd_ctl_elem_lock` on each VSENSE and ISENSE switch - and
-  # wireplumber enumerates the card and takes them first often enough to matter. When it wins,
-  # speakersafetyd panics on the first speaker it tries to claim:
+  # The race it fixed is real - both start in the same second, both want the card's control
+  # elements, speakersafetyd locks the ones it protects with `snd_ctl_elem_lock`, and when
+  # wireplumber takes them first speakersafetyd panics on the first speaker it tries to claim:
   #
   #   Could not lock elem Left Front VSENSE Switch.
   #   ALSA function 'snd_ctl_elem_lock' failed with error 'Device or resource busy (16)'
   #
-  # finit restarts it two seconds later and the second attempt wins, so this healed itself and
-  # looked like nothing - but the amps are unprotected for those two seconds of every boot, and
-  # a race lost ten times running is a boot with no protection at all. The ordering that fixes
-  # it is also the honest one: these controls are meant to be locked before anything else on the
-  # system touches the card.
+  # finit restarted it two seconds later and the second attempt won, so it healed itself and
+  # looked like nothing - while the amps were unprotected for two seconds of every boot.
   #
-  # Declared on the host rather than beside either service, because Cerberus has wireplumber and
-  # no speakersafetyd, and a unit required by name that does not exist is a branch of the graph
-  # that waits for ever.
+  # It is said in the trunk now instead: speakersafetyd attaches to `basic`, so `multi-user` is
+  # not reached until it is up, and every session - and so every user tree, wireplumber included -
+  # is behind that. Which it has to be, because wireplumber is a user unit now and a user's
+  # supervisor cannot see a system unit at all; the contract refuses the edge rather than letting
+  # it wait for ever. The ordering is also no longer this host's to remember, and Cerberus, which
+  # has wireplumber and no speakersafetyd, needs nothing said either way.
 
   # uinput, which the Touch Bar daemon cannot work without.
   #
@@ -63,8 +62,6 @@
   # fontconfig, dconf and privileges gaps: the nixos half turns it on, the finix half leaves a
   # default meaning "absent", and nothing says so.
   hardware.uinput.enable = true;
-
-  providers.services.units.wireplumber.requires = [ "speakersafetyd" ];
 
   nixpkgs.overlays = [ inputs.nixos-apple-silicon.overlays.default ];
 

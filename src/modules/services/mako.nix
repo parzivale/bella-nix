@@ -39,7 +39,7 @@ in
     {
       imports = [
         inputs.self.modules.finix.home-manager
-        inputs.self.modules.finix.graphical-session
+        inputs.self.modules.finix.user-services
       ];
 
       # home-manager's mako module writes the configuration file and a user
@@ -47,9 +47,9 @@ in
       # the daemon is supervised as part of the session instead.
       home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mako ];
 
-      state.session.services.mako = {
+      providers.services.users.${user}.units.mako = {
         description = "notification daemon";
-        command = [ "${pkgs.mako}/bin/mako" ];
+        type.service.command = "${pkgs.mako}/bin/mako";
       };
     };
 }

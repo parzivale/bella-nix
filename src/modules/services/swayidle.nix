@@ -130,7 +130,7 @@
     in
     {
       imports = [
-        inputs.self.modules.finix.graphical-session
+        inputs.self.modules.finix.user-services
         inputs.self.modules.finix.home-manager
         inputs.self.modules.finix.niri
       ];
@@ -154,10 +154,13 @@
         text = config.security.pam.services.login.text;
       };
 
-      state.session.services.swayidle = {
+      providers.services.users.${config.constants.username}.units.swayidle = {
         description = "idle manager";
 
-        command = [
+        # `escapeShellArgs`, because several of these arguments are themselves commands with
+        # arguments and have to arrive as one word each. The contract takes a command line where
+        # the old session submodule took an argv, so the quoting is done here rather than there.
+        type.service.command = lib.escapeShellArgs [
           "${pkgs.swayidle}/bin/swayidle"
           "-w"
           "timeout"
