@@ -25,20 +25,6 @@ in
             path = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
           };
 
-          # The cursor stylix chose, which it cannot set here itself: of its 109 targets there is
-          # one for sway, hyprland, hyprlock and swaync, and none for niri. So niri fell back to
-          # niri-flake's defaults - theme "default" at size 24 - while gtk applications took
-          # `gtk-cursor-theme-name=Nordzy-cursors` at 32 from settings.ini, which is why the
-          # cursor was the right shape and the wrong size depending on what was under it.
-          #
-          # The same shape as the console palette in `stylix`: the option exists on this side,
-          # so a target that would otherwise be lost is a matter of saying where the values come
-          # from.
-          cursor = {
-            theme = config.stylix.cursor.name;
-            size = config.stylix.cursor.size;
-          };
-
           prefer-no-csd = true;
 
           debug = {
