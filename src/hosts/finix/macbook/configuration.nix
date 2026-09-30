@@ -100,28 +100,6 @@ in
   #
   # Which means this says nothing about whether they work on the machine - only that a VM is not
   # where that gets tested.
-  # The initramfs is this machine's root, rather than a stage on the way to one.
-  #
-  # `/` is a tmpfs either way - the store is on btrfs and everything else is preservation bind
-  # mounts - so a stage which mounts a root and switches into it is a step with nothing in it.
-  # With `role = "root"` the kernel's rootfs is kept, /init mounts /nix and /persistent, and finit
-  # is PID 1 from the first instruction. There is nothing here that needs assembling first: no
-  # luks, no lvm, no raid, no network.
-  #
-  # What it costs is the initramfs staying resident. Nothing frees the unpacked image when it is
-  # the root, so `/` holds around 80MB rather than 9MB - most of it util-linux's whole bin output
-  # and btrfs-progs, for one `mount` and one filesystem.
-  #
-  # And it removes the fallback. A boot that fails here has no stage to fail back to: /init
-  # retries the mounts for 30s, checks activation, and drops to a shell with the store mounted if
-  # either goes wrong. The way out is picking an earlier generation at the limine menu, which is
-  # why the generation limit stays where it is.
-  #
-  # The first attempt at this did fail, and for a reason that had nothing to do with the mode:
-  # fstab still listed `/` as a tmpfs to be mounted, so finit's first act was to put an empty
-  # filesystem over the running root. finix excludes `/` from fstab in this role now.
-  boot.initrd.role = "root";
-
   virtualisation.vmVariant.providers.services.units = {
     speakersafetyd.enable = false;
     tiny-dfr.enable = false;
