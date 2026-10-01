@@ -24,24 +24,47 @@
     modules.tiny-dfr
   ];
 
-  # wireplumber waiting for the speaker protection used to be said here, by name.
+  # speakersafetyd in the session, beside the sound server it was racing.
   #
-  # The race it fixed is real - both start in the same second, both want the card's control
-  # elements, speakersafetyd locks the ones it protects with `snd_ctl_elem_lock`, and when
-  # wireplumber takes them first speakersafetyd panics on the first speaker it tries to claim:
+  # The ordering was said two ways before this and neither worked. First as a named edge -
+  # wireplumber waiting for the protection - and then structurally, by putting speakersafetyd in
+  # `basic` so that `multi-user`, and therefore every session, was behind it. The second is
+  # sound reasoning and it did not help, because a unit's readiness defaults to `fork`: finit
+  # asserts it the instant the process exists, so `basic` cleared while the daemon was still
+  # working out what it was protecting, and the session came up underneath it anyway.
   #
-  #   Could not lock elem Left Front VSENSE Switch.
-  #   ALSA function 'snd_ctl_elem_lock' failed with error 'Device or resource busy (16)'
+  # It also had the wrong failure in mind. The comment here described `snd_ctl_elem_lock`
+  # contention, which is what the upstream unit is written against. What actually happens on
+  # this machine, finally readable once the daemon's stderr reached the log:
   #
-  # finit restarted it two seconds later and the second attempt won, so it healed itself and
-  # looked like nothing - while the amps were unprotected for two seconds of every boot.
+  #   22:23:00  speakersafetyd[2059]: PCM rate: 8000..192000
+  #   22:23:02  pipewire starts
+  #   22:23:02  speakersafetyd[2059]: thread 'main' panicked at src/main.rs:298:17:
+  #   22:23:02  speakersafetyd[2059]: Invalid sample rate
   #
-  # It is said in the trunk now instead: speakersafetyd attaches to `basic`, so `multi-user` is
-  # not reached until it is up, and every session - and so every user tree, wireplumber included -
-  # is behind that. Which it has to be, because wireplumber is a user unit now and a user's
-  # supervisor cannot see a system unit at all; the contract refuses the edge rather than letting
-  # it wait for ever. The ordering is also no longer this host's to remember, and Cerberus, which
-  # has wireplumber and no speakersafetyd, needs nothing said either way.
+  # Not a lock at all. The sound server opens the card and changes its rate while the daemon is
+  # reading it, and the daemon panics. Two seconds later finit restarts it, the card has
+  # settled, and it comes up - which is why this looked like nothing for as long as nobody could
+  # read what it said.
+  #
+  # So it wants to start *after* pipewire, and that edge has nowhere to live in the trunk: a
+  # system unit cannot name a user unit, which is the same refusal that stopped wireplumber
+  # naming speakersafetyd. Beside pipewire it is one line.
+  #
+  # What that gives up is less than it looks. CAP_SYS_NICE goes, and `sched_setattr` failing is
+  # a `warn!` - more scheduling jitter, no less protection. The ALSA control device comes
+  # through the session's device ACLs, which is how pipewire reaches it. The flag file at
+  # /run/speakersafetyd goes too, and that one fails in the safe direction: no flag means "warm
+  # boot", and warm boot is the conservative branch - the coils are assumed to be at the
+  # thermal limit and gain is held down until the model cools them, where a cold boot assumes
+  # they are cold and allows full output immediately. The speakers start quiet after a cold boot
+  # and come up over the coil's time constant.
+  #
+  # And the scope: protection exists while a session does. That is safe here because the driver
+  # is fail-safe - `snd-soc-macaudio` keeps the speakers limited until this daemon unlocks them,
+  # which is the `Speaker volumes unlocked` line in the log - so no session is quiet speakers
+  # rather than unprotected ones.
+  services.speakersafetyd.session = config.constants.username;
 
   # uinput, which the Touch Bar daemon cannot work without.
   #
