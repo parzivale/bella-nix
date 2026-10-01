@@ -1,5 +1,6 @@
 { inputs }:
 {
+  config,
   lib,
   modules,
   ...
@@ -79,8 +80,37 @@
   programs.modprobe.extraConfig = ''
     options hid_apple
   '';
+  # Stage 1, still - and the reason is preservation rather than anything about the boot itself.
+  #
+  # The direct path works: tests/no-initrd-tmpfs boots this disk layout in a VM, the kernel takes
+  # the btrfs above the store's subvolume and resolves the bootspec's own `init=` against it, and
+  # finix-init pivots to the declared tmpfs. What it cannot do is preserve state, because
+  # preservation has no moment to run in.
+  #
+  # With a stage 1 the order is mount, preserve, switch_root, activate: the persisted state is in
+  # place before anything has written to the root. Without one the module moves its work into
+  # stage 2 - `mkIf (!config.boot.initrd.enable)` in community-modules' preservation - and the
+  # order inverts to mount, activate, finit, mount-filesystems, preserve. Activation then creates
+  # /etc, /var/lib and the home directories which preservation bind-mounts over a moment later,
+  # so what it wrote is hidden rather than kept. The same shape as the /run/current-system
+  # problem modules/boot/root.nix documents, and for the same reason: something ran before the
+  # thing that was supposed to make its destination real.
+  #
+  # It also does not boot, which is how this was found. finit's sysinit barrier gains
+  # `task/preservation-started/success`, the task never completes, and the machine stops there -
+  # before syslogd, so nothing is logged, on the machine or anywhere else. Three generations
+  # died in that silence:
+  #
+  #   [    4.055195] finit[1]: Starting udev-settle-started[1473]
+  #   [   14.047552] apple-pmgr-pwrstate ...: sync_state() pending due to 269080000.avd
+  #
+  # and then nothing, for ever.
+  #
+  # So the direct path waits on preservation learning to run inside finix-init, which is where
+  # stage 1's moment went. Flipping this back is all that is needed to try again.
+  boot.initrd.enable = true;
 
-  # Apple's NVMe, built in rather than modular, which the line below makes a prerequisite.
+  # Apple's NVMe, built in rather than modular - only when nothing else can load it.
   #
   # The reasoning is in the patch itself, because it is about when a value can be set rather
   # than what it should be. The short of it: nixpkgs seeds a kernel config with `make defconfig`
@@ -88,30 +118,17 @@
   # drivers/soc, and so NVMe is decided while APPLE_SART is still whatever the seed said. A
   # tristate cannot be built in over a modular dependency, so the answer is refused, re-asked
   # and the build dies - and the seed is the only place early enough to prevent it.
-  boot.kernelPatches = [
+  #
+  # Conditional, because it buys nothing with a stage 1: an initrd carries nvme_apple as a module
+  # and loads it before mounting anything, which is what it is for. Kept rather than deleted
+  # because it is correct and was not easy to arrive at - and because this comes straight back
+  # the moment the line above is false.
+  boot.kernelPatches = lib.optionals (!config.boot.initrd.enable) [
     {
       name = "apple-nvme-builtin";
       patch = ./apple-nvme-builtin.patch;
     }
   ];
-
-  # No stage 1. The kernel mounts the store's filesystem itself and execs finix-init out of it.
-  #
-  # What stage 1 was still doing here was building the tmpfs root and mounting /nix beneath it
-  # before the init ran, and finix-init does both now: the kernel is given the btrfs *above* the
-  # store's subvolume - the top level, where /nix/store/... is spelled the way the bootspec
-  # spells it - and the pivot puts the declared tmpfs in place once the binary is running. There
-  # is no LUKS to open here, no array to assemble and no pool to import, which is the line
-  # modules/boot/root.nix draws and the only reason an initrd would still be needed.
-  #
-  # The cost is a kernel with every storage driver built in rather than modular, because a module
-  # cannot be loaded from a root which is not mounted yet. That is a full kernel build, and it is
-  # the alternative to telling boot.kernel.builtinDrivers which controller this host hangs its
-  # disk off, host by host, and being wrong somewhere.
-  #
-  # Recovery, should this not come up: the previous generation is still in limine and still has
-  # its initrd, so the fallback is the boot menu rather than a USB stick.
-  boot.initrd.enable = false;
 
   # No boot entry is written: limine installs to the removable path, which is what U-Boot's EFI
   # implementation finds on these machines - the same arrangement the nixos host had, where
