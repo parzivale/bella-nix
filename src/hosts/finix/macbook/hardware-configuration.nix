@@ -80,6 +80,39 @@
     options hid_apple
   '';
 
+  # Apple's NVMe, built in rather than modular, which the line below makes a prerequisite.
+  #
+  # The reasoning is in the patch itself, because it is about when a value can be set rather
+  # than what it should be. The short of it: nixpkgs seeds a kernel config with `make defconfig`
+  # and then answers questions from its own list, kconfig asks about drivers/nvme before
+  # drivers/soc, and so NVMe is decided while APPLE_SART is still whatever the seed said. A
+  # tristate cannot be built in over a modular dependency, so the answer is refused, re-asked
+  # and the build dies - and the seed is the only place early enough to prevent it.
+  boot.kernelPatches = [
+    {
+      name = "apple-nvme-builtin";
+      patch = ./apple-nvme-builtin.patch;
+    }
+  ];
+
+  # No stage 1. The kernel mounts the store's filesystem itself and execs finix-init out of it.
+  #
+  # What stage 1 was still doing here was building the tmpfs root and mounting /nix beneath it
+  # before the init ran, and finix-init does both now: the kernel is given the btrfs *above* the
+  # store's subvolume - the top level, where /nix/store/... is spelled the way the bootspec
+  # spells it - and the pivot puts the declared tmpfs in place once the binary is running. There
+  # is no LUKS to open here, no array to assemble and no pool to import, which is the line
+  # modules/boot/root.nix draws and the only reason an initrd would still be needed.
+  #
+  # The cost is a kernel with every storage driver built in rather than modular, because a module
+  # cannot be loaded from a root which is not mounted yet. That is a full kernel build, and it is
+  # the alternative to telling boot.kernel.builtinDrivers which controller this host hangs its
+  # disk off, host by host, and being wrong somewhere.
+  #
+  # Recovery, should this not come up: the previous generation is still in limine and still has
+  # its initrd, so the fallback is the boot menu rather than a USB stick.
+  boot.initrd.enable = false;
+
   # No boot entry is written: limine installs to the removable path, which is what U-Boot's EFI
   # implementation finds on these machines - the same arrangement the nixos host had, where
   # bootctl was always passed --no-variables.

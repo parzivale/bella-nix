@@ -53,9 +53,53 @@
         inputs.self.modules.finix.udev
       ];
 
-      programs.pipewire.alsa = {
+      # `enable`, which this had never set - and that is the whole of why these speakers sound
+      # wrong.
+      #
+      # The module was imported for `configPackages` and then left switched off, so its entire
+      # `config` block - which is `mkIf cfg.enable` - never ran. Nothing wrote /etc/pipewire or
+      # /etc/wireplumber, and the units below ran a pipewire with no configuration directory at
+      # all. It starts perfectly well like that, which is why nothing said anything: the graph
+      # comes up, the card is found, audio plays. What is missing is every filter, so what the
+      # amps get is the stream itself:
+      #
+      #   Sinks:   * 56. Built-in Audio Speakers   [vol: 0.30]
+      #   Filters:
+      #   Streams:   77. Twilight  85. output_FR > Speakers:playback_FR [active]
+      #
+      # `Filters:` empty, and the stream wired straight to the raw ALSA sink. On this hardware
+      # the DSP is not a refinement, it is the crossover: asahi-audio's filter chain is what
+      # splits the signal and keeps full-range content away from the tweeters, and it publishes
+      # its own sink for everything to play into instead. Without it there was nothing between
+      # a stream and four drivers.
+      #
+      # `configPackages` on both halves, because asahi-audio ships configuration for both and
+      # they do different jobs: share/pipewire carries the filter chains, share/wireplumber the
+      # routing and policy which hides the raw sink behind them. Setting one and not the other
+      # gets filters nothing routes through.
+      #
+      # The plugin paths come along without being said here. The chains are LV2 and LADSPA -
+      # bankstown for the bass, the convolver for the IRs - and the module reads
+      # `passthru.requiredLv2Packages` off each config package and exports LV2_PATH and
+      # LADSPA_PATH through `security.pam.environment`. Which does reach these units, unlike
+      # `environment.variables`: pam_env sets it on the session, and the supervisor is started
+      # inside the session, so it inherits. Tested rather than assumed - LANG comes from the
+      # same file and is in the running pipewire's environ, where ALSA_CONFIG_UCM2 is not and
+      # has to be named on the units above.
+      programs.pipewire = {
         enable = true;
-        support32Bit = true;
+
+        alsa = {
+          enable = true;
+          support32Bit = true;
+        };
+
+        configPackages = [ pkgs.asahi-audio ];
+
+        wireplumber = {
+          enable = true;
+          configPackages = [ pkgs.asahi-audio ];
+        };
       };
 
       # What that module's README says to do - run the three by hand from the

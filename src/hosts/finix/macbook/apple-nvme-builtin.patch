@@ -1,0 +1,64 @@
+Build Apple's NVMe and its dependencies in, rather than as modules.
+
+Not a source change: it edits the defconfig that seeds the kernel's configuration,
+because that seed is the only place these values can be set in time.
+
+nixpkgs configures a kernel in three steps - `make defconfig` to seed `.config`, then
+two passes of `make config` answering from the list its structuredExtraConfig produces.
+The list is right; the order is not. kconfig walks its own source order, so
+drivers/nvme is asked long before drivers/iommu, drivers/mailbox and drivers/soc, and
+at the moment NVMe is decided its dependencies still hold whatever the seed gave them:
+
+    Depends on: OF [=y] && BLOCK [=y] && APPLE_RTKIT [=y] && APPLE_SART [=m]
+    QUESTION: Apple ANS2 NVM Express host driver, NAME: NVME_APPLE, ALTS: M/n/?, ANSWER: y
+    repeated question: Apple ANS2 NVM Express host driver at generate-config.pl line 94
+
+A tristate cannot be built in while something it depends on is a module, so `y` is not
+among the answers offered, and insisting on it gets the question re-asked and the build
+killed. generate-config.pl runs `make config` twice for exactly this - "Some options
+may only become available after other options are set in a previous run" - and the
+second pass would have worked, SART being set later in the first. It never gets there:
+the guard against kconfig looping cannot tell "unavailable now" from "stuck", and fires
+first. `lib.kernel.option` looks like the way to say this is allowed to fail, and is
+not - $requiredAnswers is read only by the final check, never by the answering loop.
+
+Seeding the values sidesteps all of it. The seed is read before any question is asked,
+so there is no order for it to be wrong in, and NVMe's dependency is already satisfied
+when its turn comes. The defconfig patch applies to the configuration derivation as
+well as the kernel's, because that derivation inherits `patches` from the kernel.
+
+Upstream Asahi ships these as modules on purpose - arch/arm64/configs/asahi.config has
+CONFIG_NVME_APPLE=m and CONFIG_APPLE_SART=m - because it expects an initramfs to load
+them. This machine has none: the kernel mounts the store itself and execs finix-init
+out of it, so the driver for the disk holding that store cannot be a module on it.
+
+RTKIT comes along because it is `m` here and `y` in asahi.config, reached by a select
+from RUST_APPLE_RTKIT; left modular in the seed it is the next dependency to fail the
+same way. If a kernel bump moves these lines this patch stops applying, which is the
+failure worth having: it stops the build rather than quietly producing a kernel that
+cannot find its own disk.
+
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -1624,7 +1624,7 @@
+ CONFIG_ARM_SMMU_V3=y
+ CONFIG_MTK_IOMMU=y
+ CONFIG_QCOM_IOMMU=y
+-CONFIG_APPLE_DART=m
++CONFIG_APPLE_DART=y
+ CONFIG_REMOTEPROC=y
+ CONFIG_IMX_REMOTEPROC=y
+ CONFIG_MTK_SCP=m
+@@ -1644,9 +1644,9 @@
+ CONFIG_RPMSG_VIRTIO=y
+ CONFIG_SOUNDWIRE=m
+ CONFIG_SOUNDWIRE_QCOM=m
+-CONFIG_APPLE_MAILBOX=m
+-CONFIG_APPLE_RTKIT=m
+-CONFIG_APPLE_SART=m
++CONFIG_APPLE_MAILBOX=y
++CONFIG_APPLE_RTKIT=y
++CONFIG_APPLE_SART=y
+ CONFIG_FSL_DPAA=y
+ CONFIG_FSL_MC_DPIO=y
+ CONFIG_FSL_RCPM=y
