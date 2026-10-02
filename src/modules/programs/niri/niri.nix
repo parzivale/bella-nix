@@ -162,12 +162,21 @@ in
       # the process greetd waits on is the session itself rather than a shell holding a pipe. The
       # logger outlives the shell and exits when the session closes the pipe.
       #
-      # NO_COLOR because the destination is syslog: niri's tracing output is coloured when it
-      # thinks it has a terminal, and a pipe is enough for it to think so, which would put escape
-      # sequences through /var/log/syslog.
+      # the colour is stripped here rather than asked for politely, because this stream carries
+      # more than niri: dinit's own [ OK ] lines and every user service's output land in it too,
+      # and a filter at the sink covers producers nobody has to go and ask.
+      #
+      # It used to ask, with `export NO_COLOR=1`, and that is a lie told to the wrong audience:
+      # export puts it in the session environment, so it reached niri, then wezterm, then the
+      # shell inside wezterm, then everything run from there. The whole desktop lost its colour
+      # to keep escape sequences out of a log file.
+      #
+      # `-u` or sed holds lines in its buffer and the log arrives late. SGR only, so the OSC
+      # palette sequences the console setup emits still go through - they are already there, and
+      # they are not what anything renders colour with.
       sessionCommand = pkgs.writeShellScript "niri-session" ''
-        export NO_COLOR=1
-        exec > >(${lib.getExe' pkgs.util-linux "logger"} -t niri-session) 2>&1
+        exec > >(${lib.getExe' pkgs.gnused "sed"} -u 's/\x1b\[[0-9;]*m//g' \
+          | ${lib.getExe' pkgs.util-linux "logger"} -t niri-session) 2>&1
 
         exec ${
           lib.escapeShellArgs [
