@@ -1,8 +1,19 @@
 _:
 let
-  # Kept in the menu, and the same number either way: both loaders are keeping
-  # generations off a full ESP.
-  generations = 20;
+  # Kept in the menu, and the same number either way.
+  #
+  # Six, which is an arithmetic answer rather than a taste one. macbook's ESP is 476M and each
+  # generation puts a kernel and an initrd on it - about 38M for an asahi kernel and its
+  # compressed initramfs - so twenty of them is 760M into a partition that cannot hold it. What
+  # that produced was not an error: the limine installer copies first and prunes last, so on a
+  # full ESP the copy fails before anything is freed, and `switch-to-configuration boot` reported
+  # success while the menu went on offering whichever generations still had files. Three switches
+  # landed and the machine booted the same stale generation every time.
+  #
+  # Six leaves headroom at roughly half the partition. The number this replaced was deliberate -
+  # "EFI, twenty generations kept" was a considered choice shared with the systemd-boot side - and
+  # it was simply never checked against the size of the disk it was writing to.
+  generations = 6;
 in
 {
   # How the machine boots - and the one module where the two classes are not two
@@ -10,7 +21,7 @@ in
   # `providers.bootloader` implementation is limine, a different loader with its
   # own configuration and its own install program.
   #
-  # What is the same is the shape of the decision: EFI, twenty generations kept,
+  # What is the same is the shape of the decision: EFI, six generations kept,
   # and no writing to EFI variables - so on both, the loader goes in the ESP and
   # the firmware is left to find it.
   flake.modules.nixos.boot = {
