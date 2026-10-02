@@ -113,7 +113,13 @@ in
   # `security.polkit.enablePkexecWrapper` has no counterpart: finix's polkit module installs
   # the setuid pkexec wrapper whenever polkit is enabled, so there is nothing to turn on.
 
-  boot.kernelParams = [ "button.lid_init_state=open" ];
+  # `loglevel=3` is temporary, for one experiment: the kernel's own chatter buries finit's unit
+  # sequence on the console, and a boot which hangs before syslogd leaves the console as the only
+  # evidence there is. Quiet it and what survives on screen is which unit finit stopped at.
+  boot.kernelParams = [
+    "button.lid_init_state=open"
+    "loglevel=3"
+  ];
 
   services.elogind.settings.Login = {
     HandleLidSwitch = "suspend";

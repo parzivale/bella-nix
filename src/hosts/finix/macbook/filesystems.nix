@@ -40,7 +40,31 @@ _: {
     };
 
     "/boot" = {
-      device = "/dev/disk/by-partuuid/8a5dc817-ca90-4ec5-9e27-7e8c2f18aaa0";
+      # `PARTUUID=` rather than /dev/disk/by-partuuid/, and the difference is who resolves it.
+      #
+      # That path is a symlink udev makes once it is running, and with no initrd nothing has run
+      # udev when the filesystems are mounted: the contract's mount-filesystems task starts
+      # before udevd does, which is harmless on a machine whose stage 1 already populated /dev
+      # and fatal on one with no stage at all. It fails exactly as a missing device does:
+      #
+      #   [FAIL] Mounting filesystems from /etc/fstab
+      #   mount: /boot: fsconfig() failed: /dev/disk/by-partuuid/8a5dc817-...
+      #
+      # and because `mount -a` is one task for every filesystem, one entry failing fails all of
+      # it. `mount-filesystems-started` never fires, the sysinit barrier waits on it for ever,
+      # and the boot stops before syslogd - so nothing records why, on the machine or anywhere
+      # else. Four generations died of this.
+      #
+      # `PARTUUID=` is read by libblkid out of the partition table itself, so it needs nothing
+      # running and resolves identically with an initrd or without one. The same reasoning
+      # modules/boot/root.nix applies to `root=`, which translates these two forms and refuses
+      # the rest; fstab is the half that was left naming a symlink.
+      #
+      # Mounted at all because the bootloader installer assumes it: limine-install walks up from
+      # /boot with os.path.ismount to find the EFI partition, so an unmounted /boot resolves to
+      # the tmpfs root and it installs kernels there - a switch which reports success and leaves
+      # the real ESP untouched. Not mounting it is a worse failure than failing to mount it.
+      device = "PARTUUID=8a5dc817-ca90-4ec5-9e27-7e8c2f18aaa0";
       fsType = "vfat";
       options = [
         "fmask=0077"

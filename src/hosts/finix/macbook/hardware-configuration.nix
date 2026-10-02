@@ -66,6 +66,30 @@
   # rather than unprotected ones.
   services.speakersafetyd.session = config.constants.username;
 
+  # ...and in the group which gates its wrapper, because the capability that wrapper grants is
+  # not optional.
+  #
+  # The first version of this ran the bare binary on the reasoning that CAP_SYS_NICE is wanted
+  # rather than needed - `sched_setattr` failing is a `warn!`, so it starts and protects and
+  # looks fine. It does, until the machine is busy. `Speaker Volume Unlock` is a watchdog the
+  # driver expects on a deadline, a loop without realtime scheduling misses it, and the driver
+  # locks the speakers itself:
+  #
+  #   00:40:16 kernel: snd-soc-macaudio sound: Speaker volumes locked: Lock timeout
+  #   00:40:19 kernel: snd-soc-macaudio sound: Speaker volumes unlocked
+  #   00:40:19 kernel: snd-soc-macaudio sound: Speaker volumes locked: Lock timeout
+  #
+  # four times in seven seconds, each unlock a restart after a panic, until dinit's restart limit
+  # stopped trying and the speakers stayed silent. Audio simply stopped, two hours into a boot,
+  # with nothing in any system log to say why - the daemon's output goes to its supervisor's
+  # buffer now, not to syslog.
+  #
+  # What the group grants is one wrapper, which execs one binary, with one capability, as the
+  # user who ran it - there is no setuid bit on it. This account is in `wheel` and can become
+  # root with its own password, so it is not a boundary that was holding anything here. On a
+  # machine with more than one human it would be, which is why the module leaves it to the host.
+  users.users.${config.constants.username}.extraGroups = [ "speakersafetyd" ];
+
   # uinput, which the Touch Bar daemon cannot work without.
   #
   # tiny-dfr draws the bar and emits the function keys pressed on it, and it emits them by
@@ -131,7 +155,7 @@
   #
   # So the direct path waits on preservation learning to run inside finix-init, which is where
   # stage 1's moment went. Flipping this back is all that is needed to try again.
-  boot.initrd.enable = true;
+  boot.initrd.enable = false;
 
   # Apple's NVMe, built in rather than modular - only when nothing else can load it.
   #
