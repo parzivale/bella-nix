@@ -170,6 +170,24 @@
   # and loads it before mounting anything, which is what it is for. Kept rather than deleted
   # because it is correct and was not easy to arrive at - and because this comes straight back
   # the moment the line above is false.
+  # The one storage driver this machine has, named rather than taken from the default.
+  #
+  # `boot.kernel.builtinDrivers` otherwise defaults to every driver finix knows, on the
+  # reasoning that a machine without an initrd is having a kernel built for it anyway and
+  # cannot reliably say which controller its disk is on. This one can: the root is
+  # /dev/nvme0n1p5, which is the ANS2 NVMe, and there is nothing else to boot from.
+  #
+  # It also has to be named, because nvme_apple is excluded from that default - it cannot be
+  # built in by answering the configuration generator, only by seeding the defconfig, which is
+  # the patch below. A driver which needs a machine-specific patch is not one to put in every
+  # machine's kernel automatically, and when it was the no-initrd tests in finix all stopped
+  # building: they use the stock kernel and have no reason to patch its defconfig.
+  #
+  # The rest of the default - ahci, mmc_block, generic nvme, sd_mod, usb_storage, virtio_blk -
+  # is hardware this does not have, so dropping it costs nothing and takes about 3 MB off the
+  # image along with the initcalls that go with it.
+  boot.kernel.builtinDrivers = [ "nvme_apple" ];
+
   boot.kernelPatches = lib.optionals (!config.boot.initrd.enable) [
     {
       name = "apple-nvme-builtin";

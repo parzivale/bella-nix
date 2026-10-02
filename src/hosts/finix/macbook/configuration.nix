@@ -38,9 +38,35 @@ in
       # FEX, below. binfmt_misc registration is a finix module of its own rather than part of
       # the always-loaded set, so it is named here.
       modules.binfmt
+
+      # sinit, for the backend named below. finit is always loaded; this one is not.
+      modules.sinit
     ];
 
-  finit.enable = true;
+  # sinit rather than finit, which is a measurement and not a preference.
+  #
+  # The same no-initrd boot, same VM, same disk image, same units, with only the backend
+  # changed (finix tests/no-initrd-sinit and its finit twin):
+  #
+  #   sinit:  multi-user at 0.63s, trunk top at 5.81s
+  #   finit:  multi-user at 1.94s, trunk top at 7.23s
+  #
+  # Three times faster to multi-user, which was the opposite of what was expected: finix builds
+  # sinit's dependency graph out of shell loops, where finit has one in C. What that says is
+  # that finit's cost here is not computing the graph but starting up - reading its
+  # configuration, building the graph, and scheduling between units - and sinit does none of it
+  # because what finix hands it is a set of self-contained scripts that simply run.
+  #
+  # sinit itself is 92 lines: it blocks every signal, execs one child, and answers four signals.
+  # Everything else - supervision, readiness, ordering, the trunk - is finix's, in shell. There
+  # is no notify or s6 readiness and no waitFor.pidfile, which the contract refuses at
+  # evaluation rather than downgrading; this machine declares none of them, now that tailscaled
+  # names its socket as well as sd_notify.
+  #
+  # What it gives up against finit: a fixed respawn backoff rather than crash-loop detection,
+  # and no start or stop timeout bounds. Services are still supervised and still restarted -
+  # speakersafetyd depends on that and it still holds.
+  providers.services.backend = "sinit";
 
   # x86_64 Wine, through FEX rather than qemu.
   #

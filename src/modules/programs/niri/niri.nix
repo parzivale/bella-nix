@@ -150,6 +150,41 @@ in
         echo "XDG_RUNTIME_DIR=${runtimeDir}"
       '';
 
+      # the session, with everything it writes going to the log.
+      #
+      # greetd hands the session a tty and nothing captures what it says there, so the compositor
+      # has always been the one part of this machine that could fail silently. niri not loading its
+      # config looked exactly like niri loading a bad one, and there was no line anywhere to tell
+      # them apart - greetd logged `Starting greetd[2388]` and nothing else, because niri's stderr
+      # went to tty7 rather than to greetd.
+      #
+      # `exec > >(logger)` rather than a pipeline: the redirection survives the `exec` below, so
+      # the process greetd waits on is the session itself rather than a shell holding a pipe. The
+      # logger outlives the shell and exits when the session closes the pipe.
+      #
+      # NO_COLOR because the destination is syslog: niri's tracing output is coloured when it
+      # thinks it has a terminal, and a pipe is enough for it to think so, which would put escape
+      # sequences through /var/log/syslog.
+      sessionCommand = pkgs.writeShellScript "niri-session" ''
+        export NO_COLOR=1
+        exec > >(${lib.getExe' pkgs.util-linux "logger"} -t niri-session) 2>&1
+
+        exec ${
+          lib.escapeShellArgs [
+            "${pkgs.dbus}/bin/dbus-run-session"
+            "--"
+            "${config.providers.services.user.sessionLauncher}"
+            "--user"
+            user
+            "--session-env"
+            sessionEnv
+            "--"
+            "${niri}/bin/niri"
+            "--session"
+          ]
+        }
+      '';
+
       # `withSystemd` off, which is not about linking: niri's systemd feature puts
       # anything it spawns - the `spawn` action, `spawn-at-startup` - into a
       # transient unit, so that an OOM kill takes the process rather than the whole
@@ -209,18 +244,11 @@ in
           # one, so the name cannot be known here - it is discovered once, by the launcher, and
           # exported into the tree. Failing until the socket exists is also what says the
           # session is up, which is why it is one command and not two.
-          command = lib.escapeShellArgs [
-            "${pkgs.dbus}/bin/dbus-run-session"
-            "--"
-            "${config.providers.services.user.sessionLauncher}"
-            "--user"
-            user
-            "--session-env"
-            sessionEnv
-            "--"
-            "${niri}/bin/niri"
-            "--session"
-          ];
+          # one word, because greetd's config cannot hold more: `inish` walks s.lines() and wants
+          # an `=` on each, so a multi-line value is unrepresentable however it is quoted. The
+          # wrapper is where dbus-run-session, the launcher and niri actually live - see
+          # sessionCommand above, and the logging it exists for.
+          command = toString sessionCommand;
           inherit user;
         };
       };
