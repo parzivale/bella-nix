@@ -295,10 +295,12 @@
     },
     "finix": {
       "locked": {
-        "lastModified": 1790951748,
-        "narHash": "sha256-Rv2KrMDfjU+gnK7iK0Sos/+NoGE5WW9zItx/CTt4voo=",
-        "path": "/home/bella/develop/finix",
-        "type": "path"
+        "lastModified": 1790962032,
+        "narHash": "sha256-PBc2Vj1MEbxw/qnaSIw5HeS65QQOdVDKWZt50ZK/nDM=",
+        "owner": "parzivale",
+        "repo": "finix",
+        "rev": "daa0875900a8de10b80d1bf141694029ff10370f",
+        "type": "github"
       },
       "original": {
         "owner": "parzivale",

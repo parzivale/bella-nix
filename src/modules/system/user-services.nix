@@ -68,6 +68,7 @@
       # EDITOR, VISUAL and STARSHIP_CONFIG come along from the shell side. A session is a
       # reasonable place for them - something spawned from a key binding wanting $EDITOR gets
       # one - and excluding them would mean maintaining a list of what counts as graphical.
-      providers.services.users.${user}.sessionVariables = hm.home.sessionVariables // hm.systemd.user.sessionVariables;
+      providers.services.users.${user}.sessionVariables =
+        hm.home.sessionVariables // hm.systemd.user.sessionVariables;
     };
 }
