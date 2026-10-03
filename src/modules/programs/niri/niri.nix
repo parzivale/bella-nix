@@ -178,6 +178,17 @@ in
         exec > >(${lib.getExe' pkgs.gnused "sed"} -u 's/\x1b\[[0-9;]*m//g' \
           | ${lib.getExe' pkgs.util-linux "logger"} -t niri-session) 2>&1
 
+        # where the last half-second of the boot goes.
+        #
+        # greetd's own latch is monotonic and so is this, so the difference is what greetd and
+        # PAM cost between deciding to start the session and this script running - elogind
+        # opening a session, /run/user/1000, the worker fork. niri's first tracing line minus
+        # this is the other half: dbus-run-session, session-launch, and niri reaching its own
+        # main. Measured end to end that span is 0.60s, which is the largest thing left on the
+        # path to a compositor, and nothing currently says which part of it is which.
+        ${lib.getExe' pkgs.coreutils "printf"} 'niri-session: starting at %s\n' \
+          "$(${lib.getExe' pkgs.coreutils "cut"} -d' ' -f1 /proc/uptime)"
+
         exec ${
           lib.escapeShellArgs [
             "${pkgs.dbus}/bin/dbus-run-session"
