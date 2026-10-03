@@ -188,6 +188,24 @@
   # image along with the initcalls that go with it.
   boot.kernel.builtinDrivers = [ "nvme_apple" ];
 
+  # 0.54 seconds of this machine's 0.89s kernel init was spent timing raid6 implementations
+  # against each other, on a machine with no raid:
+  #
+  #   [0.096036] raid6: neonx8   gen() 22227 MB/s
+  #   ... eight of them, ~68ms each ...
+  #   [0.640183] raid6: using neon recovery algorithm
+  #   [0.887763] Run /nix/store/...-finix-system/init as init process
+  #
+  # It is here because of the no-initrd boot, not in spite of it: the kernel has to mount the
+  # root itself, so CONFIG_BTRFS_FS=y, and btrfs `select`s RAID6_PQ, whose init benchmarks every
+  # implementation it has when it is built in rather than modular.
+  #
+  # Without the benchmark the kernel takes the first implementation that works instead of the
+  # fastest. The measurement above is what that costs: neonx4 won at 22924 MB/s against neonx8's
+  # 22227, a 3% difference, in a code path reached only by btrfs raid5/6 profiles and md-raid6 -
+  # neither of which exists on this disk. 0.54s of every boot for 3% of something that never runs.
+  boot.kernel.structuredExtraConfig.RAID6_PQ_BENCHMARK = lib.kernel.no;
+
   boot.kernelPatches = lib.optionals (!config.boot.initrd.enable) [
     {
       name = "apple-nvme-builtin";
