@@ -8,11 +8,41 @@ let
     enable = true;
     inherit image;
     base16Scheme = ./themes/catppuccin-macchiato.yaml;
+
+    # Said, rather than left to the default - and the default is not neutral.
+    #
+    # `polarity` exists to steer palette generation from an image: stylix ranks a light and a
+    # dark candidate with a genetic algorithm and `"either"` means "take the better one". With
+    # an explicit `base16Scheme` that algorithm never runs, so the option does nothing for the
+    # colours and it is easy to assume it does nothing at all.
+    #
+    # It does. Targets branch on it, and almost all of them are shaped
+    # `if polarity == "dark" then <dark> else <light>` - so `"either"` is not a third case, it
+    # is the light one. foot says so outright: `if polarity == "either" then "light"`. On a
+    # machine themed catppuccin-macchiato that meant the light branch everywhere:
+    #
+    #   qt       icon_theme=null, because `icons.light` was unset and that is the branch taken
+    #   gnome    color-scheme=default instead of prefer-dark, so GTK apps were told "no
+    #            preference" on a dark desktop
+    #   dunst, fnott, fuzzel, regreet   the light icon theme, likewise unset
+    #
+    # `"dark"` is simply what is true here, and it is the one line that corrects all of them.
+    polarity = "dark";
+
     icons = {
       package = pkgs.papirus-icon-theme;
       dark = "Papirus-Dark";
+
+      # Never read while polarity is `dark` - every consumer of `icons.light` is on the losing
+      # side of the branch above. It is here as the honest fallback: if that line is ever
+      # removed, or a future stylix changes what the default resolves to, this lands on light
+      # icons rather than on `null`. Papirus ships all three names, so it is a real theme and
+      # not a placeholder.
+      light = "Papirus-Light";
+
       enable = true;
     };
+
     cursor = {
       package = pkgs.nordzy-cursor-theme;
       name = "Nordzy-cursors";
