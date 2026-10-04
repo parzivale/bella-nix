@@ -111,7 +111,49 @@
   # default meaning "absent", and nothing says so.
   hardware.uinput.enable = true;
 
-  nixpkgs.overlays = [ inputs.nixos-apple-silicon.overlays.default ];
+  # uboot-asahi, which stopped building when nixpkgs' dtc went 1.7.2 -> 1.8.1:
+  #
+  #   DTC     dts/upstream/src/arm64/apple/t8103-j274.dtb
+  #   FATAL ERROR: Unrecognized check name "node_name_not_empty"
+  #
+  # Two halves of one nixpkgs workaround, and asahi's package keeps only the half that
+  # breaks. `buildUBoot` passes `DTC=${lib.getExe buildPackages.dtc}` so U-Boot uses nixpkgs'
+  # dtc, and its postPatch rewrites `-Wno-graph_child_address` into
+  # `-Eno-node_name_not_empty` - because dtc 1.8 dropped the first check and added the second
+  # as an error, and the new error rejects binman's `@<name>-SEQ` template nodes. The rewrite
+  # is only valid because the `DTC=` is there.
+  #
+  # uboot-asahi strips it: `makeFlags = filter (s: !(hasPrefix "DTC=" s)) o.makeFlags`, with
+  # the comment "DTC= flag somehow breaks DTC compilation so we remove it". U-Boot then falls
+  # back to `DTC ?= $(objtree)/scripts/dtc/dtc` - the dtc it builds itself, which is older than
+  # 1.8 and has never heard of `node_name_not_empty`. So the rewrite hands a check name to a
+  # compiler that cannot take it, and every Apple Silicon U-Boot build dies on the device trees
+  # after linking U-Boot itself.
+  #
+  # Undone rather than worked around the other way. The rewrite's precondition - that dtc 1.8
+  # is doing the compiling - is simply false for this derivation, so reverting it restores the
+  # tree this package has always built against: the vendored dtc, which knows
+  # `graph_child_address` and never had the 1.8 error to disable.
+  #
+  # The other direction would be to put `DTC=` back and let nixpkgs' dtc do it, which is what
+  # makes the two halves consistent and is the right shape for an upstream fix. Not taken here:
+  # asahi removed that flag deliberately and recorded that it broke something, without saying
+  # what, and this is not the place to find out. Worth an issue against
+  # nix-community/nixos-apple-silicon, which is upstream and not a fork of ours to push to.
+  nixpkgs.overlays = [
+    inputs.nixos-apple-silicon.overlays.default
+
+    (_final: prev: {
+      uboot-asahi = prev.uboot-asahi.overrideAttrs (o: {
+        postPatch = o.postPatch + ''
+          for f in scripts/Makefile.lib dts/upstream/Makefile; do
+            substituteInPlace "$f" \
+              --replace-fail -Eno-node_name_not_empty -Wno-graph_child_address
+          done
+        '';
+      });
+    })
+  ];
 
   hardware.facter.reportPath = ./facter.json;
 
