@@ -19,7 +19,9 @@
         wants = [ "agenix-install-secrets.service" ];
       };
 
-      nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
+      # Through the merging option `nix` declares, not `nixpkgs.config` directly:
+      # that one cannot take a second definition, and kanidm now has one.
+      permittedInsecurePackages = [ "olm-3.2.16" ];
 
       services.mautrix-discord = {
         enable = true;
