@@ -85,13 +85,14 @@
       # asahi's own sound module sets `services.pipewire.configPackages` on both halves and
       # community-modules' shim forwards them, so the two lines that used to be here were a
       # second copy of what the hardware module already said - `[ asahi-audio asahi-audio ]` in
-      # `programs.pipewire.configPackages`, measured. The machine that has the hardware asserts
-      # the result instead; see its hardware-configuration.nix.
+      # `programs.pipewire.configPackages`, measured. The shim asserts that the forward actually
+      # delivered, on both halves, which is where a check of that belongs: it is the module that
+      # knows the translation is happening, and it covers every Apple Silicon host rather than
+      # whichever one thought to ask.
       #
-      # Both halves still matter, which is why that assertion checks both: asahi-audio ships
-      # share/pipewire for the filter chains and share/wireplumber for the routing and policy
-      # that hides the raw sink behind them, and one without the other gets filters nothing
-      # routes through.
+      # Both halves matter, which is why it checks both: asahi-audio ships share/pipewire for
+      # the filter chains and share/wireplumber for the routing and policy that hides the raw
+      # sink behind them, and one without the other gets filters nothing routes through.
       #
       # The plugin paths come along without being said anywhere. The chains are LV2 and LADSPA -
       # bankstown for the bass, the convolver for the IRs - and the module reads
