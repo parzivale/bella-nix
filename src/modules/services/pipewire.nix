@@ -73,12 +73,27 @@
       # its own sink for everything to play into instead. Without it there was nothing between
       # a stream and four drivers.
       #
-      # `configPackages` on both halves, because asahi-audio ships configuration for both and
-      # they do different jobs: share/pipewire carries the filter chains, share/wireplumber the
-      # routing and policy which hides the raw sink behind them. Setting one and not the other
-      # gets filters nothing routes through.
+      # `configPackages` is not set here, and that is the change: asahi-audio is this one
+      # laptop's hardware and this module is on the `desktop` profile, which Cerberus imports
+      # too. Naming it here meant an x86_64 host evaluating an aarch64-only package, so
+      # Cerberus did not evaluate at all:
       #
-      # The plugin paths come along without being said here. The chains are LV2 and LADSPA -
+      #   error: Refusing to evaluate package 'asahi-audio-4.1' ... hostPlatform.system =
+      #   "x86_64-linux", package.meta.platforms = [ "aarch64-linux" ]
+      #
+      # The macbook loses nothing by it, because nothing here was what delivered the package.
+      # asahi's own sound module sets `services.pipewire.configPackages` on both halves and
+      # community-modules' shim forwards them, so the two lines that used to be here were a
+      # second copy of what the hardware module already said - `[ asahi-audio asahi-audio ]` in
+      # `programs.pipewire.configPackages`, measured. The machine that has the hardware asserts
+      # the result instead; see its hardware-configuration.nix.
+      #
+      # Both halves still matter, which is why that assertion checks both: asahi-audio ships
+      # share/pipewire for the filter chains and share/wireplumber for the routing and policy
+      # that hides the raw sink behind them, and one without the other gets filters nothing
+      # routes through.
+      #
+      # The plugin paths come along without being said anywhere. The chains are LV2 and LADSPA -
       # bankstown for the bass, the convolver for the IRs - and the module reads
       # `passthru.requiredLv2Packages` off each config package and exports LV2_PATH and
       # LADSPA_PATH through `security.pam.environment`. Which does reach these units, unlike
@@ -94,11 +109,8 @@
           support32Bit = true;
         };
 
-        configPackages = [ pkgs.asahi-audio ];
-
         wireplumber = {
           enable = true;
-          configPackages = [ pkgs.asahi-audio ];
         };
       };
 
