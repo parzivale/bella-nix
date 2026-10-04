@@ -42,6 +42,25 @@
         };
       };
 
+      # kanidm 1.10 reached end-of-life, and nixpkgs marks an EOL release insecure
+      # rather than removing it - so the pin below stopped evaluating, and took
+      # every other host with it through `router`'s fan-out over
+      # `self.nixosConfigurations`.
+      #
+      # Permitted rather than bumped, because the bump is not a package change:
+      # kanidmd migrates its database in place the first time a new minor starts,
+      # with no path back short of restoring /var/lib/kanidm - so it wants
+      # `kanidmd domain upgrade-check` and a backup run against the live server
+      # before the version here moves. 1.10 -> 1.11 is the one step available
+      # either way; kanidm refuses to skip a minor - and 1.11.2 is in nixpkgs and
+      # evaluates against this provisioning config unchanged, so the database step
+      # is the whole of what is left to do.
+      #
+      # The string carries the patch version because that is the package name, so
+      # this goes stale on the next 1.10.x and says so rather than quietly
+      # permitting something newer.
+      permittedInsecurePackages = [ "kanidm-with-secret-provisioning-1.10.5" ];
+
       services.kanidm = {
         package = pkgs.kanidmWithSecretProvisioning_1_10;
         server = {
