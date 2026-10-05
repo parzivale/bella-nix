@@ -141,6 +141,17 @@ in
         inputs.self.modules.finix.user
       ];
 
+      # `/share/icons` onto `environment.pathsToLink`, which is what actually puts an icon
+      # theme into a profile. finix defaults every `xdg.*` module off, so without this the
+      # per-user profile is a buildEnv over a list that does not mention icons - papirus is
+      # installed and the directory is filtered out on the way in. Everything resolving an
+      # icon by name then finds nothing, which is fuzzel showing blanks and mako's
+      # `icon-path` naming a directory that does not exist.
+      #
+      # Named here because this is the module that asks for an icon theme at all; nothing
+      # else in the configuration wants one.
+      xdg.icons.enable = true;
+
       # What `programs.dconf.enable` does on the other side, which there is no module for here:
       # put dconf where a session bus can find its service file. home-manager's activation has a
       # `dconfSettings` step that loads the settings stylix generates, and with no
