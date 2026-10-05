@@ -66,7 +66,7 @@ in
   # What it gives up against finit: a fixed respawn backoff rather than crash-loop detection,
   # and no start or stop timeout bounds. Services are still supervised and still restarted -
   # speakersafetyd depends on that and it still holds.
-  providers.services.backend = "sinit";
+  sinit.enable = true;
 
   # x86_64 Wine, through FEX rather than qemu.
   #
