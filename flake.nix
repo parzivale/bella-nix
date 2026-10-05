@@ -151,6 +151,12 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
+    # Not yet wired into any host: a candidate init, carried so the patch below has
+    # somewhere to live and `nix build .#nxinit` can prove it still applies. A finix
+    # backend for it would be `modules/init/nxinit/` over there, modelled on sinit's -
+    # which is the shape this fits, both being a signal loop around one exec'd child.
+    nxinit.url = "github:bunless/nxinit";
+
     # Declares no inputs of its own (it pins nixpkgs through lon for its
     # formatter only), so there is nothing to make follow ours.
     finix.url = "github:parzivale/finix/generic-services";
@@ -454,6 +460,32 @@
             agenix-rekey.nixosConfigurations = lib.filterAttrs (
               _: node: node.config ? age
             ) inputs.self.nixosConfigurations;
+            # nxinit, with the one change that makes it usable as an init at all.
+            #
+            # Upstream hardcodes `exec::cmd("/bin/sh")` - the single child pid 1 execs
+            # is a constant, so there is no way to tell it what userspace to start, and
+            # `/bin/sh` with no arguments and the console on stdin is an interactive
+            # shell rather than a boot. The patch takes argv[1] as the command and
+            # argv[2..] as its arguments, which is what `init=` on the kernel command
+            # line is for.
+            #
+            # It also drops the 30-second `alarm(30)` reap. That was a safety net under
+            # the SIGCHLD handler and it is not needed: `reap()` already drains in a
+            # `wait4(-1, ..., WNOHANG)` loop until ECHILD, so one CHLD collects every
+            # pending child, and a child exiting between the drain and the next
+            # `sigwait` leaves CHLD pending so the wait returns at once. What it cost
+            # was a wakeup every 30s and an unpredictable upper bound on shutdown.
+            #
+            # Tested as real pid 1 in a PID namespace rather than only built: argv
+            # reaches the child, USR1 reboots, USR2 powers off, and five orphaned
+            # grandchildren leave no zombies without the alarm.
+            #
+            # Carried here rather than upstreamed because bunless/nxinit is not ours to
+            # push to. If it lands there, this and the input above both go.
+            packages.nxinit = inputs.nxinit.packages.${system}.nxinit.overrideAttrs (o: {
+              patches = (o.patches or [ ]) ++ [ ./src/packages/nxinit/init-command-from-argv.patch ];
+            });
+
             formatter = pkgs.nixfmt-tree;
 
             devShells = {
