@@ -940,22 +940,6 @@
         "type": "github"
       }
     },
-    "nixpkgs_3": {
-      "locked": {
-        "lastModified": 1791048980,
-        "narHash": "sha256-KgItSKML8Xvte0B7/uGnBDsYzSnnKHcOaiUbgWBXLXw=",
-        "owner": "Nixos",
-        "repo": "nixpkgs",
-        "rev": "a7868a727837f3c09cee2ce0ca671c76b1589fed",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Nixos",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nur": {
       "inputs": {
         "flake-parts": [
@@ -978,24 +962,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "NUR",
-        "type": "github"
-      }
-    },
-    "nxinit": {
-      "inputs": {
-        "nixpkgs": "nixpkgs_3"
-      },
-      "locked": {
-        "lastModified": 1791154007,
-        "narHash": "sha256-kDuFrR1fjYOZdhwBiJpDjMqqs4fjbf6bbdghVBZrz5c=",
-        "owner": "bunless",
-        "repo": "nxinit",
-        "rev": "91afdfb7dfba1ad5c4a03b709489c3a8d9134eda",
-        "type": "github"
-      },
-      "original": {
-        "owner": "bunless",
-        "repo": "nxinit",
         "type": "github"
       }
     },
@@ -1081,7 +1047,6 @@
         "nixos-apple-silicon": "nixos-apple-silicon",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-libdisplay-info": "nixpkgs-libdisplay-info",
-        "nxinit": "nxinit",
         "playit-nixos-module": "playit-nixos-module",
         "preservation": "preservation",
         "stylix": "stylix",
