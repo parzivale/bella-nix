@@ -12,6 +12,36 @@ let
       home-manager.users.${user} = {
         programs.home-manager.enable = true;
 
+        # Telling home-manager what `nix.settings.use-xdg-base-directories` already made
+        # true, because on finix it cannot find that out for itself.
+        #
+        # `home.profileDirectory` is computed and read-only, in descending priority:
+        # `/etc/profiles/per-user/<name>` when home-manager is a submodule installing
+        # packages externally, else `${xdg.stateHome}/nix/profile` when `nix.useXdg`, else
+        # `~/.nix-profile`. And `useXdg` is itself computed, the last of its three sources
+        # being `osConfig.nix.settings.use-xdg-base-directories`.
+        #
+        # That is the detection, and it cannot fire here: finix has no `nix.settings` at all,
+        # the setting living under `services.nix-daemon.settings`. So home-manager asks a
+        # question finix does not answer, gets nothing, and falls through to `~/.nix-profile`
+        # - a path which does not exist on this machine, because `nix-env -i` wrote the
+        # profile to ~/.local/state/nix/profile like the setting asked it to.
+        #
+        # Everything derived from `profileDirectory` was therefore pointing at nothing:
+        # QT_PLUGIN_PATH, QML2_IMPORT_PATH, fontconfig's font directories, NIX_DEBUG_INFO_DIRS,
+        # and the hm-session-vars.sh that nushell sources.
+        #
+        # `assumeXdg` is the documented way to say it by hand - its description names this
+        # exact case, "intended for settings in which use-xdg-base-directories is set
+        # globally". It changes nothing about nix's behaviour; it stops home-manager guessing
+        # wrong about it.
+        #
+        # A no-op on the nixos side, where `useUserPackages` wins the first branch and the
+        # profile is /etc/profiles/per-user/<name> regardless. Said here rather than in the
+        # finix module because the fact is true of both: the same `settings` block in
+        # modules/system/nix.nix sets use-xdg-base-directories for either class.
+        nix.assumeXdg = true;
+
         xdg.userDirs =
           let
             dump = "${config.home-manager.users.${user}.home.homeDirectory}/dmp";
