@@ -142,8 +142,12 @@ in
   # `loglevel=3` is temporary, for one experiment: the kernel's own chatter buries finit's unit
   # sequence on the console, and a boot which hangs before syslogd leaves the console as the only
   # evidence there is. Quiet it and what survives on screen is which unit finit stopped at.
+  # `button.lid_init_state` is gone, and was never doing anything on this machine. It is a
+  # parameter of `drivers/acpi/button.c`, and there is no ACPI here: /proc/acpi does not exist,
+  # and the lid is `platform:macsmc-input`, a driver which never reads it. The module loads and
+  # reports `ACPI: button: Initial lid state set to 'open'` on every boot, governing nothing.
+  # Carried over from x86, where it would have meant something.
   boot.kernelParams = [
-    "button.lid_init_state=open"
     "loglevel=3"
   ];
 
@@ -151,33 +155,38 @@ in
     HandleLidSwitch = "suspend";
     HandleLidSwitchExternalPower = "suspend";
     HandleLidSwitchDocked = "suspend";
-    # Respect handle-lid-switch inhibitors, so the resume hook below can block stale close
-    # events after wake
-    LidSwitchIgnoreInhibited = "no";
-    # Shortened from the 30s default - the inhibitor covers the race window, so 30s of
-    # lid-close being ignored after wake is not needed
+
+    # Shortened from the 30s default, which exists to swallow exactly the spurious post-resume
+    # lid events this machine turns out not to deliver - see below. Kept rather than dropped
+    # because it is the stock mechanism for that and costs nothing; three seconds is enough
+    # insurance, and thirty would mean closing the lid shortly after a wake did nothing.
     HoldoffTimeoutSec = "3";
   };
 
-  # The stale lid-close event this machine delivers on resume, which would otherwise put it
-  # straight back to sleep.
+  # There was a `providers.resumeAndSuspend` hook here - `swallow-stale-lid-close` - which took
+  # a `handle-lid-switch` block inhibitor for three seconds after every resume, against a stale
+  # lid-close this machine was said to deliver on wake and be put straight back to sleep by.
+  # `LidSwitchIgnoreInhibited = "no"` went with it, and existed only to make elogind honour it.
   #
-  # `powerManagement.resumeCommands` on nixos; here it is a `providers.resumeAndSuspend` hook,
-  # which elogind implements by running it out of /etc/elogind/system-sleep. Backgrounded, as
-  # it was there: the hook is run before the resume completes and a foreground sleep would hold
-  # it up for the full three seconds.
-  providers.resumeAndSuspend.hooks.swallow-stale-lid-close = {
-    event = "resume";
-
-    action = ''
-      ${lib.getExe' config.services.elogind.package "elogind-inhibit"} \
-        --what=handle-lid-switch \
-        --who=post-resume-delay \
-        --why="Swallow stale lid-close event after resume" \
-        --mode=block \
-        ${lib.getExe' pkgs.coreutils "sleep"} 3 &
-    '';
-  };
+  # Measured on linux-asahi 7.1.13, with evtest on the lid's own input device across a real
+  # lid-triggered cycle - closed, suspended for two and a half minutes, opened:
+  #
+  #   23:34:03.97  SW_LID value 1      lid closed
+  #   23:34:05     PM: suspend entry   (s2idle)
+  #   23:36:33     PM: suspend exit
+  #   23:36:33.25  SW_LID value 0      lid opened
+  #   (nothing)                        twenty seconds later, still watching
+  #
+  # No stale close, so there is nothing for an inhibitor to swallow. A `loginctl suspend` with
+  # the lid untouched is the weaker version of this test and says less: with no lid transition
+  # there is nothing for the driver to replay, so only the lid-triggered path answers it.
+  #
+  # One sample. If this comes back, it comes back as a laptop which re-suspends the moment it is
+  # opened, and the hook is in the history.
+  #
+  # The close-to-suspend decision takes about a second, which is worth knowing separately:
+  # closing and reopening faster than that suspends anyway, because the decision is already
+  # committed. That is latency, not this.
 
   home-manager.users.${user} =
     { pkgs, ... }:
