@@ -90,7 +90,19 @@
         openssh
         preservation
         home-manager
+        user-services
       ];
+
+      # What `programs.ssh.startAgent = true` was on the nixos side, and what went missing when
+      # it was moved to `home-manager.users.<user>.programs.ssh.startAgent` - an option
+      # home-manager does not have, so the line evaluated to nothing and was then deleted. The
+      # client configuration below survived that move; the agent did not.
+      #
+      # It is wanted for the yubikey specifically. `secrets/yubikey/yubikey_sshkey_usb{a,c}.pub`
+      # are `sk-ssh-ed25519@openssh.com` resident keys, and the only way to use a resident key
+      # is `ssh-add -K`, which loads it from the token *into an agent*. Without one there is
+      # nothing for that command to talk to.
+      programs.ssh.startAgent = true;
 
       age.secrets.github-key = {
         rekeyFile = ../../secrets/master/github/github-key.age;
