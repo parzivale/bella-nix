@@ -5,7 +5,7 @@ let
   gamescopeOptOut = [ ];
 
   # Runs a command nested in gamescope at the size and refresh rate of the
-  # output it starts on, with gamemode. Every game goes through it via
+  # output it starts on. Every game goes through it via
   # `launchShell` below; extra gamescope flags go before a `--`:
   #
   #   gamescope-run -F fsr -w 1920 -h 1080 -- <command>
@@ -55,13 +55,15 @@ let
           wl-output-mode
         }
 
-        # --expose-wayland because the steam package sets PROTON_ENABLE_WAYLAND;
-        # without it a Wayland game has nowhere inside gamescope to go.
+        # No --expose-wayland: games reach gamescope over X11, through its own
+        # Xwayland, which is the path it is built around. Its Wayland server
+        # lacks wl_subcompositor and wp_viewporter, both of which winewayland
+        # requires, so a Proton told to use Wayland there gets no display
+        # driver at all.
         (^gamescope -f
           -W $mode.width -H $mode.height -r ($mode.refresh | math round)
-          --expose-wayland
           ...$extra
-          -- ${pkgs.gamemode}/bin/gamemoderun ...$game)
+          -- ...$game)
       }
     '';
 
@@ -78,12 +80,31 @@ let
   # evaluated inside the command line, after this has already decided. An
   # opted-out game that wants gamescope with flags of its own can still say
   # `gamescope-run -F fsr -- %command%` in its launch options.
+  #
+  # An opted-out game runs straight on the desktop compositor, so it is the one
+  # place Proton's native Wayland driver has something to talk to; it is set
+  # there and nowhere else, so nothing inside gamescope ever sees it.
+  #
+  # gamemode is asked for here, for this shell's own PID, rather than by
+  # preloading libgamemodeauto with gamemoderun. The preload is inherited into
+  # Steam's runtime container, where the library path it carries does not exist,
+  # so every process in there failed to dlopen libgamemode.so. Steam's FHS
+  # sandbox shares the host's PID namespace, so the daemon sees the real PID,
+  # and every branch below execs, so that PID lives exactly as long as the game
+  # and gamemode's reaper ends it when the game does. Renice and ioprio land on
+  # this process rather than the game's own; the governor, GPU and screensaver
+  # settings are system-wide and unaffected.
   launchShell =
     pkgs:
     pkgs.writeShellScript "steam-game-launch-shell" ''
+      ${pkgs.gamemode}/bin/gamemoded -r$$ >/dev/null 2>&1
+
       ${pkgs.lib.optionalString (gamescopeOptOut != [ ]) ''
         case "''${SteamAppId:-''${SteamGameId:-}}" in
-          ${pkgs.lib.concatMapStringsSep "|" toString gamescopeOptOut}) exec /bin/sh -c "$1" ;;
+          ${pkgs.lib.concatMapStringsSep "|" toString gamescopeOptOut})
+            export PROTON_ENABLE_WAYLAND=1
+            exec /bin/sh -c "$1"
+            ;;
         esac
       ''}
       exec ${gamescope-run pkgs}/bin/gamescope-run -- /bin/sh -c "$1"
@@ -112,7 +133,6 @@ in
         enable = true;
         package = pkgs.steam.override {
           extraEnv = {
-            PROTON_ENABLE_WAYLAND = 1;
             STEAM_GAME_LAUNCH_SHELL = "${launchShell pkgs}";
           };
           extraPkgs = pkgs: [
@@ -186,7 +206,6 @@ in
         enable = true;
         package = pkgs.steam.override {
           extraEnv = {
-            PROTON_ENABLE_WAYLAND = 1;
             STEAM_GAME_LAUNCH_SHELL = "${launchShell pkgs}";
           };
           extraPkgs = pkgs: [
