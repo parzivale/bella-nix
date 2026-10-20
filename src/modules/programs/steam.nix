@@ -65,14 +65,17 @@ let
       }
     '';
 
-  # Steam runs every game as `$STEAM_GAME_LAUNCH_SHELL -c "<command line>"`,
-  # /bin/sh by default, once it has built the game's environment - undocumented,
-  # recovered from steamclient.so in github:parzivale/nixos-steam. The command
-  # line already carries the game's own launch options, so pointing that
-  # variable here puts every game in gamescope without touching any of them.
+  # Steam runs every game through `/bin/sh -c "<command line>"` once it has
+  # built the game's environment, unless STEAM_GAME_LAUNCH_SHELL is set - then
+  # it runs `$STEAM_GAME_LAUNCH_SHELL "<command line>"`, with no `-c`. That
+  # flag is only added on the /bin/sh path (steamclient.so, around the getenv),
+  # so the command line arrives here as `$1` and the `-c` is ours to supply.
+  # The command line already carries the game's own launch options, so pointing
+  # that variable here puts every game in gamescope without touching any of
+  # them.
   #
   # Opting out is by app ID because anything set in launch options is only
-  # evaluated inside the `-c` string, after this has already decided. An
+  # evaluated inside the command line, after this has already decided. An
   # opted-out game that wants gamescope with flags of its own can still say
   # `gamescope-run -F fsr -- %command%` in its launch options.
   launchShell =
@@ -80,10 +83,10 @@ let
     pkgs.writeShellScript "steam-game-launch-shell" ''
       ${pkgs.lib.optionalString (gamescopeOptOut != [ ]) ''
         case "''${SteamAppId:-''${SteamGameId:-}}" in
-          ${pkgs.lib.concatMapStringsSep "|" toString gamescopeOptOut}) exec /bin/sh "$@" ;;
+          ${pkgs.lib.concatMapStringsSep "|" toString gamescopeOptOut}) exec /bin/sh -c "$1" ;;
         esac
       ''}
-      exec ${gamescope-run pkgs}/bin/gamescope-run -- /bin/sh "$@"
+      exec ${gamescope-run pkgs}/bin/gamescope-run -- /bin/sh -c "$1"
     '';
 in
 {
