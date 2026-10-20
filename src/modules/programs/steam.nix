@@ -1,10 +1,14 @@
 { inputs, ... }:
 let
-  # A game's launch options become `gamescope-run %command%`: gamescope nested
-  # at the size and refresh rate of the output the game starts on, with
-  # gamemode. Extra gamescope flags go before a `--`:
+  # Steam app IDs that launch without gamescope, for games that will not run
+  # under it. The ID is the number in the game's store URL.
+  gamescopeOptOut = [ ];
+
+  # Runs a command nested in gamescope at the size and refresh rate of the
+  # output it starts on, with gamemode. Every game goes through it via
+  # `launchShell` below; extra gamescope flags go before a `--`:
   #
-  #   gamescope-run -F fsr -w 1920 -h 1080 -- %command%
+  #   gamescope-run -F fsr -w 1920 -h 1080 -- <command>
   #
   # `gamescope` and `niri` are looked up on PATH, which steam's FHS sandbox
   # inherits from the host - so a setcap gamescope in /run/wrappers wins, and
@@ -38,6 +42,13 @@ let
         let extra = if $split == null { [] } else { $rest | take $split }
         let game = if $split == null { $rest } else { $rest | skip ($split + 1) }
 
+        # Already inside gamescope - launched by the launch shell with an old
+        # `gamescope-run %command%` still in the game's launch options, or from
+        # a gamescope session - so run the command as it is.
+        if ($env.GAMESCOPE_WAYLAND_DISPLAY? | is-not-empty) {
+          exec ($game | first) ...($game | skip 1)
+        }
+
         let mode = if ($env.NIRI_SOCKET? | is-not-empty) and (which niri | is-not-empty) {
           niri-mode
         } else {
@@ -52,6 +63,27 @@ let
           ...$extra
           -- ${pkgs.gamemode}/bin/gamemoderun ...$game)
       }
+    '';
+
+  # Steam runs every game as `$STEAM_GAME_LAUNCH_SHELL -c "<command line>"`,
+  # /bin/sh by default, once it has built the game's environment - undocumented,
+  # recovered from steamclient.so in github:parzivale/nixos-steam. The command
+  # line already carries the game's own launch options, so pointing that
+  # variable here puts every game in gamescope without touching any of them.
+  #
+  # Opting out is by app ID because anything set in launch options is only
+  # evaluated inside the `-c` string, after this has already decided. An
+  # opted-out game that wants gamescope with flags of its own can still say
+  # `gamescope-run -F fsr -- %command%` in its launch options.
+  launchShell =
+    pkgs:
+    pkgs.writeShellScript "steam-game-launch-shell" ''
+      ${pkgs.lib.optionalString (gamescopeOptOut != [ ]) ''
+        case "''${SteamAppId:-''${SteamGameId:-}}" in
+          ${pkgs.lib.concatMapStringsSep "|" toString gamescopeOptOut}) exec /bin/sh "$@" ;;
+        esac
+      ''}
+      exec ${gamescope-run pkgs}/bin/gamescope-run -- /bin/sh "$@"
     '';
 in
 {
@@ -78,6 +110,7 @@ in
         package = pkgs.steam.override {
           extraEnv = {
             PROTON_ENABLE_WAYLAND = 1;
+            STEAM_GAME_LAUNCH_SHELL = "${launchShell pkgs}";
           };
           extraPkgs = pkgs: [
             pkgs.gamemode
@@ -93,9 +126,10 @@ in
         ];
       };
 
-      # Nested, per game, through `gamescope-run` above. Resolution and refresh
-      # rate differ per output, so they are found at launch rather than set in
-      # `args`.
+      # Every game is nested in gamescope through the launch shell above.
+      # Resolution and refresh rate differ per output, so they are found at
+      # launch rather than set in `args`. `gamescope-run` stays on PATH for
+      # opted-out games that want it with flags of their own.
       programs.gamescope.enable = true;
       environment.systemPackages = [ (gamescope-run pkgs) ];
 
@@ -150,6 +184,7 @@ in
         package = pkgs.steam.override {
           extraEnv = {
             PROTON_ENABLE_WAYLAND = 1;
+            STEAM_GAME_LAUNCH_SHELL = "${launchShell pkgs}";
           };
           extraPkgs = pkgs: [
             pkgs.gamemode
@@ -169,7 +204,7 @@ in
       # ports here, which is nixpkgs' knowledge rather than mine, so a finix
       # host wanting remote play says so deliberately.
 
-      # Nested, per game, as on NixOS. The option comes in with
+      # Every game in gamescope, as on NixOS. The option comes in with
       # community-modules' steam module, which imports its gamescope module.
       programs.gamescope.enable = true;
       environment.systemPackages = [ (gamescope-run pkgs) ];
