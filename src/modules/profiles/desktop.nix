@@ -27,6 +27,7 @@ let
 
     # desktop hardware/services
     "xdg-desktop-portal-termfilepickers"
+    "xdg-desktop-portal-screencast"
     "keyring"
     "pipewire"
     "bluetooth"
