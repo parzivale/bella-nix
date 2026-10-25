@@ -121,90 +121,6 @@ in
     let
       user = config.constants.username;
 
-      runtimeDir = "/run/user/${toString config.constants.uid}";
-
-      # A script rather than an inline command, because greetd's config cannot hold one.
-      #
-      # It does not parse TOML - `inish`, its own parser, walks `s.lines()` and requires every
-      # line that is not a section header to contain an `=`. A multi-line value is therefore
-      # unrepresentable however it is quoted: the generator wrote a valid TOML `'''` literal and
-      # greetd read `command = '''`, then hit the next line and said
-      #
-      #   greetd[2424]: expected equals sign on line, but found none
-      #
-      # which is where the session ended. finit restarted it ten times and the machine sat at a
-      # getty with no compositor and no way in but the tty.
-      #
-      # A store path is one word, so the whole command stays on one line. `session-launch` runs it
-      # through `bash -c`, which executes a path as happily as it evaluates a string.
-      sessionEnv = pkgs.writeShellScript "niri-session-env" ''
-        socket=$(
-          cd ${runtimeDir} 2>/dev/null &&
-            ${pkgs.findutils}/bin/find . -maxdepth 1 -name 'wayland-*' -not -name '*.*' \
-              -printf '%f\n' | ${pkgs.coreutils}/bin/sort | ${pkgs.coreutils}/bin/head -1
-        )
-
-        [ -n "$socket" ] || exit 1
-
-        echo "WAYLAND_DISPLAY=$socket"
-        echo "XDG_RUNTIME_DIR=${runtimeDir}"
-      '';
-
-      # the session, with everything it writes going to the log.
-      #
-      # greetd hands the session a tty and nothing captures what it says there, so the compositor
-      # has always been the one part of this machine that could fail silently. niri not loading its
-      # config looked exactly like niri loading a bad one, and there was no line anywhere to tell
-      # them apart - greetd logged `Starting greetd[2388]` and nothing else, because niri's stderr
-      # went to tty7 rather than to greetd.
-      #
-      # `exec > >(logger)` rather than a pipeline: the redirection survives the `exec` below, so
-      # the process greetd waits on is the session itself rather than a shell holding a pipe. The
-      # logger outlives the shell and exits when the session closes the pipe.
-      #
-      # the colour is stripped here rather than asked for politely, because this stream carries
-      # more than niri: dinit's own [ OK ] lines and every user service's output land in it too,
-      # and a filter at the sink covers producers nobody has to go and ask.
-      #
-      # It used to ask, with `export NO_COLOR=1`, and that is a lie told to the wrong audience:
-      # export puts it in the session environment, so it reached niri, then wezterm, then the
-      # shell inside wezterm, then everything run from there. The whole desktop lost its colour
-      # to keep escape sequences out of a log file.
-      #
-      # `-u` or sed holds lines in its buffer and the log arrives late. SGR only, so the OSC
-      # palette sequences the console setup emits still go through - they are already there, and
-      # they are not what anything renders colour with.
-      sessionCommand = pkgs.writeShellScript "niri-session" ''
-        exec > >(${lib.getExe' pkgs.gnused "sed"} -u 's/\x1b\[[0-9;]*m//g' \
-          | ${lib.getExe' pkgs.util-linux "logger"} -t niri-session) 2>&1
-
-        # where the last half-second of the boot goes.
-        #
-        # greetd's own latch is monotonic and so is this, so the difference is what greetd and
-        # PAM cost between deciding to start the session and this script running - elogind
-        # opening a session, /run/user/1000, the worker fork. niri's first tracing line minus
-        # this is the other half: dbus-run-session, session-launch, and niri reaching its own
-        # main. Measured end to end that span is 0.60s, which is the largest thing left on the
-        # path to a compositor, and nothing currently says which part of it is which.
-        ${lib.getExe' pkgs.coreutils "printf"} 'niri-session: starting at %s\n' \
-          "$(${lib.getExe' pkgs.coreutils "cut"} -d' ' -f1 /proc/uptime)"
-
-        exec ${
-          lib.escapeShellArgs [
-            "${pkgs.dbus}/bin/dbus-run-session"
-            "--"
-            "${config.providers.services.user.sessionLauncher}"
-            "--user"
-            user
-            "--session-env"
-            sessionEnv
-            "--"
-            "${niri}/bin/niri"
-            "--session"
-          ]
-        }
-      '';
-
       # `withSystemd` off, which is not about linking: niri's systemd feature puts
       # anything it spawns - the `spawn` action, `spawn-at-startup` - into a
       # transient unit, so that an OOM kill takes the process rather than the whole
@@ -234,9 +150,9 @@ in
         inputs.self.modules.finix.udev
         inputs.self.modules.finix.home-manager
         inputs.self.modules.finix.user
-        # The user's service tree and what starts it. `services.greetd` below runs the
-        # contract's launcher rather than the compositor directly, so this is where the
-        # session's daemons come from.
+        # The user's service tree and what starts it. finix's niri session entry runs the
+        # contract's launcher when there is a tree, so this is where the session's daemons come
+        # from - and its bus, and its log.
         inputs.self.modules.finix.user-services
       ];
 
@@ -247,47 +163,26 @@ in
         package = niri;
       };
 
+      # tuigreet, offering the sessions installed on the system - finix's niri entry, which goes
+      # through the session launcher and so starts the bus, the user's tree and the log relay
+      # along with the compositor. Nothing about the session is spelled out here any more.
+      #
+      # `user` is left at finix's `greeter`: naming bella here is what made this an autologin,
+      # and a greeter is the point. Which also retires the edge this used to carry from greetd
+      # to `hm-activate-bella` - it existed because an autologin raced home-manager to niri's
+      # config, and a password typed at a greeter does not win that race. It was a hard edge, too:
+      # a failed activation meant no greeter at all.
       services.greetd = {
         enable = true;
-        settings.default_session = {
-          # Not `niri-session`: niri-flake says of that script that it "only works
-          # with systemd or dinit", and finit is neither.
-          #
-          # `dbus-run-session` outermost, so the launcher and everything it starts share one
-          # session bus: it mints an address per session and tells only its children, which is
-          # exactly the inheritance this relies on. It used to be followed by a shell that
-          # recorded that address in a file for system units to read, because they were not its
-          # children and had no other way to learn it. They are its children now.
-          #
-          # `--session-env` is the compositor-specific half, and the only one. niri takes
-          # whatever `wayland-N` is free through smithay's `new_auto` and has no flag to force
-          # one, so the name cannot be known here - it is discovered once, by the launcher, and
-          # exported into the tree. Failing until the socket exists is also what says the
-          # session is up, which is why it is one command and not two.
-          # one word, because greetd's config cannot hold more: `inish` walks s.lines() and wants
-          # an `=` on each, so a multi-line value is unrepresentable however it is quoted. The
-          # wrapper is where dbus-run-session, the launcher and niri actually live - see
-          # sessionCommand above, and the logging it exists for.
-          command = toString sessionCommand;
-          inherit user;
-        };
+        settings.default_session.command = lib.escapeShellArgs [
+          (lib.getExe pkgs.tuigreet)
+          "--time"
+          "--remember"
+          "--remember-session"
+          "--sessions"
+          "/run/current-system/sw/share/wayland-sessions"
+        ];
       };
-
-      # greetd waits for the user's home to be set up.
-      #
-      # Without this they start together - `hm-activate-bella` and `greetd` in the same second,
-      # `greetd-started` immediately after - so the compositor reads its configuration while
-      # home-manager is still linking it, finds nothing, and falls back to the built-in default
-      # config. Whose terminal keybind names a terminal this machine does not install, so the
-      # session comes up with no configuration and no way to open a shell in it. On a laptop
-      # whose function keys are drawn by a daemon that also is not running yet, that is the whole
-      # machine.
-      #
-      # `requires` is the only ordering the contract has, so this is a hard edge: if activation
-      # fails, no session starts at all. That is the right way round - a session with none of the
-      # user's configuration is not a working machine either - but it does mean sshd is the way
-      # back in, which is why it does not depend on any of this.
-      providers.services.units.greetd.requires = [ "hm-activate-${user}" ];
 
       # The polkit agent, which niri-flake's nixos module supplies as
       # `niri-flake-polkit` and which nothing supplies here. Without one a polkit

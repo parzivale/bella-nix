@@ -125,7 +125,8 @@ in
   # Genuinely nixos-only: chromium, console, grub, kmscon, lightdm, limine,
   # plymouth, regreet. Of those, only `console` does anything on these machines -
   # grub and limine because the boot loader is systemd-boot, lightdm and regreet
-  # because greetd starts the session with no greeter, plymouth and kmscon
+  # because the greeter is tuigreet, which draws on the console and so is themed by
+  # `console` like any other text there, plymouth and kmscon
   # because neither is enabled, and chromium because stylix's own target turns
   # `programs.chromium` on to write a policy file for a browser nothing here
   # installs. `console` is restored below.
