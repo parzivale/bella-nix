@@ -82,7 +82,7 @@ in
           gc = {
             automatic = true;
             dates = "weekly";
-            options = "--delete-older-than 7d";
+            options = "--delete-older-than 30d";
           };
         };
       };
@@ -117,7 +117,7 @@ in
         interval = "weekly";
         extraArgs = [
           "--delete-older-than"
-          "7d"
+          "30d"
         ];
       };
     };
