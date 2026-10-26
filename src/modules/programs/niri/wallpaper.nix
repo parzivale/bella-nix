@@ -94,6 +94,13 @@
             exec ${pkgs.awww}/bin/awww img -t none $instance ${wallpaper}
           ) &
 
+          # awww on the daemon's own PATH, which is what e446ade gave the nixos unit and the port
+          # to a script dropped. When an output is configured again - which is what resume does -
+          # the daemon clears its surface and redraws by running `sh -c "exec awww img ..."`,
+          # a bare `awww`. With none on PATH that fails, the daemon carries on, and the output
+          # is left showing nothing.
+          export PATH=${pkgs.awww}/bin:$PATH
+
           exec ${pkgs.awww}/bin/awww-daemon $instance
         '';
     in
