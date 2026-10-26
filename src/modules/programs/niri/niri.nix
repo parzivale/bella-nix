@@ -192,50 +192,10 @@ in
       # is the other caller, since finix installs its setuid wrapper whenever polkit
       # is on.
       #
-      # polkit-gnome rather than soteria, which this used and which never once ran.
-      # soteria reimplements the agent protocol and hardcodes the helper's path:
-      #
-      #   Error: Helper located at /usr/lib/polkit-1/polkit-agent-helper-1 and socket
-      #   located at /run/polkit/agent-helper.socket do not exist.
-      #
-      # Neither path exists here - the helper is a setuid wrapper at
-      # /run/wrappers/bin/polkit-agent-helper-1 - so it exited 1 before contacting
-      # polkit at all, on this machine as much as in a VM. polkit-gnome goes through
-      # libpolkit-agent-1, which nixpkgs patches to call exactly that wrapper, so it
-      # needs nothing said here to find it.
-      #
-      # `libexec` rather than `lib.getExe`: the agent is not on the package's PATH
-      # and the package declares no main program.
-      #
-      # community-modules has a soteria module and this does not use it: that one
-      # emits a system unit, and an agent which shows a dialog has to be inside the
-      # session and on its bus. So the package, started the way the session's other
-      # daemons are.
-      providers.services.users.${user}.units.polkit-agent = {
-        description = "polkit authentication agent";
-
-        # The agent built against the polkit the daemon uses, not against `pkgs.polkit`.
-        #
-        # finix overrides `services.polkit.package` to the elogind build - its own note says
-        # `loginctl poweroff` needs it - but that option reaches the daemon and nothing else. An
-        # agent links libpolkit itself, and `pkgs.polkit_gnome` takes plain `pkgs.polkit`, whose
-        # `useSystemd` defaults to true on Linux. So it was built `-Dsession_tracking=logind` and
-        # asked systemd's `sd_pid_get_session`, which looks for a cgroup path like
-        # /user.slice/user-1000.slice/session-1.scope; elogind's are flat, /1, so every process
-        # on the machine got
-        #
-        #   polkit-gnome-1-WARNING: Unable to determine the session we are in: No session for pid
-        #
-        # and no polkit prompt has ever appeared here. The same call compiled against each build:
-        # `pkgs.polkit` answers "No session for pid", the elogind one answers "unix-session:1".
-        #
-        # Overriding this one package rather than `pkgs.polkit` globally, which is the same fix
-        # and rebuilds everything that links polkit - udisks, the portals, colord, most of the
-        # gtk-adjacent world - to correct an agent.
-        type.service.command = "${
-          pkgs.polkit_gnome.override { polkit = config.services.polkit.package; }
-        }/libexec/polkit-gnome-authentication-agent-1";
-      };
+      # finix's now, in every user's session tree: which agent (polkit-gnome, not soteria) and
+      # which polkit it has to be built against (the elogind one) are its to know, beside the
+      # helper wrapper it installs. See `services.polkit.agent` there.
+      services.polkit.agent.enable = true;
 
       #
       #   `services.dbus.implementation = "broker"` — finix's dbus module runs
