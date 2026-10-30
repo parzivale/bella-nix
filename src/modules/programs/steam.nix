@@ -121,6 +121,29 @@ let
     pkgs.writeShellScript "steam-game-launch-shell" ''
       exec ${pkgs.lib.concatStringsSep " " (gameWrappers pkgs)} /bin/sh -c "$1"
     '';
+
+  # Library art for non-Steam games, cut from whatever the game's own site or
+  # launcher has. Each kind has a fixed shape - grid 600x900, wide 920x430,
+  # hero 1920x620 - so the source is scaled to cover it and cropped from the
+  # middle, with `over`, a logo say, laid on top. With no size it is only made a
+  # PNG.
+  steamArt =
+    pkgs:
+    {
+      name,
+      src,
+      size ? null,
+      over ? null,
+    }:
+    pkgs.runCommand "${name}.png" { nativeBuildInputs = [ pkgs.imagemagick ]; } ''
+      magick ${src} ${
+        pkgs.lib.optionalString (size != null) "-resize ${size}^ -gravity center -extent ${size}"
+      } ${
+        pkgs.lib.optionalString (
+          over != null
+        ) ''\( ${over.src} -resize ${over.width}x \) -gravity ${over.gravity} -geometry +0+60 -composite''
+      } $out
+    '';
 in
 {
   flake.modules.nixos.steam =
@@ -205,6 +228,32 @@ in
     { config, pkgs, ... }:
     let
       user = config.constants.username;
+      art = steamArt pkgs;
+
+      # Star Stable's site: a 1920x1080 key art shot and the square brand mark.
+      starstableKey = pkgs.fetchurl {
+        url = "https://cms-proxy.starstable.com/65346/1788520888-iae_images_westphalian_1920x1080-1.jpg";
+        hash = "sha256-AXsJVESi0BygouKUeqiE1IOFRvKUjXaW0PXg3pWbESQ=";
+      };
+      starstableMark = pkgs.fetchurl {
+        url = "https://cms-proxy.starstable.com/65346/1648052887-ssom.webp";
+        hash = "sha256-aK577WDj7dJSAP+6f8mmzdqowM4PCZpcw+xewjGzg9g=";
+      };
+
+      # What HoYoPlay itself shows for Genshin, from its launcher API
+      # (hyp-connect getGames, hk4e_global): background, logo and icon.
+      genshinBackground = pkgs.fetchurl {
+        url = "https://fastcdn.hoyoverse.com/static-resource-v2/2026/09/12/544bf0d17e4570f886fd1b731a3274da_5003849349598617917.webp";
+        hash = "sha256-91F1ckny2bxoOMTmOHjdexmmXcbb4e9VHFzajn17GQI=";
+      };
+      genshinLogo = pkgs.fetchurl {
+        url = "https://fastcdn.hoyoverse.com/static-resource-v2/2026/03/30/ee8f064a6d814f521c401f9778ce0b2f_1125309761890426348.png";
+        hash = "sha256-yZhNKv1uJf2USM+oGwwwbjSF42BRLksUaLDICPjpWO8=";
+      };
+      genshinIcon = pkgs.fetchurl {
+        url = "https://fastcdn.hoyoverse.com/static-resource-v2/2026/09/14/d76a4a6df4220cde1f434ca696824ccb_2101223399950486130.png";
+        hash = "sha256-KuBPQR+nUk1bMJLaoHxAMj8byq9CAtj0SRAPEYOGQOw=";
+      };
     in
     {
       imports = [
@@ -242,6 +291,34 @@ in
               url = "https://launcher-release-prod.starstable.com/latest/Star%20Stable%20Online%20Setup.exe";
               game = "drive_c/users/steamuser/AppData/Local/Programs/Star Stable Online/Star Stable Online.exe";
             };
+            # There is no logo with a transparent background, so no `logo`, and the
+            # mark goes at the foot of the grid, where it covers leaves, not the horse.
+            artwork = {
+              grid = art {
+                name = "starstable-grid";
+                src = starstableKey;
+                size = "600x900";
+                over = {
+                  src = starstableMark;
+                  width = "220";
+                  gravity = "south";
+                };
+              };
+              wide = art {
+                name = "starstable-wide";
+                src = starstableKey;
+                size = "920x430";
+              };
+              hero = art {
+                name = "starstable-hero";
+                src = starstableKey;
+                size = "1920x620";
+              };
+              icon = art {
+                name = "starstable-icon";
+                src = starstableMark;
+              };
+            };
           };
 
           # HoYoPlay, HoYoverse's launcher, installed from Genshin's installer. Genshin, and
@@ -255,6 +332,31 @@ in
             installer = {
               url = "https://download-porter.hoyoverse.com/download-porter/2026/10/13/GenshinImpact_install_20260924_hoyoverse.exe";
               game = "drive_c/Program Files/HoYoPlay/launcher.exe";
+            };
+            # Genshin's, since that is what it is here for.
+            artwork = {
+              grid = art {
+                name = "genshin-grid";
+                src = genshinBackground;
+                size = "600x900";
+                over = {
+                  src = genshinLogo;
+                  width = "480";
+                  gravity = "south";
+                };
+              };
+              wide = art {
+                name = "genshin-wide";
+                src = genshinBackground;
+                size = "920x430";
+              };
+              hero = art {
+                name = "genshin-hero";
+                src = genshinBackground;
+                size = "1920x620";
+              };
+              logo = genshinLogo;
+              icon = genshinIcon;
             };
           };
         };
