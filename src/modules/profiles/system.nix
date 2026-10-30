@@ -17,7 +17,7 @@
   };
 
   flake.modules.finix.system =
-    { modules, ... }:
+    { lib, modules, ... }:
     {
       imports =
         with inputs.self.modules.finix;
@@ -63,9 +63,9 @@
       # A way in that is not the compositor. systemd hands a nixos host `getty@tty1`
       # without being asked; finix does not, and a machine whose only login is
       # greetd is one you cannot reach when the session fails to start - which is
-      # exactly when reaching it matters. tty1 through tty6, and greetd's
-      # `terminal.vt` is "next", so it takes the first free one above them.
-      services.getty.enable = true;
+      # exactly when reaching it matters. A default, because a host with a greeter
+      # turns it off: see the niri module.
+      services.getty.enable = lib.mkDefault true;
 
       # Somewhere for output to go. finit can redirect a unit's stdout and stderr to
       # syslog through `logit`, and with no syslogd that redirection has nowhere to

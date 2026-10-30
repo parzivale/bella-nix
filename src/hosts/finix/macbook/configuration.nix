@@ -97,8 +97,6 @@ in
   hardware.facter.reportPath = ./facter.json;
   age.rekey.hostPubkey = lib.mkIf (key != "") key;
 
-  services.getty.autologinUser = user;
-
   # The nixos host emptied `tailscaled-autoconnect`'s `wantedBy`, and this is the same thing
   # said here: community-modules' tailscale module calls its unit `tailscale-up`, and nothing
   # in the graph requires it, so disabling it strands nothing.

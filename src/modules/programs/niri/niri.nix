@@ -184,6 +184,14 @@ in
         ];
       };
 
+      # No gettys beside the greeter. greetd's `terminal.vt` is "next", the first console
+      # nobody has opened, and the gettys on tty1 through tty6 start in the same tier as
+      # greetd - so when greetd won, it took a console a getty then opened too, and the two
+      # read the keyboard between them: typing into tuigreet lost and mangled characters.
+      # What goes with them is a text login for when the session will not start; ssh over
+      # tailscale is the way in then.
+      services.getty.enable = false;
+
       # The polkit agent, which niri-flake's nixos module supplies as
       # `niri-flake-polkit` and which nothing supplies here. Without one a polkit
       # question has nobody to ask: 1Password's three actions are all `auth_self`,
