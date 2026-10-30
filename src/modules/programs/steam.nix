@@ -282,14 +282,14 @@ in
         # to plain "GE-Proton", so the name survives version bumps.
         apps = {
           # The standalone launcher, not the Steam release. It is an electron-builder
-          # installer, whose default is a per-user install - for Proton's `steamuser`.
-          # Take that default when it asks, or `game` will not be where it is looked for.
+          # installer, and under Proton it installs for all users, into Program Files -
+          # not per-user, which is electron-builder's usual default.
           starstable = {
             shortcut.appName = "Star Stable Online";
             compatTool = "GE-Proton";
             installer = {
               url = "https://launcher-release-prod.starstable.com/latest/Star%20Stable%20Online%20Setup.exe";
-              game = "drive_c/users/steamuser/AppData/Local/Programs/Star Stable Online/Star Stable Online.exe";
+              game = "drive_c/Program Files/Star Stable Online/Star Stable Online.exe";
             };
             # There is no logo with a transparent background, so no `logo`, and the
             # mark goes at the foot of the grid, where it covers leaves, not the horse.
