@@ -33,6 +33,8 @@ in
       # system
       wireshark
       use-x86-builders
+      # games
+      bolt-launcher
     ])
     ++ [
       # FEX, below. binfmt_misc registration is a finix module of its own rather than part of

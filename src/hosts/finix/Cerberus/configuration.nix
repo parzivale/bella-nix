@@ -24,6 +24,7 @@ in
     desktop
     cli
     steam
+    bolt-launcher
     mangohud
     iwd
     obs
