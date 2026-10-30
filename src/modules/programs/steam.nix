@@ -6,7 +6,7 @@ let
 
   # Runs a command nested in gamescope at the size and refresh rate of the
   # output it starts on. Every game goes through it via
-  # `launchShell` below; extra gamescope flags go before a `--`:
+  # `gameWrappers` below; extra gamescope flags go before a `--`:
   #
   #   gamescope-run -F fsr -w 1920 -h 1080 -- <command>
   #
@@ -67,47 +67,59 @@ let
       }
     '';
 
-  # Steam runs every game through `/bin/sh -c "<command line>"` once it has
-  # built the game's environment, unless STEAM_GAME_LAUNCH_SHELL is set - then
-  # it runs `$STEAM_GAME_LAUNCH_SHELL "<command line>"`, with no `-c`. That
-  # flag is only added on the /bin/sh path (steamclient.so, around the getenv),
-  # so the command line arrives here as `$1` and the `-c` is ours to supply.
-  # The command line already carries the game's own launch options, so pointing
-  # that variable here puts every game in gamescope without touching any of
-  # them.
+  # Every game, in order, outermost first: given the rest of the chain and then
+  # the game's command line as arguments, each `exec`s the rest. The command
+  # line already carries the game's own launch options, so this puts every game
+  # in gamescope without touching any of them. On finix this list is
+  # `programs.steam.gameWrappers`; on nixos `launchShell` below runs it.
   #
-  # Opting out is by app ID because anything set in launch options is only
-  # evaluated inside the command line, after this has already decided. An
-  # opted-out game that wants gamescope with flags of its own can still say
+  # gamemode is asked for first, for the wrapper's own PID, rather than by
+  # preloading libgamemodeauto with gamemoderun. The preload is inherited into
+  # Steam's runtime container, where the library path it carries does not exist,
+  # so every process in there failed to dlopen libgamemode.so. Steam's FHS
+  # sandbox shares the host's PID namespace, so the daemon sees the real PID,
+  # and the wrappers exec down to gamescope-run, so that PID lives exactly as
+  # long as the game and gamemode's reaper ends it when the game does. It has to
+  # come before gamescope, which starts the game as a child rather than becoming
+  # it. Renice and ioprio land on that process rather than the game's own; the
+  # governor, GPU and screensaver settings are system-wide and unaffected.
+  #
+  # Opting out of gamescope is by app ID because anything set in launch options
+  # is only evaluated inside the command line, after this has already decided.
+  # An opted-out game that wants gamescope with flags of its own can still say
   # `gamescope-run -F fsr -- %command%` in its launch options.
   #
   # An opted-out game runs straight on the desktop compositor, so it is the one
   # place Proton's native Wayland driver has something to talk to; it is set
   # there and nowhere else, so nothing inside gamescope ever sees it.
-  #
-  # gamemode is asked for here, for this shell's own PID, rather than by
-  # preloading libgamemodeauto with gamemoderun. The preload is inherited into
-  # Steam's runtime container, where the library path it carries does not exist,
-  # so every process in there failed to dlopen libgamemode.so. Steam's FHS
-  # sandbox shares the host's PID namespace, so the daemon sees the real PID,
-  # and every branch below execs, so that PID lives exactly as long as the game
-  # and gamemode's reaper ends it when the game does. Renice and ioprio land on
-  # this process rather than the game's own; the governor, GPU and screensaver
-  # settings are system-wide and unaffected.
-  launchShell =
-    pkgs:
-    pkgs.writeShellScript "steam-game-launch-shell" ''
+  gameWrappers = pkgs: [
+    (pkgs.writeShellScript "steam-gamemode" ''
       ${pkgs.gamemode}/bin/gamemoded -r$$ >/dev/null 2>&1
-
+      exec "$@"
+    '')
+    (pkgs.writeShellScript "steam-gamescope" ''
       ${pkgs.lib.optionalString (gamescopeOptOut != [ ]) ''
         case "''${SteamAppId:-''${SteamGameId:-}}" in
           ${pkgs.lib.concatMapStringsSep "|" toString gamescopeOptOut})
             export PROTON_ENABLE_WAYLAND=1
-            exec /bin/sh -c "$1"
+            exec "$@"
             ;;
         esac
       ''}
-      exec ${gamescope-run pkgs}/bin/gamescope-run -- /bin/sh -c "$1"
+      exec ${gamescope-run pkgs}/bin/gamescope-run -- "$@"
+    '')
+  ];
+
+  # nixpkgs' steam module has no `gameWrappers`, so on nixos the launch shell is
+  # written here, as community-modules writes it on finix. With
+  # STEAM_GAME_LAUNCH_SHELL set, steam runs `$STEAM_GAME_LAUNCH_SHELL "<command
+  # line>"` instead of `/bin/sh -c "<command line>"`, with no `-c`. That flag is
+  # only added on the /bin/sh path (steamclient.so, around the getenv), so the
+  # command line arrives here as `$1` and the `-c` is ours to supply.
+  launchShell =
+    pkgs:
+    pkgs.writeShellScript "steam-game-launch-shell" ''
+      exec ${pkgs.lib.concatStringsSep " " (gameWrappers pkgs)} /bin/sh -c "$1"
     '';
 in
 {
@@ -205,15 +217,13 @@ in
       programs.steam = {
         enable = true;
         package = pkgs.steam.override {
-          extraEnv = {
-            STEAM_GAME_LAUNCH_SHELL = "${launchShell pkgs}";
-          };
           extraPkgs = pkgs: [
             pkgs.gamemode
             pkgs.faudio
           ];
           extraLibraries = pkgs: [ pkgs.gamemode ];
         };
+        gameWrappers = gameWrappers pkgs;
         extraCompatPackages = [
           pkgs.proton-ge-bin
           pkgs.proton-cachyos_x86_64_v3
