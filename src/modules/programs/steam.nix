@@ -228,6 +228,36 @@ in
           pkgs.proton-ge-bin
           pkgs.proton-cachyos_x86_64_v3
         ];
+
+        # Merged into steam's own config when it starts. proton-ge-bin renames its tool
+        # to plain "GE-Proton", so the name survives version bumps.
+        apps = {
+          # The standalone launcher, not the Steam release. It is an electron-builder
+          # installer, whose default is a per-user install - for Proton's `steamuser`.
+          # Take that default when it asks, or `game` will not be where it is looked for.
+          starstable = {
+            shortcut.appName = "Star Stable Online";
+            compatTool = "GE-Proton";
+            installer = {
+              url = "https://launcher-release-prod.starstable.com/latest/Star%20Stable%20Online%20Setup.exe";
+              game = "drive_c/users/steamuser/AppData/Local/Programs/Star Stable Online/Star Stable Online.exe";
+            };
+          };
+
+          # HoYoPlay, HoYoverse's launcher, installed from Genshin's installer. Genshin, and
+          # any other HoYoverse game added in it, is downloaded into this same prefix and
+          # started from it. Its files sit in a folder named for its version, so this is
+          # the launcher stub at the top, which stays put across updates. The attribute
+          # name is the prefix's directory, so renaming it orphans the install.
+          hoyoplay = {
+            shortcut.appName = "HoYoPlay";
+            compatTool = "GE-Proton";
+            installer = {
+              url = "https://download-porter.hoyoverse.com/download-porter/2026/10/13/GenshinImpact_install_20260924_hoyoverse.exe";
+              game = "drive_c/Program Files/HoYoPlay/launcher.exe";
+            };
+          };
+        };
       };
 
       # No `remotePlay.openFirewall` or `dedicatedServer.openFirewall`: the
