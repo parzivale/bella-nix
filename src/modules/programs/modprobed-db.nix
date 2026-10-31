@@ -1,4 +1,25 @@
 { inputs, ... }:
+let
+  # The same module for nixos and finix; `class` only picks which home-manager it imports.
+  module =
+    class:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.${class}.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.modprobed-db ];
+
+      # The db is the only real state here — the package, config, and units
+      # are all reproducible from the store, so only the accumulated module
+      # list needs to survive the tmpfs root wipe.
+      state.preserve.users.${user} = {
+        files = [ { file = ".config/modprobed.db"; } ];
+      };
+    };
+in
 {
   flake.modules.homeManager.modprobed-db =
     { config, pkgs, ... }:
@@ -40,39 +61,6 @@
       };
     };
 
-  flake.modules.nixos.modprobed-db =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.modprobed-db ];
-
-      # The db is the only real state here — the package, config, and units
-      # are all reproducible from the store, so only the accumulated module
-      # list needs to survive the tmpfs root wipe.
-      state.preserve.users.${user} = {
-        files = [ { file = ".config/modprobed.db"; } ];
-      };
-    };
-
-  flake.modules.finix.modprobed-db =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.modprobed-db ];
-
-      # The db is the only real state here — the package, config, and units
-      # are all reproducible from the store, so only the accumulated module
-      # list needs to survive the tmpfs root wipe.
-      state.preserve.users.${user} = {
-        files = [ { file = ".config/modprobed.db"; } ];
-      };
-    };
+  flake.modules.nixos.modprobed-db = module "nixos";
+  flake.modules.finix.modprobed-db = module "finix";
 }

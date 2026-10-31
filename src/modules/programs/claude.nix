@@ -1,4 +1,28 @@
 { inputs, ... }:
+let
+  # The same module for nixos and finix; `class` only picks which home-manager it imports.
+  module =
+    class:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.${class}.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.claude ];
+
+      state.preserve.users.${user} = {
+        directories = [
+          {
+            directory = ".claude";
+            mode = "0755";
+          }
+        ];
+        files = [ { file = ".claude.json"; } ];
+      };
+    };
+in
 {
   flake.modules.homeManager.claude = _: {
     programs.claude-code = {
@@ -38,45 +62,6 @@
     };
   };
 
-  flake.modules.nixos.claude =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.claude ];
-
-      state.preserve.users.${user} = {
-        directories = [
-          {
-            directory = ".claude";
-            mode = "0755";
-          }
-        ];
-        files = [ { file = ".claude.json"; } ];
-      };
-    };
-
-  flake.modules.finix.claude =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.claude ];
-
-      state.preserve.users.${user} = {
-        directories = [
-          {
-            directory = ".claude";
-            mode = "0755";
-          }
-        ];
-        files = [ { file = ".claude.json"; } ];
-      };
-    };
+  flake.modules.nixos.claude = module "nixos";
+  flake.modules.finix.claude = module "finix";
 }

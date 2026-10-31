@@ -1,4 +1,18 @@
 { inputs, ... }:
+let
+  # The same module for nixos and finix; `class` only picks which home-manager it imports.
+  module =
+    class:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.${class}.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.git ];
+    };
+in
 {
   flake.modules.homeManager.git = _: {
     home.file.".cargo/config.toml".text = ''
@@ -20,25 +34,6 @@
     };
   };
 
-  flake.modules.nixos.git =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.git ];
-    };
-
-  flake.modules.finix.git =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.git ];
-    };
+  flake.modules.nixos.git = module "nixos";
+  flake.modules.finix.git = module "finix";
 }

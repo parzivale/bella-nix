@@ -1,4 +1,18 @@
 { inputs, ... }:
+let
+  # The same module for nixos and finix; `class` only picks which home-manager it imports.
+  module =
+    class:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.${class}.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.helix ];
+    };
+in
 {
   flake.modules.homeManager.helix =
     { pkgs, ... }:
@@ -60,25 +74,6 @@
       };
     };
 
-  flake.modules.nixos.helix =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.helix ];
-    };
-
-  flake.modules.finix.helix =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.helix ];
-    };
+  flake.modules.nixos.helix = module "nixos";
+  flake.modules.finix.helix = module "finix";
 }

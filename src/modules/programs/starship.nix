@@ -1,4 +1,18 @@
 { inputs, ... }:
+let
+  # The same module for nixos and finix; `class` only picks which home-manager it imports.
+  module =
+    class:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.${class}.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.starship ];
+    };
+in
 {
   flake.modules.homeManager.starship = _: {
     programs.starship = {
@@ -34,25 +48,6 @@
     };
   };
 
-  flake.modules.nixos.starship =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.starship ];
-    };
-
-  flake.modules.finix.starship =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.starship ];
-    };
+  flake.modules.nixos.starship = module "nixos";
+  flake.modules.finix.starship = module "finix";
 }

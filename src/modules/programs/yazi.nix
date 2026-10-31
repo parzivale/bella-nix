@@ -1,4 +1,18 @@
 { inputs, ... }:
+let
+  # The same module for nixos and finix; `class` only picks which home-manager it imports.
+  module =
+    class:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.${class}.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.yazi ];
+    };
+in
 {
   flake.modules.homeManager.yazi = _: {
     programs.yazi = {
@@ -28,25 +42,6 @@
     };
   };
 
-  flake.modules.nixos.yazi =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.yazi ];
-    };
-
-  flake.modules.finix.yazi =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.yazi ];
-    };
+  flake.modules.nixos.yazi = module "nixos";
+  flake.modules.finix.yazi = module "finix";
 }

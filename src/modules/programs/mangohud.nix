@@ -1,4 +1,18 @@
 { inputs, ... }:
+let
+  # The same module for nixos and finix; `class` only picks which home-manager it imports.
+  module =
+    class:
+    { config, ... }:
+    let
+      user = config.constants.username;
+    in
+    {
+      imports = [ inputs.self.modules.${class}.home-manager ];
+
+      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mangohud ];
+    };
+in
 {
   flake.modules.homeManager.mangohud = _: {
     programs.mangohud = {
@@ -22,25 +36,6 @@
     };
   };
 
-  flake.modules.nixos.mangohud =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.nixos.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mangohud ];
-    };
-
-  flake.modules.finix.mangohud =
-    { config, ... }:
-    let
-      user = config.constants.username;
-    in
-    {
-      imports = [ inputs.self.modules.finix.home-manager ];
-
-      home-manager.users.${user}.imports = [ inputs.self.modules.homeManager.mangohud ];
-    };
+  flake.modules.nixos.mangohud = module "nixos";
+  flake.modules.finix.mangohud = module "finix";
 }
