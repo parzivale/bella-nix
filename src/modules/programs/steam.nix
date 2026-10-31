@@ -92,7 +92,11 @@ let
   # An opted-out game runs straight on the desktop compositor, so it is the one
   # place Proton's native Wayland driver has something to talk to; it is set
   # there and nowhere else, so nothing inside gamescope ever sees it.
-  gameWrappers = pkgs: [
+  #
+  # `gamescopeFlags` maps an app ID to extra gamescope flags for that game. On
+  # finix it comes from `apps.<name>.gamescope.flags`; nixpkgs' module has no
+  # `apps`, so on nixos it is empty.
+  gameWrappers = pkgs: gamescopeFlags: [
     (pkgs.writeShellScript "steam-gamemode" ''
       ${pkgs.gamemode}/bin/gamemoded -r$$ >/dev/null 2>&1
       exec "$@"
@@ -104,6 +108,14 @@ let
             export PROTON_ENABLE_WAYLAND=1
             exec "$@"
             ;;
+        esac
+      ''}
+      ${pkgs.lib.optionalString (gamescopeFlags != { }) ''
+        case "''${SteamAppId:-''${SteamGameId:-}}" in
+          ${pkgs.lib.concatMapAttrsStringSep "\n  " (
+            id: flags:
+            ''${id}) exec ${gamescope-run pkgs}/bin/gamescope-run ${pkgs.lib.escapeShellArgs flags} -- "$@" ;;''
+          ) gamescopeFlags}
         esac
       ''}
       exec ${gamescope-run pkgs}/bin/gamescope-run -- "$@"
@@ -119,7 +131,7 @@ let
   launchShell =
     pkgs:
     pkgs.writeShellScript "steam-game-launch-shell" ''
-      exec ${pkgs.lib.concatStringsSep " " (gameWrappers pkgs)} /bin/sh -c "$1"
+      exec ${pkgs.lib.concatStringsSep " " (gameWrappers pkgs { })} /bin/sh -c "$1"
     '';
 
   # Library art for non-Steam games, cut from whatever the game's own site or
@@ -225,10 +237,23 @@ in
     };
 
   flake.modules.finix.steam =
-    { config, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       user = config.constants.username;
       art = steamArt pkgs;
+
+      # Only games with a Steam app ID: a shortcut's ID is computed by
+      # community-modules and not exposed, so there is nothing to match it by.
+      gamescopeFlags = lib.mapAttrs' (_: app: lib.nameValuePair (toString app.appId) app.gamescope.flags) (
+        lib.filterAttrs (
+          _: app: app.appId != null && app.gamescope.flags != [ ]
+        ) config.programs.steam.apps
+      );
 
       # Star Stable's site: a 1920x1080 key art shot and the square brand mark.
       starstableKey = pkgs.fetchurl {
@@ -261,6 +286,28 @@ in
         inputs.self.modules.finix.user
         inputs.community-modules.nixosModules.steam
         inputs.finix.nixosModules.gamemode
+
+        # Added to community-modules' `apps` here rather than there, since gamescope-run
+        # and the wrapper that reads this are this repo's.
+        {
+          options.programs.steam.apps = lib.mkOption {
+            type = lib.types.attrsOf (
+              lib.types.submodule {
+                options.gamescope.flags = lib.mkOption {
+                  type = lib.types.listOf lib.types.str;
+                  default = [ ];
+                  example = [ "--force-grab-cursor" ];
+                  description = ''
+                    Extra gamescope flags for this game, passed to `gamescope-run`. Launch
+                    options cannot carry these: by the time they are read the game is already
+                    inside gamescope, and a nested `gamescope-run` runs the command as it is.
+                    Needs `appId`.
+                  '';
+                };
+              }
+            );
+          };
+        }
       ];
 
       programs.steam = {
@@ -272,7 +319,7 @@ in
           ];
           extraLibraries = pkgs: [ pkgs.gamemode ];
         };
-        gameWrappers = gameWrappers pkgs;
+        gameWrappers = gameWrappers pkgs gamescopeFlags;
         extraCompatPackages = [
           pkgs.proton-ge-bin
           pkgs.proton-cachyos_x86_64_v3
@@ -281,6 +328,17 @@ in
         # Merged into steam's own config when it starts. proton-ge-bin renames its tool
         # to plain "GE-Proton", so the name survives version bumps.
         apps = {
+          # Both are mouse-look games whose camera spins or stops at the window edge in
+          # gamescope unless the pointer is held in relative mode.
+          deadlock = {
+            appId = 1422450;
+            gamescope.flags = [ "--force-grab-cursor" ];
+          };
+          infinity-nikki = {
+            appId = 3164330;
+            gamescope.flags = [ "--force-grab-cursor" ];
+          };
+
           # The standalone launcher, not the Steam release. It is an electron-builder
           # installer, and under Proton it installs for all users, into Program Files -
           # not per-user, which is electron-builder's usual default.
