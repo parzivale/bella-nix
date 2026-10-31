@@ -17,7 +17,12 @@
   };
 
   flake.modules.finix.system =
-    { lib, modules, ... }:
+    {
+      config,
+      lib,
+      modules,
+      ...
+    }:
     {
       imports =
         with inputs.self.modules.finix;
@@ -92,5 +97,16 @@
       # timer is `Persistent`, which catches up instead. fcron can say that too,
       # with its `%` periodical form; the backend does not use it.
       services.fcron.enable = true;
+
+      # The file descriptor ceiling systemd raises without being asked: its
+      # `DefaultLimitNOFILE` hands every nixos session a hard limit of 524288. Here
+      # there is nothing between the kernel's 4096 and the session, and Proton can
+      # only lift its soft limit as far as the hard one - Genshin passes 4096 a
+      # couple of minutes in and starts failing every open and socket after.
+      # pam_limits reads this on each way in (greetd, login, sshd, su). Hard only,
+      # as systemd does, so nothing that still uses select() sees a raised default.
+      environment.etc."security/limits.conf".text = ''
+        ${config.constants.username}   hard   nofile   524288
+      '';
     };
 }
