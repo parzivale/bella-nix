@@ -329,6 +329,9 @@ in
           hoyoplay = {
             shortcut.appName = "HoYoPlay";
             compatTool = "GE-Proton";
+            # Empty rather than unset: an unset option leaves Steam's last value in place,
+            # and this was carrying PROTON_LOG from debugging Genshin's crashes.
+            launchOptions = "";
             installer = {
               url = "https://download-porter.hoyoverse.com/download-porter/2026/10/13/GenshinImpact_install_20260924_hoyoverse.exe";
               game = "drive_c/Program Files/HoYoPlay/launcher.exe";
