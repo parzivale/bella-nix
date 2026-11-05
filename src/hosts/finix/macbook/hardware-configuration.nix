@@ -199,19 +199,6 @@
   # stage 1's moment went. Flipping this back is all that is needed to try again.
   boot.initrd.enable = false;
 
-  # Apple's NVMe, built in rather than modular - only when nothing else can load it.
-  #
-  # The reasoning is in the patch itself, because it is about when a value can be set rather
-  # than what it should be. The short of it: nixpkgs seeds a kernel config with `make defconfig`
-  # and then answers questions from its own list, kconfig asks about drivers/nvme before
-  # drivers/soc, and so NVMe is decided while APPLE_SART is still whatever the seed said. A
-  # tristate cannot be built in over a modular dependency, so the answer is refused, re-asked
-  # and the build dies - and the seed is the only place early enough to prevent it.
-  #
-  # Conditional, because it buys nothing with a stage 1: an initrd carries nvme_apple as a module
-  # and loads it before mounting anything, which is what it is for. Kept rather than deleted
-  # because it is correct and was not easy to arrive at - and because this comes straight back
-  # the moment the line above is false.
   # The one storage driver this machine has, named rather than taken from the default.
   #
   # `boot.kernel.builtinDrivers` otherwise defaults to every driver finix knows, on the
@@ -219,11 +206,13 @@
   # cannot reliably say which controller its disk is on. This one can: the root is
   # /dev/nvme0n1p5, which is the ANS2 NVMe, and there is nothing else to boot from.
   #
-  # It also has to be named, because nvme_apple is excluded from that default - it cannot be
-  # built in by answering the configuration generator, only by seeding the defconfig, which is
-  # the patch below. A driver which needs a machine-specific patch is not one to put in every
-  # machine's kernel automatically, and when it was the no-initrd tests in finix all stopped
-  # building: they use the stock kernel and have no reason to patch its defconfig.
+  # It also has to be named, because nvme_apple is excluded from that default. On a kernel
+  # seeded from `make defconfig` it cannot be built in by answering the configuration
+  # generator: kconfig asks about NVMe while APPLE_SART is still the seed's `m`, and a tristate
+  # cannot be `y` over a modular dependency. This one is seeded from `allnoconfig` instead - see
+  # linux-asahi.nix - so SART starts at `n`, NVMe is not asked until the second pass, and `y` is
+  # on offer by then. That used to take a patch to the defconfig, which went once nothing read
+  # the defconfig any more.
   #
   # The rest of the default - ahci, mmc_block, generic nvme, sd_mod, usb_storage, virtio_blk -
   # is hardware this does not have, so dropping it costs nothing and takes about 3 MB off the
@@ -247,13 +236,6 @@
   # 22227, a 3% difference, in a code path reached only by btrfs raid5/6 profiles and md-raid6 -
   # neither of which exists on this disk. 0.54s of every boot for 3% of something that never runs.
   boot.kernel.structuredExtraConfig.RAID6_PQ_BENCHMARK = lib.kernel.no;
-
-  boot.kernelPatches = lib.optionals (!config.boot.initrd.enable) [
-    {
-      name = "apple-nvme-builtin";
-      patch = ./apple-nvme-builtin.patch;
-    }
-  ];
 
   # No boot entry is written: limine installs to the removable path, which is what U-Boot's EFI
   # implementation finds on these machines - the same arrangement the nixos host had, where

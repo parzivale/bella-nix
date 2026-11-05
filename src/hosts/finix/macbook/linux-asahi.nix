@@ -446,8 +446,8 @@ let
         }
       ]
       # What asahi's module passes, and what carries finix's built-in nvme_apple and btrfs
-      # and the patches in hardware-configuration.nix. Without it they would silently stop
-      # reaching this kernel.
+      # and the RAID6 setting in hardware-configuration.nix. Without it they would silently
+      # stop reaching this kernel.
       ++ config.boot.kernelPatches;
     };
 

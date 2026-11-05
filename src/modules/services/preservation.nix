@@ -10,7 +10,6 @@
       imports = [
         inputs.preservation.nixosModules.preservation
       ];
-      boot.initrd.systemd.enable = true;
 
       systemd.services.systemd-machine-id-commit = {
         unitConfig.ConditionPathIsMountPoint = [
