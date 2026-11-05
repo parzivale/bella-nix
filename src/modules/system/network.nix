@@ -16,7 +16,7 @@
   # the client finix does have. iwd takes its own wireless interfaces back in
   # the iwd module, which is where that belongs.
   flake.modules.finix.network =
-    { modules, ... }:
+    { lib, modules, ... }:
     {
       imports = [ modules.dhcpcd ];
 
@@ -27,7 +27,8 @@
       programs.resolvconf.enable = true;
 
       services.dhcpcd = {
-        enable = true;
+        # a default, so a host whose interfaces belong to NetworkManager can turn it off
+        enable = lib.mkDefault true;
 
         # iwd configures wireless itself here - finix defaults its
         # `EnableNetworkConfiguration` on, which is why the iwd module needs no

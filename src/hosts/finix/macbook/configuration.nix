@@ -25,7 +25,7 @@ in
       desktop
       remote-builder
       # hardware
-      iwd
+      networkmanager
       zram
       # power
       upower

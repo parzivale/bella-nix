@@ -28,7 +28,7 @@ in
       steam
       bolt-launcher
       mangohud
-      iwd
+      networkmanager
       obs
       lact
       flightcore
