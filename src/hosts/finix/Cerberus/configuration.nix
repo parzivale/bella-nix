@@ -3,6 +3,7 @@
   config,
   lib,
   pkgs,
+  modules,
   ...
 }:
 let
@@ -13,28 +14,39 @@ in
 {
   networking.hostName = "Cerberus";
 
-  imports = with inputs.self.modules.finix; [
-    system
-    secrets
-    home-manager
-    zram
-    use-arm-builders
-    deployer
-    deployable
-    desktop
-    cli
-    steam
-    bolt-launcher
-    mangohud
-    iwd
-    obs
-    lact
-    flightcore
-    r8126
-    modprobed-db
-    # linuxPackages_cachyos below
-    chaotic
-  ];
+  imports =
+    (with inputs.self.modules.finix; [
+      system
+      secrets
+      home-manager
+      zram
+      use-arm-builders
+      deployer
+      deployable
+      desktop
+      cli
+      steam
+      bolt-launcher
+      mangohud
+      iwd
+      obs
+      lact
+      flightcore
+      r8126
+      modprobed-db
+      # linuxPackages_cachyos below
+      chaotic
+    ])
+    ++ [
+      # rtkit, below. A finix module rather than one of ours, so it is named from finix's
+      # registry the way the macbook names binfmt and sinit.
+      modules.rtkit
+    ];
+
+  # realtime scheduling for pipewire and anything else that asks rtkit for it. The macbook gets
+  # this through asahi's `security.rtkit.enable`, which the apple-silicon shim forwards here;
+  # Cerberus has nothing that would, so it says so itself.
+  services.rtkit.enable = true;
 
   # What pid 1 is. The nixos Cerberus has no equivalent line because the answer
   # there is never in question.
