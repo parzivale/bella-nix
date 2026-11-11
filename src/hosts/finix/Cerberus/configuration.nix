@@ -19,7 +19,7 @@ in
       system
       secrets
       home-manager
-      zram
+      zswap
       use-arm-builders
       deployer
       deployable
@@ -69,10 +69,7 @@ in
   # `size` has no counterpart: nixos creates the swapfile when told how big, and
   # finix only mounts one that is already there. Which it is - /persistent
   # survives the tmpfs root, so the 40G file the nixos Cerberus made is still on
-  # the disk this boots from.
-  #
-  # The priority is what matters and does carry over: zram takes 5 by default, so
-  # 1 here keeps the compressed tier ahead of the disk.
+  # the disk this boots from. zswap sits in front of it as the compressed tier.
   swapDevices = [
     {
       device = "/persistent/swapfile";

@@ -26,7 +26,7 @@ in
       remote-builder
       # hardware
       networkmanager
-      zram
+      zswap
       # power
       upower
       poweralertd

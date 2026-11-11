@@ -137,6 +137,7 @@ let
             ZRAM = module;
             ZRAM_BACKEND_ZSTD = yes;
             ZRAM_DEF_COMP_ZSTD = yes;
+            ZSWAP = yes;
             COMPACTION = yes;
             TRANSPARENT_HUGEPAGE = yes;
             TRANSPARENT_HUGEPAGE_MADVISE = yes;

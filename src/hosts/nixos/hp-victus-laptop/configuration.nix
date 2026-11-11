@@ -32,7 +32,7 @@ in
     sober
     flightcore
     # system
-    zram
+    zswap
     use-arm-builders
   ];
 
