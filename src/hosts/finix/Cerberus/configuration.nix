@@ -19,6 +19,7 @@ in
       system
       secrets
       home-manager
+      disko
       zswap
       use-arm-builders
       deployer

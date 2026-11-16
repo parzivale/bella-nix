@@ -18,6 +18,7 @@ in
     home-manager
     cli
     server
+    disko
     gtnh
     atm10
     playit

@@ -25,6 +25,7 @@ in
       desktop
       remote-builder
       # hardware
+      apple-silicon
       networkmanager
       zswap
       # power

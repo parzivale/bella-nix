@@ -1,4 +1,4 @@
-{ inputs }:
+_:
 {
   config,
   lib,
@@ -7,15 +7,6 @@
 }:
 {
   imports = [
-    # The asahi module tree, which carries no class stamp so finix can import it, plus the
-    # compatibility layer which declares the option paths it writes to and forwards the ones
-    # with somewhere to go. That layer is also what turns asahi's
-    # `systemd.packages = [ speakersafetyd ]` into `services.speakersafetyd.enable` - the
-    # speaker protection is not optional on this hardware, so it asserts rather than dropping
-    # the unit quietly.
-    inputs.nixos-apple-silicon.nixosModules.default
-    inputs.community-modules.nixosModules.apple-silicon
-
     # The hardware report: the initrd's disk and keyboard modules, redistributable firmware,
     # and the graphics card's own module, all read out of facter.json.
     modules.facter
@@ -110,8 +101,6 @@
   # fontconfig, dconf and privileges gaps: the nixos half turns it on, the finix half leaves a
   # default meaning "absent", and nothing says so.
   hardware.uinput.enable = true;
-
-  nixpkgs.overlays = [ inputs.nixos-apple-silicon.overlays.default ];
 
   hardware.facter.reportPath = ./facter.json;
 

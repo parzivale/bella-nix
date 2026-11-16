@@ -11,6 +11,7 @@ let
 in
 {
   imports = with inputs.self.modules.nixos; [
+    disko
     helix
     git
     ssh

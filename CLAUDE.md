@@ -31,7 +31,7 @@ nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
 
 ### Module System
 
-All modules expose `flake.modules.nixos.<name>` and are auto-loaded from `src/modules/` by `loadModules` in `lib.nix`. Every host automatically imports the `base` module plus disko and agenix.
+All modules expose `flake.modules.nixos.<name>` and are auto-loaded from `src/modules/` by `loadModules` in `lib.nix`. Every host automatically imports only the `base` module; everything else, disko and agenix included, is a module the host imports by name (e.g. `disko` for hosts with a `disk-configuration.nix`, `apple-silicon` for finix Apple Silicon machines).
 
 **Module hierarchy:**
 - `base/` - Core system defaults (user, home-manager, nix settings, boot)
