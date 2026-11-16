@@ -31,7 +31,7 @@ nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
 
 ### Module System
 
-All modules expose `flake.modules.nixos.<name>` and are auto-loaded by haumea from `src/modules/`. Every host automatically imports the `base` module plus disko and agenix.
+All modules expose `flake.modules.nixos.<name>` and are auto-loaded from `src/modules/` by `loadModules` in `lib.nix`. Every host automatically imports the `base` module plus disko and agenix.
 
 **Module hierarchy:**
 - `base/` - Core system defaults (user, home-manager, nix settings, boot)
@@ -79,7 +79,8 @@ Hosts live in `src/hosts/<evaluator>/<hostname>/` (`nixos/` or `finix/`) with:
 
 ### Key Files
 
-- `flake.nix` - Flake definition, inputs, module loading logic
+- `flake.nix` - Flake definition and inputs
+- `lib.nix` - Flake-level helpers: module/host loading, host builders, deploy nodes and checks
 - `vars.nix` - Global variables (username, email, tailscale domain)
 - `src/modules/base/constants.nix` - Exposes the `constants` option set (from `vars.nix`)
 
