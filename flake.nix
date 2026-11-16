@@ -173,8 +173,12 @@
   outputs =
     inputs@{ flake-parts, ... }:
     let
-      inherit (import ./lib.nix { inherit inputs; })
-        systems
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+
+      inherit (import ./lib.nix { inherit inputs systems; })
         modules
         hostModules
         flakeModulesOption
