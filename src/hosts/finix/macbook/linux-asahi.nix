@@ -162,7 +162,7 @@ let
             # -------------------------------------------------------------------------------
             # Apple SoC
             # -------------------------------------------------------------------------------
-            # DART, MAILBOX and SART are built in by finix's own config for nvme_apple.
+            # DART, MAILBOX and SART are built in for nvme_apple, under Storage below.
             IOMMU_SUPPORT = yes;
             MAILBOX = yes;
             APPLE_RTKIT = yes;
@@ -225,15 +225,41 @@ let
             # -------------------------------------------------------------------------------
             # Storage and filesystems
             # -------------------------------------------------------------------------------
-            # nvme_apple and btrfs are built in by finix, because nothing could load them.
+            # The disk and the root filesystem are built in, because with no initrd nothing
+            # could load them. btrfs comes from finix's `builtinFilesystems`; the disk is here.
+            #
+            # nvme_apple is the ANS2 controller /dev/nvme0n1p5 sits on: an RTKit coprocessor
+            # reached over a mailbox, not a PCIe function, so none of generic NVMe's symbols
+            # bring it in. SART is the address filter it DMAs through, and NVME_APPLE depends
+            # on it directly. DART is the IOMMU, and has to be built in too: a built-in driver
+            # probes before any module loads, so a modular DART fails the probe with nothing
+            # said about why. MAILBOX is how the coprocessor is reached at all.
+            #
+            # These can be `y` only because this kernel is seeded from allnoconfig: SART starts
+            # at `n`, so by the time kconfig asks about NVMe its dependencies are no longer a
+            # seed's `m`, and `y` is on offer. From a defconfig seed it is refused.
+            NVME_APPLE = yes;
+            APPLE_SART = yes;
+            APPLE_DART = yes;
+            APPLE_MAILBOX = yes;
             BTRFS_FS_POSIX_ACL = yes;
             BLK_DEV = yes; # The menu zram is in.
 
-            # finix insists on this for nvme_apple, because on a stock kernel NVMe over
-            # Fabrics' host authentication is on and selects it. allnoconfig leaves that off,
-            # nothing selects NVME_AUTH, and finix's `yes` would fail as an unused option.
-            # Under finix's mkForce, which is 50.
-            NVME_AUTH = lib.mkOverride 40 unset;
+            # btrfs `select`s RAID6_PQ, and built in rather than modular its init benchmarks
+            # every implementation it has: 0.54s of this machine's 0.89s kernel init, on a
+            # machine with no raid.
+            #
+            #   [0.096036] raid6: neonx8   gen() 22227 MB/s
+            #   ... eight of them, ~68ms each ...
+            #   [0.640183] raid6: using neon recovery algorithm
+            #   [0.887763] Run /nix/store/...-finix-system/init as init process
+            #
+            # Without the benchmark the first implementation that works is taken instead of the
+            # fastest: neonx4 won at 22924 MB/s against neonx8's 22227, 3%, in a code path
+            # reached only by btrfs raid5/6 profiles and md-raid6 - neither of which exists on
+            # this disk.
+            RAID6_PQ_BENCHMARK = no;
+
             PCI = yes;
             PCIEPORTBUS = yes;
             PCIE_APPLE = module; # Wi-Fi sits behind it.
@@ -446,9 +472,8 @@ let
           };
         }
       ]
-      # What asahi's module passes, and what carries finix's built-in nvme_apple and btrfs
-      # and the RAID6 setting in hardware-configuration.nix. Without it they would silently
-      # stop reaching this kernel.
+      # What asahi's module passes, and what carries finix's built-in btrfs. Without it that
+      # would silently stop reaching this kernel.
       ++ config.boot.kernelPatches;
     };
 
@@ -463,4 +488,13 @@ in
 {
   # Forced, because asahi's module sets it as well.
   boot.kernelPackages = lib.mkForce (lib.recurseIntoAttrs (linuxPackagesFor kernel));
+
+  # None of finix's storage drivers: this kernel names its own, in the whitelist above.
+  #
+  # With no initrd, `boot.kernel.builtinDrivers` otherwise defaults to every driver finix
+  # knows - ahci, mmc_block, generic nvme, sd_mod, usb_storage, virtio_blk - all hardware
+  # this machine does not have, about 3 MB of image and the initcalls that go with it. Its
+  # nvme_apple entry is not wanted either: it forces NVME_AUTH on, which allnoconfig leaves
+  # with nothing selecting it, so the whitelist would only have to undo it.
+  boot.kernel.builtinDrivers = [ ];
 }

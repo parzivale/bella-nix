@@ -146,44 +146,6 @@ _:
   # stage 1's moment went. Flipping this back is all that is needed to try again.
   boot.initrd.enable = false;
 
-  # The one storage driver this machine has, named rather than taken from the default.
-  #
-  # `boot.kernel.builtinDrivers` otherwise defaults to every driver finix knows, on the
-  # reasoning that a machine without an initrd is having a kernel built for it anyway and
-  # cannot reliably say which controller its disk is on. This one can: the root is
-  # /dev/nvme0n1p5, which is the ANS2 NVMe, and there is nothing else to boot from.
-  #
-  # It also has to be named, because nvme_apple is excluded from that default. On a kernel
-  # seeded from `make defconfig` it cannot be built in by answering the configuration
-  # generator: kconfig asks about NVMe while APPLE_SART is still the seed's `m`, and a tristate
-  # cannot be `y` over a modular dependency. This one is seeded from `allnoconfig` instead - see
-  # linux-asahi.nix - so SART starts at `n`, NVMe is not asked until the second pass, and `y` is
-  # on offer by then. That used to take a patch to the defconfig, which went once nothing read
-  # the defconfig any more.
-  #
-  # The rest of the default - ahci, mmc_block, generic nvme, sd_mod, usb_storage, virtio_blk -
-  # is hardware this does not have, so dropping it costs nothing and takes about 3 MB off the
-  # image along with the initcalls that go with it.
-  boot.kernel.builtinDrivers = [ "nvme_apple" ];
-
-  # 0.54 seconds of this machine's 0.89s kernel init was spent timing raid6 implementations
-  # against each other, on a machine with no raid:
-  #
-  #   [0.096036] raid6: neonx8   gen() 22227 MB/s
-  #   ... eight of them, ~68ms each ...
-  #   [0.640183] raid6: using neon recovery algorithm
-  #   [0.887763] Run /nix/store/...-finix-system/init as init process
-  #
-  # It is here because of the no-initrd boot, not in spite of it: the kernel has to mount the
-  # root itself, so CONFIG_BTRFS_FS=y, and btrfs `select`s RAID6_PQ, whose init benchmarks every
-  # implementation it has when it is built in rather than modular.
-  #
-  # Without the benchmark the kernel takes the first implementation that works instead of the
-  # fastest. The measurement above is what that costs: neonx4 won at 22924 MB/s against neonx8's
-  # 22227, a 3% difference, in a code path reached only by btrfs raid5/6 profiles and md-raid6 -
-  # neither of which exists on this disk. 0.54s of every boot for 3% of something that never runs.
-  boot.kernel.structuredExtraConfig.RAID6_PQ_BENCHMARK = lib.kernel.no;
-
   # No boot entry is written: limine installs to the removable path, which is what U-Boot's EFI
   # implementation finds on these machines - the same arrangement the nixos host had, where
   # bootctl was always passed --no-variables.
