@@ -133,25 +133,6 @@ in
     greetd.enable = false;
   };
 
-  # The session's own daemons need nothing said here. They are not system units any more: they
-  # belong to a tree a session starts, and a VM with no greetd starts no session, so nothing in
-  # that tree runs and there is nothing to disable.
-
-  # `security.polkit.enablePkexecWrapper` has no counterpart: finix's polkit module installs
-  # the setuid pkexec wrapper whenever polkit is enabled, so there is nothing to turn on.
-
-  # `loglevel=3` is temporary, for one experiment: the kernel's own chatter buries finit's unit
-  # sequence on the console, and a boot which hangs before syslogd leaves the console as the only
-  # evidence there is. Quiet it and what survives on screen is which unit finit stopped at.
-  # `button.lid_init_state` is gone, and was never doing anything on this machine. It is a
-  # parameter of `drivers/acpi/button.c`, and there is no ACPI here: /proc/acpi does not exist,
-  # and the lid is `platform:macsmc-input`, a driver which never reads it. The module loads and
-  # reports `ACPI: button: Initial lid state set to 'open'` on every boot, governing nothing.
-  # Carried over from x86, where it would have meant something.
-  boot.kernelParams = [
-    "loglevel=3"
-  ];
-
   services.elogind.settings.Login = {
     HandleLidSwitch = "suspend";
     HandleLidSwitchExternalPower = "suspend";
