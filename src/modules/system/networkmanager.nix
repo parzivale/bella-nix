@@ -28,5 +28,6 @@
         "/etc/NetworkManager/system-connections"
         "/var/lib/NetworkManager"
       ];
+      state.preserve.units = [ "network-manager" ];
     };
 }

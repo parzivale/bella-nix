@@ -65,6 +65,9 @@ in
       tailscale-up.requires = [ "agenix-install-secrets" ];
     };
 
+    # /var/lib/tailscale, preserved by `tailnet` above, is the node's identity
+    state.preserve.units = [ "tailscaled" ];
+
     # Not in a virtual machine. `tailscale up` needs the auth key, which is a secret, and a VM
     # has none - see the note in `secrets`. With the agenix unit gone this one would be left
     # requiring something which will never be ready, which is a branch of the graph that waits

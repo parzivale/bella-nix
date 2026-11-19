@@ -71,6 +71,13 @@
       # it - so a bare path here does not merely leave a private key's mode unsaid, it forces it
       # world readable on every boot. sshd refuses such a key outright ("Permissions 0644 ...
       # are too open") and exits having loaded none, which is what this was doing.
+      # ssh-keygen most of all: started before the key is in place, it finds none and generates
+      # a new one, which the preserved key is then mounted over - or, worse, not.
+      state.preserve.units = [
+        "ssh-keygen"
+        "sshd"
+      ];
+
       state.preserve.files = [
         {
           file = "/etc/ssh/ssh_host_ed25519_key";

@@ -118,6 +118,40 @@
         };
       };
 
+      # With no initrd the preserved state is put in place by units, while others are already
+      # starting, so whatever uses it has to wait for them by name. With an initrd
+      # `preservation.units` is empty: stage 1 has done it all before any unit runs, and this
+      # adds nothing.
+      #
+      # Who waits is `state.preserve.units` - named by the module that declared the state - plus
+      # the baseline above: syslogd writes /var/log, and dbus reads the machine id. Home
+      # directories are read by the session, so a user's state holds back its entry points: the
+      # greeter, and home-manager's activation.
+      #
+      # Each name is checked against the option that creates its unit, not with
+      # `providers.services.lib.present`: that reads the unit set this is adding to, so the set's
+      # names would depend on themselves. Names in `state.preserve.units` are trusted for the
+      # same reason - a module names only units it enables.
+      providers.services.units =
+        let
+          users = lib.attrNames config.state.preserve.users;
+
+          waiting = lib.unique (
+            lib.optional config.services.sysklogd.enable "syslogd"
+            ++ lib.optional config.services.dbus.enable "dbus"
+            ++ lib.optional (users != [ ] && config.services.greetd.enable or false) "greetd"
+            ++ map (user: "hm-activate-${user}") (
+              lib.filter (user: config.home-manager.users or { } ? ${user}) users
+            )
+            ++ config.state.preserve.units
+          );
+        in
+        lib.mkIf (config.preservation.units != [ ]) (
+          lib.genAttrs waiting (_: {
+            requires = config.preservation.units;
+          })
+        );
+
       # Nothing corresponds to the nixos side's initrd systemd or its
       # machine-id-commit override: both are systemd putting its own state in
       # order, and the ssh host key is preserved by the openssh module, which

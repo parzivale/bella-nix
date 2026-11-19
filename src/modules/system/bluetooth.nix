@@ -22,5 +22,6 @@
       services.bluetooth.enable = true;
 
       state.preserve.directories = [ "/var/lib/bluetooth" ];
+      state.preserve.units = [ "bluetooth" ];
     };
 }

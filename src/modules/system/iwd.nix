@@ -51,5 +51,6 @@ _: {
       state.preserve.directories = [
         "/var/lib/iwd"
       ];
+      state.preserve.units = [ "iwd" ];
     };
 }

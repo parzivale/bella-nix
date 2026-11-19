@@ -20,6 +20,15 @@
         directories = entries;
         files = entries;
 
+        # The units which read or write the state above, named by whichever module declared
+        # that state - it is the one which knows both the path and what uses it. An
+        # implementation which sets the state up while units are already running (finix with no
+        # initrd) orders these after it; one which does it before any unit starts ignores this.
+        units = lib.mkOption {
+          type = with lib.types; listOf str;
+          default = [ ];
+        };
+
         users = lib.mkOption {
           type = lib.types.attrsOf (
             lib.types.submodule {

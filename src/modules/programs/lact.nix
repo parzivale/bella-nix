@@ -16,5 +16,6 @@ _: {
       services.lact.enable = true;
 
       state.preserve.directories = [ "/etc/lact" ];
+      state.preserve.units = [ "lactd" ];
     };
 }

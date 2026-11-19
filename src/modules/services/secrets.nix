@@ -63,7 +63,7 @@ in
 
         # ryantm/agenix' nixos module ported onto `providers.services`: the
         # options and the install script are the same, the systemd unit is a
-        # oneshot on sysinit instead.
+        # oneshot, which whatever reads a secret requires by name.
         inputs.community-modules.nixosModules.agenix
 
         # Unported, because it needs no port - it only computes where a rekeyed
@@ -78,8 +78,9 @@ in
       # it should not be handed the real one: the store is world readable.
       #
       # The way that failed is the point. `agenix-install-secrets` exited 1, its readiness
-      # companion waited for a success which was never coming, and since the unit is attached to
-      # `sysinit` the whole trunk stopped behind it. The machine booted to nothing, silently.
+      # companion waited for a success which was never coming, and since the unit was attached
+      # to `sysinit` the whole trunk stopped behind it. The machine booted to nothing, silently.
+      # There is no trunk now, but everything reading a secret still requires this unit.
       #
       # Emptying `age.secrets` is not the answer: the set is read at evaluation time all over the
       # configuration - `config.age.secrets.tailscale_token.path` and friends - so removing it
@@ -101,5 +102,9 @@ in
       # `age.identityPaths` is left alone: the community module reads it from
       # `services.openssh.settings.HostKey`, which our openssh module pins to
       # /etc/ssh/ssh_host_ed25519_key on this class too.
+      #
+      # That key is preserved state, so decrypting before it is in place decrypts with nothing.
+      # Said here as well as through `ssh-keygen`, which only covers it while openssh is on.
+      state.preserve.units = [ "agenix-install-secrets" ];
     };
 }
