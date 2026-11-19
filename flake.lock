@@ -163,16 +163,16 @@
     },
     "community-modules": {
       "locked": {
-        "lastModified": 1793900128,
-        "narHash": "sha256-ThCjlDBlNtXPz6AkaRfyqr/hfhOCax13L+FhSYaO+0g=",
-        "owner": "parzivale",
+        "lastModified": 1795050801,
+        "narHash": "sha256-qxABDPeFP/65QT1tEyb0F/8Y9HZwRjZGR3KaFe3kmIM=",
+        "owner": "ginix-org",
         "repo": "community-modules",
-        "rev": "04a25abc5e41dc2b59ca1277eb13413c2bc8f37a",
+        "rev": "591771b718433f7392f5532b19f0d571c3f66642",
         "type": "github"
       },
       "original": {
-        "owner": "parzivale",
-        "ref": "generic-services",
+        "owner": "ginix-org",
+        "ref": "providers-services/no-trunk",
         "repo": "community-modules",
         "type": "github"
       }
@@ -295,17 +295,16 @@
     },
     "finix": {
       "locked": {
-        "lastModified": 1793913848,
-        "narHash": "sha256-DjyKn5KK8eOPX4f1rN+Hpc2cbuezwYN9pSY4cxntWUs=",
-        "owner": "parzivale",
-        "repo": "finix",
-        "rev": "f2889277fff195f06313948ec8d2dc620fe65893",
+        "lastModified": 1795051269,
+        "narHash": "sha256-931v4tFIxmlCKPGItfF84zoAT45ZhmH0jdgiPvKNQpc=",
+        "owner": "ginix-org",
+        "repo": "ginix",
+        "rev": "1a5e75858c6f8936adba67900eb2a473b8da832b",
         "type": "github"
       },
       "original": {
-        "owner": "parzivale",
-        "ref": "generic-services",
-        "repo": "finix",
+        "owner": "ginix-org",
+        "repo": "ginix",
         "type": "github"
       }
     },
