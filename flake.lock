@@ -295,11 +295,11 @@
     },
     "finix": {
       "locked": {
-        "lastModified": 1795051269,
-        "narHash": "sha256-931v4tFIxmlCKPGItfF84zoAT45ZhmH0jdgiPvKNQpc=",
+        "lastModified": 1795051748,
+        "narHash": "sha256-+0WfCBpiIp/YZzSrv92ONUHo2hsnEApfGe9uU9N8J8Y=",
         "owner": "ginix-org",
         "repo": "ginix",
-        "rev": "1a5e75858c6f8936adba67900eb2a473b8da832b",
+        "rev": "75adf07697e9d36daaae574f2be341fbee1f4ffa",
         "type": "github"
       },
       "original": {
