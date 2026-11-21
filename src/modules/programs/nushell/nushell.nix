@@ -15,7 +15,6 @@ let
 in
 {
   flake.modules.homeManager.nushell =
-    { config, pkgs, ... }:
     {
       programs = {
         lazygit.enableNushellIntegration = true;
@@ -26,32 +25,7 @@ in
         nushell = {
           enable = true;
           configFile.source = ./configuration.nu;
-          extraConfig = ''
-            def bash-env [
-              path?: string
-            ] {
-              let path_args = if $path != null {
-                [($path | path expand)]
-              } else {
-                []
-              }
-
-              let input_str = $in | default "" | str join "\n"
-              let raw = $input_str | ${pkgs.bash-env-json}/bin/bash-env-json  ...($path_args) | complete
-              let raw_json = $raw.stdout | from json
-
-              let error = $raw_json | get -o error
-              if $error != null {
-                error make { msg: $error }
-              } else if $raw.exit_code != 0 {
-                error make { msg: $"unexpected failure from bash-env-json ($raw.stderr)" }
-              }
-
-              $raw_json.env
-            }
-
-            load-env (bash-env "${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh")
-          '';
+          loadSessionVariables = true;
           settings = {
             show_banner = false;
           };
