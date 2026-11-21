@@ -84,6 +84,15 @@ in
       inputs.community-modules.nixosModules.home-manager
     ];
 
+    # community-modules' home-manager module imports from `pkgs.home-manager.src`
+    # rather than taking a source, so point that at our input: keeps finix on the
+    # same revision as stylix and the NixOS hosts, and makes the import not IFD.
+    nixpkgs.overlays = [
+      (final: prev: {
+        home-manager = prev.home-manager.overrideAttrs { src = inputs.home-manager; };
+      })
+    ];
+
     # No `useGlobalPkgs`, `useUserPackages` or `backupFileExtension` to set.
     # The first two are how it works there rather than options: the module
     # evaluates against the system's `pkgs` and puts each user's profile in
